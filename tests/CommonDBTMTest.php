@@ -35,15 +35,32 @@ along with GLPI. If not, see <http://www.gnu.org/licenses/>.
 class CommonDBTMTest extends DbTestCase {
 
    public function testAdd() {
+      global $DB;
+
       $input = [
          'name'        => self::getUniqueString(),
          '_no_history' => false
-      ];
+     ];
 
-      $mock = $this->getMockBuilder('UserTitle')
-         ->enableProxyingToOriginalMethods()
-         ->setMethods(['prepareInputForAdd', 'post_addItem'])
+      $list_fields = $DB->list_fields(UserTitle::getTable());
+
+      $DB = $this->getMockBuilder(Db::class)
+         ->setMethods(['list_fields'])
          ->getMock();
+
+      $DB->expects($this->any())
+         ->method('list_fields')
+         ->will($this->returnValue($list_fields));
+
+      $mock = $this->getMockBuilder(UserTitle::class)
+         ->enableProxyingToOriginalMethods()
+         ->setMethods(['prepareInputForAdd', 'post_addItem', 'addToDB'])
+         ->getMock();
+
+      $mock->expects($this->any())
+         ->method('addToDB')
+         ->will($this->returnValue(156));
+
       /*
       $mock->expects($this->once())
          ->method('prepareInputForAdd')
