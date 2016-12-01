@@ -111,22 +111,6 @@ class KnowbaseItem_ItemTest extends DbTestCase {
          $item = getItemByTypeName($expected['itemtype'], $expected['id']);
          $this->assertInstanceOf($expected['itemtype'], $item);
       }
-
-      //add sql where clause
-      $items = KnowbaseItem_Item::getItems($kb2, 0, 0, '`itemtype` = \'Computer\'');
-      $this->assertCount(1, $items);
-
-      $expecteds = [
-         1 => [
-            'id'       => '_test_pc21',
-            'itemtype' => Computer::getType(),
-         ]
-      ];
-
-      foreach ($expecteds as $key => $expected) {
-         $item = getItemByTypeName($expected['itemtype'], $expected['id']);
-         $this->assertInstanceOf($expected['itemtype'], $item);
-      }
    }
 
    /**
@@ -175,28 +159,28 @@ class KnowbaseItem_ItemTest extends DbTestCase {
       $_SESSION['glpishowallentities'] = 0;
 
       $entity = getItemByTypeName(Entity::getType(), '_test_root_entity');
-      $_SESSION['glpiactiveentities_string'] = $entity->getID();
+      $_SESSION['glpiactiveentities'] = [$entity->getID()];
 
       $ticket3 = getItemByTypeName(Ticket::getType(), '_ticket03');
       $kbs = KnowbaseItem_Item::getItems($ticket3);
       $this->assertCount(0, $kbs);
 
       $entity = getItemByTypeName(Entity::getType(), '_test_child_1');
-      $_SESSION['glpiactiveentities_string'] = $entity->getID();
+      $_SESSION['glpiactiveentities'] = [$entity->getID()];
 
       $ticket3 = getItemByTypeName(Ticket::getType(), '_ticket03');
       $kbs = KnowbaseItem_Item::getItems($ticket3);
       $this->assertCount(2, $kbs);
 
       $entity = getItemByTypeName(Entity::getType(), '_test_child_2');
-      $_SESSION['glpiactiveentities_string'] = $entity->getID();
+      $_SESSION['glpiactiveentities'] = [$entity->getID()];
 
       $ticket3 = getItemByTypeName(Ticket::getType(), '_ticket03');
       $kbs = KnowbaseItem_Item::getItems($ticket3);
       $this->assertCount(0, $kbs);
 
       $_SESSION['glpishowallentities'] = 1;
-      unset($_SESSION['glpiactiveentities_string']);
+      unset($_SESSION['glpiactiveentities']);
    }
 
    /**

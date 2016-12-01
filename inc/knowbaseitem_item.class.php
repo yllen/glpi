@@ -147,7 +147,7 @@ class KnowbaseItem_Item extends CommonDBRelation {
          } else {
             $rand = KnowbaseItem::dropdown([
                'entity' => $item->getEntityID(),
-               'used'   => self::getItems($item, 0, 0, '', true)
+               'used'   => self::getItems($item, 0, 0, true)
             ]);
          }
          echo "</td><td>";
@@ -296,60 +296,60 @@ class KnowbaseItem_Item extends CommonDBRelation {
     * @param CommonDBTM $item      CommonDBTM object
     * @param integer    $start     first line to retrieve (default 0)
     * @param integer    $limit     max number of line to retrive (0 for all) (default 0)
-    * @param string     $sqlfilter to add an SQL filter (default '')
     * @param boolean    $used      whether to retrieve data for "used" records
     *
     * @return array of linked items
    **/
-   static function getItems(CommonDBTM $item, $start=0, $limit=0, $sqlfilter='', $used = false) {
+   static function getItems(CommonDBTM $item, $start=0, $limit=0, $used = false) {
       global $DB;
+
+      $options = [
+         'FROM'   => ['glpi_knowbaseitems_items', 'glpi_knowbaseitems'],
+         'FIELDS' => ['glpi_knowbaseitems_items' => '*'],
+         'FKEY'   => [
+            'glpi_knowbaseitems_items' => 'knowbaseitems_id',
+            'glpi_knowbaseitems'       => 'id'
+         ],
+         'ORDER'  => ['itemtype', 'items_id DESC'],
+      ];
+      $where = [];
 
       $itemtype  = $item->getType();
       $items_id  = $item->getField('id');
       $itemtable = $item->getTable();
 
-      $select = $used === false ? '*' :
-          $item::getType() === KnowbaseItem::getType() ?
-             '`kb_linked`.`knowbaseitems_id`' :
-             '`kb_linked`.`items_id`';
-
-      $query = "SELECT `kb_linked`.*
-                FROM `glpi_knowbaseitems_items` AS `kb_linked`
-                INNER JOIN `glpi_knowbaseitems`
-                   ON `kb_linked`.`knowbaseitems_id`=`glpi_knowbaseitems`.`id` ";
-
       if ($item::getType() == KnowbaseItem::getType()) {
-         $id_field = 'knowbaseitems_id';
-         $query .= KnowbaseItem::addvisibilityjoins() . ' WHERE ' .
-            KnowbaseItem::addVisibilityRestrict();
+         $id_field = 'glpi_knowbaseitems_items.knowbaseitems_id';
+         $visibility = KnowbaseItem::getVisibilityCriteria();
+         if (count($visibility['JOIN'])) {
+             $options['JOIN'] = $visibility['JOIN'];
+             if (isset($visibility['WHERE'])) {
+                $where = $visibility['WHERE'];
+             }
+         }
       } else {
-         $id_field = 'items_id';
-         $restrict = getEntitiesRestrictRequest(
-            '',
-            $item::getTable(),
-            '',
-            '',
-            true
-         );
-         if ($restrict !== '') {
-            $query .= ' INNER JOIN `' . $item->getTable() .
-               '` ON `kb_linked`.`items_id`=`' . $item->getTable() . '`.`id`' .
-               ' WHERE ' . $restrict;
+         $id_field = 'glpi_knowbaseitems_items.items_id';
+         $where = getEntitiesRestrictCriteria($item->getTable(), '', '', $item->maybeRecursive());
+         if (count($where)) {
+            $options['FROM'][] = $item->getTable();
+            $where[] = ['glpi_knowbaseitems_items.items_id' => '`' . $item->getTable() . '`.`id`'];
          }
       }
-      $query .= " AND `kb_linked`.`$id_field` = '$items_id'";
 
-      if ($sqlfilter) {
-         $query .= " AND ($sqlfilter) ";
+      if (count($where)) {
+         $options['AND'] = [$id_field => $items_id, 'AND' =>$where];
+      } else {
+         $options['AND'] = [$id_field => $items_id];
       }
-      $query .= " ORDER BY `itemtype`, `items_id` DESC";
 
       if ($limit) {
-         $query .= " LIMIT ".intval($start)."," . intval($limit);
+         $options['START'] = intval($start);
+         $options['LIMIT'] = intval($limit);
       }
 
       $linked_items = array();
-      foreach ($DB->request($query) as $data) {
+      $results = $DB->request($options, true);
+      foreach ($results as $data) {
          if ($used === false) {
             $linked_items[] = $data;
          } else {
