@@ -60,6 +60,7 @@ if (isset($_POST["add"])) {
    $track->update($_POST);
 
    if(isset($_POST['kb_linked_id'])) {
+      //if solution should be linked to selected KB entry
       $params = [
          'knowbaseitems_id' => $_POST['kb_linked_id'],
          'itemtype'         => $track->getType(),

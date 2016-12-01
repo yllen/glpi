@@ -314,7 +314,7 @@ class KnowbaseItem_Item extends CommonDBRelation {
              '`kb_linked`.`items_id`';
 
       $query = "SELECT `kb_linked`.*
-                FROM `glpi_knowbaseitems_items` as `kb_linked`
+                FROM `glpi_knowbaseitems_items` AS `kb_linked`
                 INNER JOIN `glpi_knowbaseitems`
                    ON `kb_linked`.`knowbaseitems_id`=`glpi_knowbaseitems`.`id` ";
 
