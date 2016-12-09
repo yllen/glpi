@@ -77,6 +77,8 @@ class Computer_SoftwareVersionTest extends DbTestCase {
 
       $this->setEntity('_test_root_entity', true);
       $this->assertEquals($expected, $ins->prepareInputForAdd($input));
+
+      Session::destroy();
    }
 
    /**
@@ -109,6 +111,8 @@ class Computer_SoftwareVersionTest extends DbTestCase {
       ];
 
       $this->assertEquals($expected, $ins->prepareInputForUpdate($input));
+
+      Session::destroy();
    }
 
 
@@ -116,7 +120,6 @@ class Computer_SoftwareVersionTest extends DbTestCase {
     * @covers Computer_SoftwareVersion::countForVersion
     */
    public function testCountInstall() {
-
       $this->Login();
 
       $computer1 = getItemByTypeName('Computer', '_test_pc01', true);
@@ -148,6 +151,8 @@ class Computer_SoftwareVersionTest extends DbTestCase {
 
       $this->setEntity('_test_child_1', false);
       $this->assertEquals(2, Computer_SoftwareVersion::countForVersion($ver), 'count in child');
+
+      Session::destroy();
    }
 
    /**

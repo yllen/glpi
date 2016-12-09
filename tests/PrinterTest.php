@@ -88,7 +88,6 @@ class PrinterTest extends DbTestCase {
    }
 
    public function testVisibility() {
-
       $this->Login();
 
       $p = new Printer();
@@ -113,6 +112,8 @@ class PrinterTest extends DbTestCase {
       $this->assertFalse($p->can(getItemByTypeName('Printer', '_test_printer_ent0', true), READ));
       $this->assertTrue( $p->can(getItemByTypeName('Printer', '_test_printer_ent1', true), READ));
       $this->assertFalse($p->can(getItemByTypeName('Printer', '_test_printer_ent2', true), READ));
+
+      Session::destroy();
    }
 
    /**

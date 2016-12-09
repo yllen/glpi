@@ -248,6 +248,8 @@ class DbFunctionTest extends DbTestCase {
       $this->assertEquals(1, countElementsInTableForMyEntities('glpi_computers', ['name' => '_test_pc11']));
       $this->assertEquals(0, countElementsInTableForMyEntities('glpi_computers', 'name="_test_pc01"'));
       $this->assertEquals(0, countElementsInTableForMyEntities('glpi_computers', ['name' => '_test_pc01']));
+
+      Session::destroy();
    }
 
    /**
@@ -402,6 +404,7 @@ class DbFunctionTest extends DbTestCase {
       $it = new DBmysqlIterator(NULL, 'glpi_entities', getEntitiesRestrictCriteria('glpi_entities', '', 7, true));
       $this->assertEquals('SELECT * FROM `glpi_entities` WHERE `glpi_entities`.`id` = 7', $it->getSql());
 
+      Session::destroy();
    }
 }
 

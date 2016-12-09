@@ -41,9 +41,7 @@ class SearchTest extends DbTestCase {
       $this->assertTrue(is_subclass_of($itemtype, "CommonDBTM"));
 
       // login to glpi if needed
-      if (!isset($_SESSION['glpiname'])) {
-         $this->Login();
-      }
+      $this->Login();
 
       // force session in debug mode (to store & retrieve sql errors)
       $glpi_use_mode             = $_SESSION['glpi_use_mode'];
@@ -68,6 +66,8 @@ class SearchTest extends DbTestCase {
 
       // do not store this search from session
       Search::resetSaveSearch();
+
+      Session::destroy();
 
       return $data;
    }

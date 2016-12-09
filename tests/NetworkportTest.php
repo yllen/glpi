@@ -96,6 +96,8 @@ class NetworkportTest extends DbTestCase {
       ], [], false);
       $this->assertGreaterThan(0, $new_id);
       $this->assertEquals($nb_log, countElementsInTable('glpi_logs'));
+
+      Session::destroy();
    }
 
    /**
@@ -215,5 +217,7 @@ class NetworkportTest extends DbTestCase {
       ], [], false);
       $this->assertGreaterThan(0, $new_id);
       $this->assertEquals($nb_log, countElementsInTable('glpi_logs'));
+
+      Session::destroy();
    }
 }
