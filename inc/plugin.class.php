@@ -1311,4 +1311,39 @@ class Plugin extends CommonDBTM {
       return (isset($PLUGIN_HOOKS['import_item']) && count($PLUGIN_HOOKS['import_item']));
    }
 
+   /**
+    * Get an internationnalized message for incomatible plugins (either core or php version)
+    *
+    * @param string $typ Either 'php' or 'core', defaults to 'core'
+    * @param string $min Minimal required version
+    * @param string $max Maximal required version
+    *
+    * @since 9.2
+    *
+    * @return string
+    */
+   static public function messageIncompatible($type = 'core', $min = null, $max = null) {
+      $type = ($type === 'core' ? __('GLPi') : __('PHP'));
+      if ($min === null && $max !== null) {
+         return sprintf(
+            __('This plugin requires %1$s > %2$s.'),
+            $type,
+            $min
+         );
+      } else if ($min !== null && $max === null) {
+         return sprintf(
+            __('This plugin requires %1$s < %2$s.'),
+            $type,
+            $max
+         );
+
+      } else {
+         return sprintf(
+            __('This plugin requires %1$s > %2$s and < %3$s'),
+            $type,
+            $min,
+            $max
+         );
+      }
+   }
 }
