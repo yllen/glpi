@@ -500,14 +500,19 @@ class Plugin extends CommonDBTM {
                case self::ANEW :
                case self::NOTINSTALLED :
                case self::NOTUPDATED :
-                  echo "<td>";
+                  $out = '';
+                  $do_install = true;
                   if (function_exists("plugin_".$plug['directory']."_install")
                       && function_exists("plugin_".$plug['directory']."_check_config")) {
 
                      $function   = 'plugin_' . $plug['directory'] . '_check_prerequisites';
-                     $do_install = true;
                      if (function_exists($function)) {
+                        ob_start();
                         $do_install = $function();
+                        if (!$do_install) {
+                           $out .= '<span class="error">' . ob_get_contents() . '</span>';
+                        }
+                        ob_end_clean();
                      }
                      if ($plug['state'] == self::NOTUPDATED) {
                         $msg = _x('button', 'Upgrade');
@@ -515,10 +520,11 @@ class Plugin extends CommonDBTM {
                         $msg = _x('button', 'Install');
                      }
                      if ($do_install) {
-                        Html::showSimpleForm(static::getFormURL(), array('action' => 'install'),
+                        $out .= Html::getSimpleForm(static::getFormURL(), array('action' => 'install'),
                                              $msg, array('id' => $ID));
                      }
                   } else {
+                     $do_install = false;
 
                      $missing = '';
                      if (!function_exists("plugin_".$plug['directory']."_install")) {
@@ -528,10 +534,17 @@ class Plugin extends CommonDBTM {
                         $missing .= " plugin_".$plug['directory']."_check_config";
                      }
                      //TRANS: %s is the list of missing functions
-                     printf(__('%1$s: %2$s'), __('Non-existent function'),
+                     $out .= sprintf(__('%1$s: %2$s'), __('Non-existent function'),
                             $missing);
                   }
-                  echo "</td><td>";
+                  echo "<td";
+                  if (!$do_install) {
+                     echo " colspan='2'";
+                  }
+                  echo ">$out";
+                  if ($do_install) {
+                     echo "</td><td>";
+                  }
                   if (function_exists("plugin_".$plug['directory']."_uninstall")) {
                      if ($plug['state'] == self::ANEW || $plug['state'] == self::NOTINSTALLED) {
                         //not installed: no uninstall button ;)
