@@ -525,7 +525,6 @@ class Plugin extends CommonDBTM {
                      }
                   } else {
                      $do_install = false;
-
                      $missing = '';
                      if (!function_exists("plugin_".$plug['directory']."_install")) {
                         $missing .= "plugin_".$plug['directory']."_install";
@@ -641,6 +640,8 @@ class Plugin extends CommonDBTM {
     * @param $ID ID of the plugin
    **/
    function uninstall($ID) {
+      $message = '';
+      $type = ERROR;
 
       if ($this->getFromDB($ID)) {
          CronTask::Unregister($this->fields['directory']);
@@ -654,13 +655,30 @@ class Plugin extends CommonDBTM {
             $_SESSION['glpi_plugins']['temp'] = $this->fields['directory']; // For autoloader
             $function();
             unset($_SESSION['glpi_plugins']['temp']);
+         } else {
+            Session::addMessageAfterRedirect(
+               sprintf(__('Plugin %1$s has no install function!'), $this->fields['name']),
+               true,
+               WARNING
+            );
          }
 
          $this->update(array('id'      => $ID,
                              'state'   => self::NOTINSTALLED,
                              'version' => ''));
          $this->removeFromSession($this->fields['directory']);
+
+         $type = INFO;
+         $message = sprintf(__('Plugin %1$s has been uninstalled!'), $this->fields['name']);
+      } else {
+         $message = sprintf(__('Plugin %1$s not found!'), $ID);
       }
+
+      Session::addMessageAfterRedirect(
+         $message,
+         true,
+         $type
+      );
    }
 
 
@@ -671,27 +689,49 @@ class Plugin extends CommonDBTM {
    **/
    function install($ID) {
 
+      $message = '';
+      $type = ERROR;
+
       if ($this->getFromDB($ID)) {
          self::load($this->fields['directory'],true);
          $function   = 'plugin_' . $this->fields['directory'] . '_install';
-         $install_ok = false;
          if (function_exists($function)) {
             $_SESSION['glpi_plugins']['temp'] = $this->fields['directory'];  // For autoloader
             if ($function()) {
+               $type = INFO;
                $function = 'plugin_' . $this->fields['directory'] . '_check_config';
                if (function_exists($function)) {
                   if ($function()) {
                      $this->update(array('id'    => $ID,
                                          'state' => self::NOTACTIVATED));
+                     $message = sprintf(__('Plugin %1$s has been installed!'), $this->fields['name']);
+                     $message .= '<br/><br/>' . str_replace(
+                        '%activate_link',
+                        Html::getSimpleForm(static::getFormURL(), array('action' => 'activate'),
+                                          mb_strtolower(_x('button','Enable')), array('id' => $ID), '', 'class="pointer"'),
+                        __('Do you want to %activate_link it?')
+                     );
                   } else {
                      $this->update(array('id'    => $ID,
                                          'state' => self::TOBECONFIGURED));
+                     $message = sprintf(__('Plugin %1$s has been installed and must be configured!'), $this->fields['name']);
                   }
                }
             }
             unset($_SESSION['glpi_plugins']['temp']);
+         } else {
+            $type = WARNING;
+            $message = sprintf(__('Plugin %1$s has no install function!'), $this->fields['name']);
          }
+      } else {
+         $message = sprintf(__('Plugin %1$s not found!'), $ID);
       }
+
+      Session::addMessageAfterRedirect(
+         $message,
+         true,
+         $type
+      );
    }
 
 
@@ -711,6 +751,11 @@ class Plugin extends CommonDBTM {
          // No activation if not CSRF compliant
          if (!isset($PLUGIN_HOOKS['csrf_compliant'][$this->fields['directory']])
              || !$PLUGIN_HOOKS['csrf_compliant'][$this->fields['directory']]) {
+            Session::addMessageAfterRedirect(
+               sprintf(__('Plugin %1$s is not CSRF compliant!'), $this->fields['name']),
+               true,
+               ERROR
+            );
             return false;
          }
          // Enable autoloader early, during activation process
@@ -720,6 +765,11 @@ class Plugin extends CommonDBTM {
          if (function_exists($function)) {
             if (!$function()) {
                unset($_SESSION['glpi_plugins'][$ID]);
+               Session::addMessageAfterRedirect(
+                  sprintf(__('Plugin %1$s has no check function!'), $this->fields['name']),
+                  true,
+                  ERROR
+               );
                return false;
             }
          }
@@ -746,12 +796,25 @@ class Plugin extends CommonDBTM {
                if (isset($_SESSION['glpimenu'])) {
                   unset($_SESSION['glpimenu']);
                }
+
+               Session::addMessageAfterRedirect(
+                  sprintf(__('Plugin %1$s has been activated!'), $this->fields['name']),
+                  true,
+                  INFO
+               );
+
                return true;
             }
          }  // exists _check_config
          // Failure so remove it
          unset($_SESSION['glpi_plugins'][$ID]);
       } // getFromDB
+
+      Session::addMessageAfterRedirect(
+         sprintf(__('Plugin %1$s not found!'), $ID),
+         true,
+         ERROR
+      );
       return false;
    }
 
@@ -760,6 +823,8 @@ class Plugin extends CommonDBTM {
     * unactivate a plugin
     *
     * @param $ID ID of the plugin
+    *
+    * @return boolean
    **/
    function unactivate($ID) {
 
@@ -771,7 +836,23 @@ class Plugin extends CommonDBTM {
          if (isset($_SESSION['glpimenu'])) {
             unset($_SESSION['glpimenu']);
          }
+
+         Session::addMessageAfterRedirect(
+            sprintf(__('Plugin %1$s has been deactivated!'), $this->fields['name']),
+            true,
+            INFO
+         );
+
+         return true;
       }
+
+      Session::addMessageAfterRedirect(
+         sprintf(__('Plugin %1$s not found!'), $ID),
+         true,
+         ERROR
+      );
+
+      return false;
    }
 
 
