@@ -357,7 +357,7 @@ class Plugin extends CommonDBTM {
 
 
    /**
-    * List availabled plugins
+    * List available plugins
    **/
    function listPlugins() {
       global $CFG_GLPI, $PLUGIN_HOOKS;
@@ -533,7 +533,10 @@ class Plugin extends CommonDBTM {
                   }
                   echo "</td><td>";
                   if (function_exists("plugin_".$plug['directory']."_uninstall")) {
-                     if (function_exists("plugin_".$plug['directory']."_check_config")) {
+                     if ($plug['state'] == self::ANEW || $plug['state'] == self::NOTINSTALLED) {
+                        //not installed: no uninstall button ;)
+                        echo "&nbsp;";
+                     } else if (function_exists("plugin_".$plug['directory']."_check_config")) {
                         Html::showSimpleForm(static::getFormURL(), array('action' => 'uninstall'),
                                              _x('button','Uninstall'), array('id' => $ID));
                      } else {
