@@ -51,6 +51,9 @@ class Plugin extends CommonDBTM {
    const TOBECLEANED    = 5;
    const NOTUPDATED     = 6;
 
+   const MASS_ENABLE = 0;
+   const MASS_DISABLE = 1;
+
    static $rightname = 'config';
 
 
@@ -363,15 +366,23 @@ class Plugin extends CommonDBTM {
       global $CFG_GLPI, $PLUGIN_HOOKS;
 
       $this->checkStates();
-      echo "<div class='center'><table class='tab_cadrehov'>";
+      echo "<div class='center'>";
 
       $pluglist          = $this->find("", "name, directory");
       $i                 = 0;
       $PLUGIN_HOOKS_SAVE = $PLUGIN_HOOKS;
-      echo "<tr><th colspan='9'>".__('Plugins list')."</th></tr>\n";
 
       if (!empty($pluglist)) {
-         echo "<tr><th>".__('Name')."</th><th>"._n('Version', 'Versions',1)."</th>";
+         echo "<form method='post' id='mass".__CLASS__."' name='plugins_form' action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+         Html::openArrowMassives('mass'.__CLASS__, false, true, false, '96%');
+         Html::closeArrowMassives(['mass_enable' => _sx('button', 'Enable'), 'mass_disable' => _sx('button', 'Disable')]);
+      }
+
+      echo "<table class='tab_cadrehov'>";
+      echo "<tr><th colspan='10'>".__('Plugins list')."</th></tr>\n";
+
+      if (!empty($pluglist)) {
+         echo "<tr><th>&nbsp;</th><th>".__('Name')."</th><th>"._n('Version', 'Versions',1)."</th>";
          echo "<th>".__('License')."</th>";
          echo "<th>".__('Status')."</th><th>"._n('Author', 'Authors', Session::getPluralNumber())."</th>";
          echo "<th>".__('Website')."</th>";
@@ -389,6 +400,9 @@ class Plugin extends CommonDBTM {
                $class = 'tab_bg_2';
             }
             echo "<tr class='$class'>";
+            echo "<td width='10'>";
+            Html::showMassiveActionCheckBox(__CLASS__, $ID);
+            echo "</td>";
             echo "<td>";
             $name = trim($plug['name']);
             if (empty($name)) {
@@ -623,7 +637,11 @@ class Plugin extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td class='center' colspan='7'>".__('No plugin installed').
               "</td></tr>";
       }
-      echo "</table></div>";
+      echo "</table>";
+      if (!empty($pluglist)) {
+         Html::closeForm();
+      }
+      echo "</div>";
       echo "<br>";
       echo "<div class='center'><p>";
       echo "<a href='http://plugins.glpi-project.org'  class='vsubmit' target='_blank'>".
@@ -895,10 +913,20 @@ class Plugin extends CommonDBTM {
    function isActivated($plugin) {
 
       if ($this->getFromDBbyDir($plugin)) {
-         return ($this->fields['state'] == self::ACTIVATED);
+         return $this->isDbActivated();
       }
    }
 
+   /**
+    * Check if current loaded DB plugin is active
+    *
+    * @return boolean
+    *
+    * @since 9.2
+    */
+   private function isDbActivated() {
+      return $this->fields['state'] == self::ACTIVATED;
+   }
 
    /**
     * is a plugin installed
@@ -906,12 +934,24 @@ class Plugin extends CommonDBTM {
     * @param $plugin plugin directory
    **/
    function isInstalled($plugin) {
-
       if ($this->getFromDBbyDir($plugin)) {
-         return (($this->fields['state']    == self::ACTIVATED)
-                 || ($this->fields['state'] == self::TOBECONFIGURED)
-                 || ($this->fields['state'] == self::NOTACTIVATED));
+         return $this->isDbInstalled();
       }
+   }
+
+   /**
+    * Check if current loaded DB plugin is installed
+    *
+    * @return boolean
+    *
+    * @since 9.2
+    */
+   private function isDbInstalled() {
+      return (
+         ($this->fields['state']    == self::ACTIVATED)
+          || ($this->fields['state'] == self::TOBECONFIGURED)
+          || ($this->fields['state'] == self::NOTACTIVATED)
+      );
    }
 
 
@@ -1438,6 +1478,46 @@ class Plugin extends CommonDBTM {
             $min,
             $max
          );
+      }
+   }
+
+   /**
+    * Massive actions on plugins list
+    *
+    * @param integer $action Enable (self::MASS_ENABLE) or disable (self::MASS_DISABLE)
+    * @param array   $ids    Identifiers to work on
+    *
+    * @return boolean
+    */
+   public function massiveAction($action, $ids) {
+      foreach ($ids as $id) {
+         if ($this->getFromDB($id)) {
+            if ($this->isDbInstalled()) {
+               //only proceed if plugin has been installed. Otherwise, do nothing
+               switch ($action) {
+                  case self::MASS_ENABLE:
+                     if (!$this->isDbActivated()) {
+                        //proceed only if plugin is currently not enabled
+                        $this->activate($id);
+                     }
+                     break;
+                  case self::MASS_DISABLE:
+                     if ($this->isDbActivated()) {
+                        //proceed only if plugin is actually enabled
+                        $this->unactivate($id);
+                     }
+                     break;
+                  default:
+                     throw new \RuntimeException(
+                        sprintf(__('Unknown action %1$s'), $action)
+                     );
+               }
+            }
+         } else {
+            Html::addMessageAfterRedirect(
+               sprintf(__('No plugin with ID %1$s'), $id)
+            );
+         }
       }
    }
 }

@@ -2405,15 +2405,20 @@ class Html {
     * @param $fixed     boolean  used tab_cadre_fixe in both tables (false by default)
     * @param $ontop              display on top of the list (false by default)
     * @param $onright            display on right of the list (false by default)
+    * @param $width     string   Specific width
     * \deprecated since 0.84
    **/
-   static function openArrowMassives($formname, $fixed=false, $ontop=false, $onright=false) {
+   static function openArrowMassives($formname, $fixed=false, $ontop=false, $onright=false, $width = null) {
       global $CFG_GLPI;
 
-      if ($fixed) {
-         echo "<table class='tab_glpi' width='950px'>";
+      if ($width === null) {
+         if ($fixed) {
+            echo "<table class='tab_glpi' width='950px'>";
+         } else {
+            echo "<table class='tab_glpi' width='80%'>";
+         }
       } else {
-         echo "<table class='tab_glpi' width='80%'>";
+         echo "<table class='tab_glpi' width='$width'>";
       }
 
       echo "<tr>";

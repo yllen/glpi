@@ -42,13 +42,30 @@ Session::checkRight("config", UPDATE);
 
 $plugin = new Plugin();
 
-if (isset($_POST['action'])
+if (isset($_POST['mass_enable']) || isset($_POST['mass_disable'])) {
+   if (!isset($_POST['item']['Plugin']) || count($_POST['item']['Plugin']) == 0) {
+      Html::addMessageAfterRedirect(
+         __('No selected items'),
+         ERROR
+      );
+      Html::back();
+   }
+   $action = (isset($_POST['mass_enable']) ? Plugin::MASS_ENABLE : Plugin::MASS_DISABLE);
+   $plugin->massiveAction($action, array_keys($_POST['item']['Plugin']));
+   Html::back();
+} else if (isset($_POST['action'])
     && isset($_POST['id'])) {
 
    if (method_exists($plugin,$_POST['action'])) {
       call_user_func([$plugin, $_POST['action']], $_POST['id']);
    } else {
-      echo "Action ".$_POST['action']." undefined";
+      Html::addMessageAfterRedirect(
+         sprintf(
+            __('Action %1$s is not defined'),
+            $_POST['action'],
+            WARNING
+         )
+      );
    }
    Html::back();
 }
