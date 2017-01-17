@@ -1189,12 +1189,13 @@ class Plugin extends CommonDBTM {
    /**
     * This function executes a hook.
     *
-    * @param $name   Name of hook to fire
-    * @param $param  Parameters if needed : if object limit to the itemtype (default NULL)
+    * @param string  $name     Name of hook to fire
+    * @param array   $param    Parameters if needed : if object limit to the itemtype (default NULL)
+    * @param boolean $wdisplay Wether the hook is expected to provide an output; defaults to false
     *
     * @return mixed $data
    **/
-   static function doHook ($name, $param=NULL) {
+   static function doHook ($name, $param=NULL, $wdisplay = false) {
       global $PLUGIN_HOOKS;
 
       if ($param == NULL) {
@@ -1204,6 +1205,7 @@ class Plugin extends CommonDBTM {
       }
 
       // Apply hook only for the item
+      $plugins_output = '';
       if (($param != NULL) && is_object($param)) {
          $itemtype = get_class($param);
          if (isset($PLUGIN_HOOKS[$name]) && is_array($PLUGIN_HOOKS[$name])) {
@@ -1214,6 +1216,14 @@ class Plugin extends CommonDBTM {
                   }
                   if (is_callable($tab[$itemtype])) {
                      call_user_func($tab[$itemtype], $data);
+                     if ($wdisplay === true && !isset($data['plugins_output'])) {
+                        Toolbox::logDebug("Hook $name from $plug is expected to return an output!");
+                     } else if ($wdisplay === false && isset($data['plugins_output'])) {
+                        Toolbox::logDebug("Hook $name from $plug is not expected to return any output!");
+                     } else if (isset($data['plugins_output'])) {
+                        $plugins_output .= $data['plugins_output'];
+                        unset($data['plugins_output']);
+                     }
                   }
                }
             }
@@ -1227,10 +1237,23 @@ class Plugin extends CommonDBTM {
                }
                if (is_callable($function)) {
                   call_user_func($function, $data);
+                  if ($wdisplay === true && !isset($data['plugins_output'])) {
+                     Toolbox::logDebug("Hook $name from $ug is expected to return an output!");
+                  } else if ($wdisplay === false && isset($data['plugins_output'])) {
+                     Toolbox::logDebug("Hook $name from $plug is not expected to return any output!");
+                  } else if (isset($data['plugins_output'])) {
+                     $plugins_output .= $data['plugins_output'];
+                     unset($data['plugins_output']);
+                  }
                }
             }
          }
       }
+
+      if ($plugins_output != '') {
+         $data['plugins_output'] = $plugins_output;
+      }
+
       /* Variable-length argument lists have a slight problem when */
       /* passing values by reference. Pity. This is a workaround.  */
       return $data;
@@ -1240,15 +1263,17 @@ class Plugin extends CommonDBTM {
    /**
     * This function executes a hook.
     *
-    * @param $name   Name of hook to fire
-    * @param $parm   Parameters (default NULL)
+    * @param string  $name     Name of hook to fire
+    * @param mixed   $parm     Parameters (default NULL)
+    * @param boolean $wdisplay Wether the hook is expected to provide an output; defaults to false
     *
     * @return mixed $data
    **/
-   static function doHookFunction($name, $parm=NULL) {
+   static function doHookFunction($name, $parm=NULL, $wdisplay = false) {
       global $PLUGIN_HOOKS;
 
       $ret = $parm;
+      $plugins_output = '';
       if (isset($PLUGIN_HOOKS[$name]) && is_array($PLUGIN_HOOKS[$name])) {
          foreach ($PLUGIN_HOOKS[$name] as $plug => $function) {
             if (file_exists(GLPI_ROOT . "/plugins/$plug/hook.php")) {
@@ -1256,9 +1281,22 @@ class Plugin extends CommonDBTM {
             }
             if (is_callable($function)) {
                $ret = call_user_func($function, $ret);
+               if ($wdisplay === true && !isset($data['plugins_output'])) {
+                  Toolbox::logDebug("Hook $name from $plug is expected to return an output!");
+               } else if ($wdisplay === false && isset($data['plugins_output'])) {
+                  Toolbox::logDebug("Hook $name from $plug is not expected to return any output!");
+               } else if (isset($data['plugins_output'])) {
+                  $plugins_output .= $data['plugins_output'];
+                  unset($data['plugins_output']);
+               }
             }
          }
       }
+
+      if ($plugins_output !== '') {
+         $data['plugins_output'] = $plugins_output;
+      }
+
       /* Variable-length argument lists have a slight problem when */
       /* passing values by reference. Pity. This is a workaround.  */
       return $ret;
@@ -1268,13 +1306,14 @@ class Plugin extends CommonDBTM {
    /**
     * This function executes a hook for 1 plugin.
     *
-    * @param $plugname        Name of the plugin
-    * @param $hook            function to be called (may be an array for call a class method)
-    * @param $options   array of params passed to the function
+    * @param string  $plugname Name of the plugin
+    * @param string  $hook     function to be called (may be an array for call a class method)
+    * @param array   $options  array of params passed to the function
+    * @param boolean $wdisplay Wether the hook is expected to provide an output; defaults to false
     *
     * @return mixed $data
    **/
-   static function doOneHook($plugname, $hook, $options=array()) {
+   static function doOneHook($plugname, $hook, $options=array(), $wdisplay = false) {
 
       $plugname=strtolower($plugname);
       if (!is_array($hook)) {
@@ -1284,7 +1323,13 @@ class Plugin extends CommonDBTM {
          }
       }
       if (is_callable($hook)) {
-         return call_user_func($hook, $options);
+         $ret = call_user_func($hook, $options);
+         if ($wdisplay === true && !isset($ret['plugins_output'])) {
+            Toolbox::logDebug("Hook $hook from $plugname is expected to return an output!");
+         } else if ($wdisplay === false && isset($ret['plugins_output'])) {
+            Toolbox::logDebug("Hook $hook from $plugname is not expected to return any output!");
+         }
+         return $ret;
       }
    }
 
