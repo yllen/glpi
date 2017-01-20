@@ -591,7 +591,14 @@ function updateDbUpTo031() {
    // To prevent problem of execution time
    ini_set("max_execution_time", "0");
 
-   $migration = new Migration(GLPI_VERSION);
+   $migration = new Migration(GLPI_SCHEMA_VERSION);
+
+   if (defined('GLPI_PREVER')
+      && $current_version != GLPI_SCHEMA_VERSION
+      && strlen($current_version) > 40
+   ) {
+      return $ret;
+   }
 
    switch ($current_version) {
       case "0.31" :
@@ -810,6 +817,7 @@ function updateDbUpTo031() {
          break;
 
       case GLPI_VERSION:
+      case GLPI_SCHEMA_VERSION:
          break;
 
       default :
@@ -840,7 +848,7 @@ function updateDbUpTo031() {
    }
 
    // Update version number and default langage and new version_founded ---- LEAVE AT THE END
-   Config::setConfigurationValues('core', array('version'             => GLPI_VERSION,
+   Config::setConfigurationValues('core', array('version'             => GLPI_SCHEMA_VERSION,
                                                 'language'            => $glpilanguage,
                                                 'founded_new_version' => ''));
 
@@ -946,7 +954,7 @@ if (empty($_POST["continuer"]) && empty($_POST["from_update"])) {
    if (test_connect()) {
       echo "<h3>".__('Database connection successful')."</h3>";
       if (!isset($_POST["update_location"])) {
-         $current_verison = "0.31";
+         $current_version = "0.31";
          $config_table    = "glpi_config";
 
          if (TableExists("glpi_configs")) {

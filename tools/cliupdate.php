@@ -214,15 +214,28 @@ if (!TableExists("glpi_configs")) {
    $glpilanguage        = $configurationValues['language'];
 }
 
-$migration = new CliMigration(GLPI_VERSION);
+$migration = new CliMigration(GLPI_SCHEMA_VERSION);
 
 $migration->displayWarning("Current GLPI Data version: $current_version");
+$migration->displayWarning("New     GLPI Data version: ".GLPI_SCHEMA_VERSION);
 $migration->displayWarning("Current GLPI Code version: ".GLPI_VERSION);
 $migration->displayWarning("Default GLPI Language: $glpilanguage");
 
 
 // To prevent problem of execution time
 ini_set("max_execution_time", "0");
+
+if (defined('GLPI_PREVER')) {
+   if (strlen($current_version) > 40 && $current_version != GLPI_SCHEMA_VERSION) {
+      if (!isset($args['force'])) {
+         die("Upgrading from a dev version to a dev version is not supported. Please upgrade manually - or add --force.");
+      } else {
+         $current_version = GLPI_SCHEMA_VERSION;
+      }
+   } else if ($current_version != GLPI_SCHEMA_VERSION && !isset($args['dev'])) {
+      die(GLPI_SCHEMA_VERSION . " is not a stable release. Please upgrade manually - or add --dev.");
+   }
+}
 
 switch ($current_version) {
    case "0.72.3" :
@@ -359,17 +372,19 @@ switch ($current_version) {
       update91to92();
       break;
 
-   case GLPI_VERSION :
+   case GLPI_VERSION:
+   case GLPI_SCHEMA_VERSION:
+   case GLPI_PREVER:
       break;
 
    default :
       die("Unsupported version ($current_version)\n");
 }
 
-if (version_compare($current_version, GLPI_VERSION, 'ne')) {
+if (version_compare($current_version, GLPI_SCHEMA_VERSION, 'ne')) {
 
    // Update version number and default langage and new version_founded ---- LEAVE AT THE END
-   Config::setConfigurationValues('core', array('version'             => GLPI_VERSION,
+   Config::setConfigurationValues('core', array('version'             => GLPI_SCHEMA_VERSION,
                                                 'founded_new_version' => ''));
 
    // Update process desactivate all plugins
@@ -382,6 +397,16 @@ if (version_compare($current_version, GLPI_VERSION, 'ne')) {
 
    include_once("../install/update_91_92.php");
    update91to92();
+
+   if (defined('GLPI_PREVER')) {
+      Config::setConfigurationValues(
+         'core',
+         array(
+            'version'               => GLPI_SCHEMA_VERSION,
+            'founded_new_version'   => ''
+         )
+      );
+   }
 
    $migration->displayWarning("\nForced migration Done.");
 

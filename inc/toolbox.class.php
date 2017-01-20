@@ -2197,9 +2197,9 @@ class Toolbox {
     *
     * @since 9.1
     *
-    * @param $lang
+    * @param string $lang Language to install
     *
-    * @return nothing
+    * @return void
    **/
    static function createSchema($lang='en_GB') {
       global $CFG_GLPI, $DB;
@@ -2207,7 +2207,7 @@ class Toolbox {
       include_once (GLPI_CONFIG_DIR . "/config_db.php");
 
       $DB = new DB();
-      if (!$DB->runFile(GLPI_ROOT ."/install/mysql/glpi-" . GLPI_SCHEMA_VERSION . "-empty.sql")) {
+      if (!$DB->runFile(GLPI_ROOT ."/install/mysql/glpi-empty.sql")) {
          echo "Errors occurred inserting default database";
       } else {
          // update default language
@@ -2215,7 +2215,7 @@ class Toolbox {
             'core',
             array(
                'language' => $lang,
-               'version'  => GLPI_VERSION
+               'version'  => GLPI_SCHEMA_VERSION
             )
          );
          $query = "UPDATE `glpi_users`
