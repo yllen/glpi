@@ -2362,13 +2362,7 @@ class User extends CommonDBTM {
          }
          echo "</td></tr>";
 
-         echo "<tr><td class='tab_bg_2 center' colspan='4'>";
-         echo "<input type='submit' name='update' value=\""._sx('button','Save')."\" class='submit'>";
-         echo "</td></tr>";
-
-         echo "</table>";
-         Html::closeForm();
-         echo "</div>";
+         $this->showFormButtons(array('candel' => false, 'formfooter' => false));
          $CFG_GLPI["use_ajax_autocompletion"] = $save_autocompletion;
          return true;
       }
