@@ -212,7 +212,7 @@ DROP TABLE IF EXISTS `glpi_savedsearches`;
 CREATE TABLE `glpi_savedsearches` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `type` int(11) NOT NULL DEFAULT '0' COMMENT 'see SavedSearch::TYPE_* constant',
+  `type` int(11) NOT NULL DEFAULT '0' COMMENT 'see SavedSearch:: constants',
   `itemtype` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `users_id` int(11) NOT NULL DEFAULT '0',
   `is_private` tinyint(1) NOT NULL DEFAULT '1',
@@ -220,17 +220,13 @@ CREATE TABLE `glpi_savedsearches` (
   `is_recursive` tinyint(1) NOT NULL DEFAULT '0',
   `path` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `query` text COLLATE utf8_unicode_ci,
-  `is_bookmark` tinyint(1) NOT NULL DEFAULT '1',
-  `is_alert` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `type` (`type`),
   KEY `itemtype` (`itemtype`),
   KEY `entities_id` (`entities_id`),
   KEY `users_id` (`users_id`),
   KEY `is_private` (`is_private`),
-  KEY `is_recursive` (`is_recursive`),
-  KEY `is_bookmark` (`is_bookmark`),
-  KEY `is_alert` (`is_alert`)
+  KEY `is_recursive` (`is_recursive`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 

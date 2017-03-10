@@ -636,18 +636,6 @@ function update91to92() {
                                                 'login_remember_default' => 1));
 
    if (TableExists('glpi_bookmarks')) {
-      //Add new fields for alerts in bookmarks
-      $migration->addField("glpi_bookmarks", "is_bookmark", "bool");
-      $migration->addField("glpi_bookmarks", "is_alert", "bool");
-      $migration->addKey("glpi_bookmarks", "is_bookmark");
-      $migration->addKey("glpi_bookmarks", "is_alert");
-      $migration->migrationOneTable('glpi_bookmarks');
-
-      //set all existing bookmarks as bookmarks.
-      $migration->addPostQuery(
-         'UPDATE glpi_bookmarks SET is_bookmark=1',
-         'Set all saved searches as bookmarks'
-      );
       $migration->renameTable("glpi_bookmarks", "glpi_savedsearches");
    }
 
