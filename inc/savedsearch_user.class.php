@@ -38,6 +38,20 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access this file directly");
 }
 
-class Bookmark_User extends SavedSearch_User {
-   static public $itemtype_1          = 'Bookmark';
+abstract class SavedSearch_User extends CommonDBRelation {
+   public $auto_message_on_action = false;
+
+   static public $items_id_1          = 'savedsearches_id';
+
+   static public $itemtype_2          = 'User';
+   static public $items_id_2          = 'users_id';
+
+   static public function getTable() {
+      return parent::getTable(__CLASS__);
+      /*if (empty($_SESSION['glpi_table_of'][__CLASS__])) {
+         $_SESSION['glpi_table_of'][__CLASS__] = getTableForItemType(__CLASS__);
+      }
+
+      return $_SESSION['glpi_table_of'][__CLASS__];*/
+   }
 }

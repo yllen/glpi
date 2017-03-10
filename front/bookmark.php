@@ -84,9 +84,9 @@ if (isset($_POST["add"])) {
    $bookmark->check($_GET["id"], READ);
 
    if ($_GET["mark_default"] > 0) {
-      $bookmark->mark_default($_GET["id"]);
+      $bookmark->markDefault($_GET["id"]);
    } else if ($_GET["mark_default"] == 0) {
-      $bookmark->unmark_default($_GET["id"]);
+      $bookmark->unmarkDefault($_GET["id"]);
    }
    $_GET["action"] = "";
 
