@@ -28,6 +28,10 @@ The following methods have been deprecated:
 
 - `_e()`
 - `_ex()`
+- `Bookmark::changeBookmarkOrder()`
+- `Bookmark::moveBookmark()`
+- `Bookmark::mark_default()`
+- `Bookmark::unmark_default()`
 
 #### Removals
 
