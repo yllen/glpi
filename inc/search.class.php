@@ -5099,8 +5099,8 @@ class Search {
               && !isset($params["reset"])
               && !isset($_SESSION['glpisearch'][$itemtype]))) {
 
-         $query = "SELECT `bookmarks_id`
-                   FROM `glpi_bookmarks_users`
+         $query = "SELECT `savedsearches_id`
+                   FROM `glpi_savedsearches_users`
                    WHERE `users_id`='".Session::getLoginUserID()."'
                          AND `itemtype` = '$itemtype'";
          if ($result = $DB->query($query)) {
