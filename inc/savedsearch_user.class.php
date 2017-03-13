@@ -41,8 +41,4 @@ abstract class SavedSearch_User extends CommonDBRelation {
 
    static public $itemtype_2          = 'User';
    static public $items_id_2          = 'users_id';
-
-   static public function getTable($classname = null) {
-      return parent::getTable(__CLASS__);
-   }
 }
