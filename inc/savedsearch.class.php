@@ -245,9 +245,10 @@ abstract class SavedSearch extends CommonDBTM {
    function cleanDBonPurge() {
       global $DB;
 
+      $type = static::getCurrentType();
       $query="DELETE
               FROM `glpi_savedsearches_users`
-              WHERE `savedsearches_id` = '".$this->fields['id']."'";
+              WHERE `savedsearches_id` = '".$this->fields['id']."' AND type=$type";
       $DB->query($query);
    }
 
@@ -755,20 +756,20 @@ abstract class SavedSearch extends CommonDBTM {
             echo "</td>";
 
             echo "<td style='white-space: nowrap;'><a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=load&amp;id=".
-                       $this->fields["id"]."\" class='vsubmit'>".__('Load')."</a>";
+                       $this->fields["id"]."&amp;type=" . static::getCurrentType() .  "\" class='vsubmit'>".__('Load')."</a>";
             echo "&nbsp;<a href=\"".$CFG_GLPI['root_doc']."/ajax/bookmark.php?action=count&amp;id=".
-                       $this->fields["id"]."\" class='vsubmit countSearches'>".__('Count')."</a>";
+                       $this->fields["id"]."&amp;type=" . static::getCurrentType() . "\" class='vsubmit countSearches'>".__('Count')."</a>";
             echo "</td>";
             echo "<td class='center'>";
             if ($this->fields['type'] != self::URI) {
                if (is_null($this->fields['IS_DEFAULT'])) {
                   echo "<a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=edit&amp;".
-                         "mark_default=1&amp;id=".$this->fields["id"]."\" alt=\"".
+                         "mark_default=1&amp;id=".$this->fields["id"]."&amp;type=" . static::getCurrentType() . "\" alt=\"".
                          __s('Not default search')."\" title=\"".__s('Not default search')."\">".
                          "<img src=\"".$CFG_GLPI['root_doc']."/pics/bookmark_record.png\" class='pointer'></a>";
                } else {
                   echo "<a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=edit&amp;".
-                         "mark_default=0&amp;id=".$this->fields["id"]."\" alt=\"".
+                         "mark_default=0&amp;id=".$this->fields["id"]."&amp;type=" . static::getCurrentType()  . "\" alt=\"".
                          __s('Default search')."\" title=\"".__s('Default search')."\">".
                          "<img src=\"".$CFG_GLPI['root_doc']."/pics/bookmark_default.png\" class='pointer'></a>";
                }
@@ -778,7 +779,7 @@ abstract class SavedSearch extends CommonDBTM {
                if ($number != 1) {
                   echo "<td>";
                   Html::showSimpleForm($this->getSearchURL(), array('action' => 'up'), '',
-                                       array('id'      => $this->fields["id"]),
+                                       array('id'      => $this->fields["id"], 'type' => static::getCurrentType()),
                                        $CFG_GLPI["root_doc"]."/pics/puce-up.png");
                   echo "</td>";
                } else {
@@ -788,7 +789,7 @@ abstract class SavedSearch extends CommonDBTM {
                if ($number != $totalcount) {
                   echo "<td>";
                   Html::showSimpleForm($this->getSearchURL(), array('action' => 'down'), '',
-                                       array('id'      => $this->fields["id"]),
+                                       array('id'      => $this->fields["id"], 'type' => static::getCurrentType()),
                                        $CFG_GLPI["root_doc"]."/pics/puce-down.png");
                   echo "</td>";
                } else {

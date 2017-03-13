@@ -39,19 +39,19 @@ if (!defined('GLPI_ROOT')) {
 }
 
 
-Html::popHeader(__('Setup'), $_SERVER['PHP_SELF'], true);
+Html::popHeader(__('Saved searches'), $_SERVER['PHP_SELF'], true);
 
-if (!isset($_GET["type"])) {
-   $_GET["type"] = -1;
+if (!isset($_GET["type"]) && !isset($_POST['type'])) {
+   throw new \RuntimeException('Invalid SavedSearch type provided!');
 } else {
-    $_GET['type'] = intval($_GET['type']);
+   $type = (isset($_POST['type']) ? (int)$_POST['type'] : (int)$_GET['type']);
 }
 
 if (!isset($_GET["itemtype"]) || $_GET['itemtype'] == 'AllAssets') {
    $_GET["itemtype"] = -1;
 } else {
    if (!is_subclass_of($_GET['itemtype'], 'CommonDBTM')) {
-       throw new \RuntimeException('Invalid name provided!');
+       throw new \RuntimeException('Invalid item type provided!');
    }
 }
 
@@ -117,7 +117,7 @@ if ($_GET["action"] == "edit") {
    } else {
       // Create
       $bookmark->check(-1, CREATE);
-      $bookmark->showForm(0, array('type'     => $_GET["type"],
+      $bookmark->showForm(0, array('type'     => $type,
                                    'url'      => rawurldecode($_GET["url"]),
                                    'itemtype' => $_GET["itemtype"]));
    }
