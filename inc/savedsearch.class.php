@@ -278,7 +278,6 @@ abstract class SavedSearch extends CommonDBTM {
          $this->check(-1, CREATE);
       }
 
-      echo '<br>';
       echo "<form method='post' name='form_save_query' action='".$_SERVER['PHP_SELF']."'>";
       echo "<div class='center'>";
       if (isset($options['itemtype'])) {
