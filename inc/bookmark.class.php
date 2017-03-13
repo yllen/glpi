@@ -120,29 +120,4 @@ class Bookmark extends SavedSearch {
       Toolbox::logDebug('moveBookmark() method is deprecated');
       return parent::move($items, $ref_ID, $action);
    }
-
-
-   /**
-    * Display bookmark buttons
-    *
-    * @param $type      bookmark type to use
-    * @param $itemtype  device type of item where is the bookmark (default 0)
-   **/
-   static function showSaveButton($type, $itemtype=0) {
-      global $CFG_GLPI;
-
-      echo " <a href='#' onClick=\"".Html::jsGetElementbyID('bookmarksave').".dialog('open'); return false;\">";
-      echo "<img src='".$CFG_GLPI["root_doc"]."/pics/bookmark_record.png'
-             title=\"".__s('Save as bookmark')."\" alt=\"".__s('Save as bookmark')."\"
-             class='calendrier pointer'>";
-      echo "</a>";
-      Ajax::createIframeModalWindow('bookmarksave',
-                                    $CFG_GLPI["root_doc"]."/front/bookmark.php?type=$type".
-                                          "&action=edit&itemtype=$itemtype&".
-                                          "url=".rawurlencode($_SERVER["REQUEST_URI"]),
-                                    array('title'         => __('Save as bookmark'),
-                                          'reloadonclose' => true));
-   }
-
-
 }

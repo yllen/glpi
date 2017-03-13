@@ -283,16 +283,13 @@ abstract class SavedSearch extends CommonDBTM {
       if (isset($options['itemtype'])) {
          echo "<input type='hidden' name='itemtype' value='".$options['itemtype']."'>";
       }
-      if (isset($options['type']) && ($options['type'] != 0)) {
-         echo "<input type='hidden' name='type' value='".$options['type']."'>";
-      }
 
       if (isset($options['url'])) {
          echo "<input type='hidden' name='url' value='" . rawurlencode($options['url']) . "'>";
       }
 
       echo "<table class='tab_cadre' width='".self::WIDTH."px'>";
-      echo "<tr><th>&nbsp;</th><th>";
+      echo "<tr><th colspan='2'>";
       if ($ID > 0) {
          //TRANS: %1$s is the Itemtype name and $2$d the ID of the item
          printf(__('%1$s - ID %2$d'), $this->getTypeName(1), $ID);
@@ -301,12 +298,30 @@ abstract class SavedSearch extends CommonDBTM {
       }
       echo "</th></tr>";
 
+      echo "<tr>";
+      echo "<td>" . __('Type:') . "</td>";
+      echo "<td>";
+      echo "<input type='radio' name='type' id='type_bookmark' value='" . self::SEARCH . "'";
+      if ($options['type'] == self::SEARCH) {
+         echo " checked='checked'";
+      }
+      echo"/>";
+      echo "<label for='type_bookmark'>" . __('Bookmark')  . "</label><br/>";
+      echo "<input type='radio' name='type' id='type_searchalert' value='" . self::ALERT . "'";
+      if ($options['type'] == self::ALERT) {
+         echo " checked='checked'";
+      }
+      echo "/>";
+      echo "<label for='type_searchalert'>" . __('Search alert')  . "</label>";
+      echo "</td>";
+      echo "</tr>";
+
       echo "<tr><td class='tab_bg_1'>".__('Name')."</td>";
       echo "<td class='tab_bg_1'>";
       Html::autocompletionTextField($this, "name", array('user' => $this->fields["users_id"]));
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_2'><td>".__('Type')."</td>";
+      echo "<tr class='tab_bg_2'><td>".__('Visibility')."</td>";
       echo "<td>";
 
       if (static::canCreate()) {
@@ -928,28 +943,30 @@ abstract class SavedSearch extends CommonDBTM {
    /**
     * Display buttons
     *
-    * @param integer $type     Bookmark type to use
+    * @param integer $type     SavedSearch type to use
     * @param integer $itemtype Device type of item where is the bookmark (default 0)
     *
     * @return void
-    */
+   **/
    static function showSaveButton($type, $itemtype=0) {
       global $CFG_GLPI;
 
-      $btntext = static::getBtntext();
-
       echo " <a href='#' onClick=\"".Html::jsGetElementbyID('savesearch').".dialog('open'); return false;\">";
       echo "<img src='".$CFG_GLPI["root_doc"]."/pics/bookmark_record.png'
-             title=\"$btntext\" alt=\"$btntext\"
+             title=\"".__s('Save current search')."\" alt=\"".__s('Save current search')."\"
              class='calendrier pointer'>";
       echo "</a>";
-      Ajax::createIframeModalWindow('savesearch',
-                                    $CFG_GLPI["root_doc"]."/front/bookmark.php?type=$type".
-                                          "&action=edit&itemtype=$itemtype&".
-                                          "url=".rawurlencode($_SERVER["REQUEST_URI"]),
-                                    array('title'         => $btntext,
-                                          'reloadonclose' => true));
+      Ajax::createIframeModalWindow(
+         'savesearch',
+         $CFG_GLPI["root_doc"]."/front/bookmark.php?type=$type".
+            "&action=edit&itemtype=$itemtype&".
+            "url=".rawurlencode($_SERVER["REQUEST_URI"]),
+         array(
+            'title'           => __('Save current search')
+         )
+      );
    }
+
 
    static public function getTable($classname = null) {
       return parent::getTable(__CLASS__);
