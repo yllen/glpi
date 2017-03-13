@@ -537,7 +537,6 @@ abstract class SavedSearch extends CommonDBTM {
          $query = "SELECT `id`
                    FROM `glpi_savedsearches_users`
                    WHERE `users_id` = '".Session::getLoginUserID()."'
-                         AND `savedsearches_id` = '$ID'
                          AND `itemtype` = '".$this->fields['itemtype']."'";
 
          if ($result = $DB->query($query)) {
@@ -748,7 +747,7 @@ abstract class SavedSearch extends CommonDBTM {
             echo "<td>";
             if ($canedit) {
                echo "<a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=edit&amp;id=".
-                      $this->fields["id"]."\" title='"._sx('button', 'Update')."'>".
+                      $this->fields["id"]."&amp;type=" . static::getCurrentType() . "\" title='"._sx('button', 'Update')."'>".
                       $this->fields["name"]."</a><span class='count'></span>";
             } else {
                echo $this->fields["name"];
