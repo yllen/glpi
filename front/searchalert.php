@@ -30,55 +30,18 @@
  * ---------------------------------------------------------------------
  */
 
+/** @file
+* @brief
+*/
+
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access this file directly");
+   include ('../inc/includes.php');
 }
 
-/**
- * SearchAlert class
-**/
-class SearchAlert extends SavedSearch {
+Html::header(SearchAlert::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "tools", "savedsearch");
 
-   //TODO: what to do?
-   //static $rightname               = 'bookmark_public';
-
-   public static function getTypeName($nb = 0) {
-      return _n('Search alert', 'Search alerts', $nb);
-   }
-
-   /**
-    * Get personal order field name
-    *
-    * @return string
-    */
-   protected function getPersonalOrderField() {
-      return 'privatesavedalertorder';
-   }
-
-   /**
-    * Get current type.
-    *
-    * @return integer, either SavedSearch::SEARCH or SavedSearch::ALERT
-    */
-   protected function getCurrentType() {
-      return self::ALERT;
-   }
-
-   /**
-    * Get save button text
-    *
-    * @return string
-    */
-   static protected function getBtntext() {
-      return __s('Save as search alert');
-   }
-
-   /**
-    * Get user related class name
-    *
-    * @return string
-    */
-   static protected function getUserClass() {
-      return 'SearchAlert_User';
-   }
-}
+$type = SavedSearch::ALERT;
+$savedsearch = new SearchAlert();
+$ispopup = false;
+include __DIR__ . '/savedsearch.php';
+Html::footer();

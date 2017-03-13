@@ -46,7 +46,7 @@ class Bookmark extends SavedSearch {
    static $rightname               = 'bookmark_public';
 
    public static function getTypeName($nb = 0) {
-      _n('Bookmark', 'Bookmarks', $nb);
+      return _n('Bookmark', 'Bookmarks', $nb);
    }
 
    /**

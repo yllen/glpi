@@ -245,10 +245,9 @@ abstract class SavedSearch extends CommonDBTM {
    function cleanDBonPurge() {
       global $DB;
 
-      $type = static::getCurrentType();
       $query="DELETE
               FROM `glpi_savedsearches_users`
-              WHERE `savedsearches_id` = '".$this->fields['id']."' AND type=$type";
+              WHERE `savedsearches_id` = '".$this->fields['id']."'";
       $DB->query($query);
    }
 
@@ -269,7 +268,7 @@ abstract class SavedSearch extends CommonDBTM {
       $ID = $this->fields['id'];
 
       if (!isset($options['type'])) {
-         $options['type'] = static::getCurrentType();
+         $options['type'] = $this->getCurrentType();
       }
 
       // Only an edit form : always check w right
@@ -282,11 +281,11 @@ abstract class SavedSearch extends CommonDBTM {
       echo "<form method='post' name='form_save_query' action='".$_SERVER['PHP_SELF']."'>";
       echo "<div class='center'>";
       if (isset($options['itemtype'])) {
-         echo "<input type='hidden' name='itemtype' value='".$options['itemtype']."'>";
+         echo "<input type='hidden' name='itemtype' value='".$options['itemtype']."'/>";
       }
 
       if (isset($options['url'])) {
-         echo "<input type='hidden' name='url' value='" . rawurlencode($options['url']) . "'>";
+         echo "<input type='hidden' name='url' value='" . rawurlencode($options['url']) . "'/>";
       }
 
       echo "<table class='tab_cadre' width='".self::WIDTH."px'>";
@@ -325,7 +324,7 @@ abstract class SavedSearch extends CommonDBTM {
       echo "<tr class='tab_bg_2'><td>".__('Visibility')."</td>";
       echo "<td>";
 
-      if (static::canCreate()) {
+      if ($this->canCreate()) {
          Dropdown::showPrivatePublicSwitch($this->fields["is_private"],
                                            $this->fields["entities_id"],
                                            $this->fields["is_recursive"]);
@@ -617,7 +616,7 @@ abstract class SavedSearch extends CommonDBTM {
    function showSavedSearchesList($target, $is_private=1) {
       global $DB, $CFG_GLPI;
 
-      if (!$is_private && !static::canView()) {
+      if (!$is_private && !$this->canView()) {
          return false;
       }
 
@@ -746,29 +745,29 @@ abstract class SavedSearch extends CommonDBTM {
             echo "<td>$current_type_name</td>";
             echo "<td>";
             if ($canedit) {
-               echo "<a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=edit&amp;id=".
-                      $this->fields["id"]."&amp;type=" . static::getCurrentType() . "\" title='"._sx('button', 'Update')."'>".
+               echo "<a href=\"" . $this->getSearchURL() . "?action=edit&amp;id=".
+                      $this->fields["id"]."\" title='"._sx('button', 'Update')."'>".
                       $this->fields["name"]."</a><span class='count'></span>";
             } else {
                echo $this->fields["name"];
             }
             echo "</td>";
 
-            echo "<td style='white-space: nowrap;'><a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=load&amp;id=".
-                       $this->fields["id"]."&amp;type=" . static::getCurrentType() .  "\" class='vsubmit'>".__('Load')."</a>";
-            echo "&nbsp;<a href=\"".$CFG_GLPI['root_doc']."/ajax/bookmark.php?action=count&amp;id=".
-                       $this->fields["id"]."&amp;type=" . static::getCurrentType() . "\" class='vsubmit countSearches'>".__('Count')."</a>";
+            echo "<td style='white-space: nowrap;'><a href=\"" . $this->getSearchURL() . "?action=load&amp;id=".
+                       $this->fields["id"]."\" class='vsubmit'>".__('Load')."</a>";
+            echo "&nbsp;<a href=\"".$CFG_GLPI['root_doc']."/ajax/savedsearch.php?action=count&amp;id=".
+                       $this->fields["id"]."&amp;type=" . $this->getCurrentType() . "\" class='vsubmit countSearches'>".__('Count')."</a>";
             echo "</td>";
             echo "<td class='center'>";
             if ($this->fields['type'] != self::URI) {
                if (is_null($this->fields['IS_DEFAULT'])) {
-                  echo "<a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=edit&amp;".
-                         "mark_default=1&amp;id=".$this->fields["id"]."&amp;type=" . static::getCurrentType() . "\" alt=\"".
+                  echo "<a href=\"" . $this->getSearchURL() . "?action=edit&amp;".
+                         "mark_default=1&amp;id=".$this->fields["id"]."\" alt=\"".
                          __s('Not default search')."\" title=\"".__s('Not default search')."\">".
                          "<img src=\"".$CFG_GLPI['root_doc']."/pics/bookmark_record.png\" class='pointer'></a>";
                } else {
-                  echo "<a href=\"".$CFG_GLPI['root_doc']."/front/bookmark.php?action=edit&amp;".
-                         "mark_default=0&amp;id=".$this->fields["id"]."&amp;type=" . static::getCurrentType()  . "\" alt=\"".
+                  echo "<a href=\"" . $this->getSearchURL() . "?action=edit&amp;".
+                         "mark_default=0&amp;id=".$this->fields["id"]."\" alt=\"".
                          __s('Default search')."\" title=\"".__s('Default search')."\">".
                          "<img src=\"".$CFG_GLPI['root_doc']."/pics/bookmark_default.png\" class='pointer'></a>";
                }
@@ -778,7 +777,7 @@ abstract class SavedSearch extends CommonDBTM {
                if ($number != 1) {
                   echo "<td>";
                   Html::showSimpleForm($this->getSearchURL(), array('action' => 'up'), '',
-                                       array('id'      => $this->fields["id"], 'type' => static::getCurrentType()),
+                                       array('id'      => $this->fields["id"]),
                                        $CFG_GLPI["root_doc"]."/pics/puce-up.png");
                   echo "</td>";
                } else {
@@ -788,7 +787,7 @@ abstract class SavedSearch extends CommonDBTM {
                if ($number != $totalcount) {
                   echo "<td>";
                   Html::showSimpleForm($this->getSearchURL(), array('action' => 'down'), '',
-                                       array('id'      => $this->fields["id"], 'type' => static::getCurrentType()),
+                                       array('id'      => $this->fields["id"]),
                                        $CFG_GLPI["root_doc"]."/pics/puce-down.png");
                   echo "</td>";
                } else {
@@ -835,7 +834,7 @@ abstract class SavedSearch extends CommonDBTM {
             __('You have not recorded any %1$s yet'),
             $this->getTypeName(1)
          );
-         echo "</td></tr></table>";
+         echo "</td></tr></table></div>";
       }
       Html::closeForm();
 
@@ -958,7 +957,7 @@ abstract class SavedSearch extends CommonDBTM {
       echo "</a>";
       Ajax::createIframeModalWindow(
          'savesearch',
-         $CFG_GLPI["root_doc"]."/front/bookmark.php?type=$type".
+         $CFG_GLPI["root_doc"]."/front/savedsearch.php?type=$type".
             "&action=edit&itemtype=$itemtype&".
             "url=".rawurlencode($_SERVER["REQUEST_URI"]),
          array(
