@@ -30,23 +30,20 @@
  * ---------------------------------------------------------------------
  */
 
-/** @file
-* @brief
-*/
-
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access this file directly");
 }
 
 /**
- * Bookmark class
+ * SearchAlert class
 **/
-class Bookmark extends SavedSearch {
+class SearchAlert extends SavedSearch {
 
-   static $rightname               = 'bookmark_public';
+   //TODO: what to do?
+   //static $rightname               = 'bookmark_public';
 
    public static function getTypeName($nb = 0) {
-      _n('Bookmark', 'Bookmarks', $nb);
+      _n('Search alert', 'Search alerts', $nb);
    }
 
    /**
@@ -55,7 +52,7 @@ class Bookmark extends SavedSearch {
     * @return string
     */
    protected function getPersonalOrderField() {
-      return 'privatebookmarkorder';
+      return 'privatesavedalertorder';
    }
 
    /**
@@ -64,7 +61,7 @@ class Bookmark extends SavedSearch {
     * @return integer, either SavedSearch::SEARCH or SavedSearch::ALERT
     */
    protected function getCurrentType() {
-      return self::SEARCH;
+      return self::ALERT;
    }
 
    /**
@@ -73,7 +70,7 @@ class Bookmark extends SavedSearch {
     * @return string
     */
    static protected function getBtntext() {
-      return __s('Save as bookmark');
+      return __s('Save as search alert');
    }
 
    /**
@@ -82,43 +79,7 @@ class Bookmark extends SavedSearch {
     * @return string
     */
    static protected function getUserClass() {
-      return 'Bookmark_User';
-   }
-
-
-   /**
-    * Modify ranking and automatically reorder
-    *
-    * @since version 0.85
-    *
-    * @param integer $ID     The saved search ID whose ranking must be modified
-    * @param string  $action Either 'up' or 'down'
-    *
-    * @deprecated since version 9.2; use changeOrder() method instead.
-    *
-    * @return void
-    */
-   function changeBookmarkOrder($ID, $action) {
-      Toolbox::logDebug('changeBookmarkOrder() method is deprecated');
-      return $this->changeOrder($ID, $action);
-   }
-
-   /**
-    * Move a bookmark in an ordered collection
-    *
-    * @since version 0.85
-    *
-    * @param array   $items  ID to move
-    * @param integer $ref_ID Position  (0 means all, so before all or after all)
-    * @param string  $action Either after or before ( default 'after')
-    *
-    * @deprecated since version 9.2; use move() method instead.
-    *
-    * @return true if all ok
-   **/
-   function moveBookmark(array $items, $ref_ID, $action='after') {
-      Toolbox::logDebug('moveBookmark() method is deprecated');
-      return parent::move($items, $ref_ID, $action);
+      return 'SavedSearch_User';
    }
 
 

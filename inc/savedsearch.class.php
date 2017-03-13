@@ -47,7 +47,7 @@ abstract class SavedSearch extends CommonDBTM {
    const WIDTH  = 750;
    const SEARCH = 1; //SEARCH SYSTEM bookmark
    const URI    = 2;
-   const ALERT  = 3;
+   const ALERT  = 3; //SEARCH SYSTEM search alert
 
    /**
     * @since version 0.84
@@ -68,8 +68,6 @@ abstract class SavedSearch extends CommonDBTM {
 
 
    static function showMassiveActionsSubForm(MassiveAction $ma) {
-      global $CFG_GLPI;
-
       switch ($ma->getAction()) {
          case 'move_savedsearch' :
             $values             = array('after'  => __('After'),
@@ -267,12 +265,10 @@ abstract class SavedSearch extends CommonDBTM {
     * @return void
    **/
    function showForm($ID, $options=array()) {
-      global $CFG_GLPI;
-
       $ID = $this->fields['id'];
 
       if (!isset($options['type'])) {
-         $options['type'] = self::getCurrentType();
+         $options['type'] = static::getCurrentType();
       }
 
       // Only an edit form : always check w right
@@ -956,13 +952,8 @@ abstract class SavedSearch extends CommonDBTM {
                                           'reloadonclose' => true));
    }
 
-   static public function getTable() {
+   static public function getTable($classname = null) {
       return parent::getTable(__CLASS__);
-      /*if (empty($_SESSION['glpi_table_of'][__CLASS__])) {
-         $_SESSION['glpi_table_of'][__CLASS__] = getTableForItemType(__CLASS__);
-      }
-
-      return $_SESSION['glpi_table_of'][__CLASS__];*/
    }
 
    /**

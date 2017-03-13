@@ -30,19 +30,14 @@
  * ---------------------------------------------------------------------
  */
 
+/** @file
+* @brief
+*/
+
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access this file directly");
 }
 
-abstract class SavedSearch_User extends CommonDBRelation {
-   public $auto_message_on_action = false;
-
-   static public $items_id_1          = 'savedsearches_id';
-
-   static public $itemtype_2          = 'User';
-   static public $items_id_2          = 'users_id';
-
-   static public function getTable($classname = null) {
-      return parent::getTable(__CLASS__);
-   }
+class SearchAlert_User extends SavedSearch_User {
+   static public $itemtype_1          = 'SavedSearch';
 }
