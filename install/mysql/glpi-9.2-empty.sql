@@ -2292,6 +2292,13 @@ INSERT INTO `glpi_displaypreferences` VALUES ('257','SoftwareLicense','10','3','
 INSERT INTO `glpi_displaypreferences` VALUES ('258','SoftwareLicense','162','4','0');
 INSERT INTO `glpi_displaypreferences` VALUES ('259','SoftwareLicense','5','5','0');
 
+INSERT INTO `glpi_displaypreferences` VALUES ('272','Plugin','1','1','0');
+INSERT INTO `glpi_displaypreferences` VALUES ('273','Plugin','2','1','0');
+INSERT INTO `glpi_displaypreferences` VALUES ('274','Plugin','3','1','0');
+INSERT INTO `glpi_displaypreferences` VALUES ('275','Plugin','4','1','0');
+INSERT INTO `glpi_displaypreferences` VALUES ('276','Plugin','5','1','0');
+INSERT INTO `glpi_displaypreferences` VALUES ('277','Plugin','6','1','0');
+
 ### Dump table glpi_documentcategories
 
 DROP TABLE IF EXISTS `glpi_documentcategories`;

@@ -92,6 +92,7 @@ $plugin = new Plugin();
 
 Html::header(__('Setup'), $_SERVER['PHP_SELF'], "config", "plugin");
 
-$plugin->listPlugins();
+//$plugin->listPlugins();
+Search::show('Plugin');
 
 Html::footer();

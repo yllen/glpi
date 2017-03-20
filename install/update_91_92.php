@@ -633,6 +633,8 @@ function update91to92() {
    Config::setConfigurationValues('core', array('login_remember_time'    => 604800,
                                                 'login_remember_default' => 1));
 
+   $ADDTODISPLAYPREF['Plugin'] = array(1, 2, 3, 4, 5, 6);
+
    // ************ Keep it at the end **************
    $migration->executeMigration();
 
