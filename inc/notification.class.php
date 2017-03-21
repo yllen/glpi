@@ -189,6 +189,7 @@ class Notification extends CommonDBTM {
 
       $ong = array();
       $this->addDefaultFormTab($ong);
+      $this->addStandardTab('NotificationTemplateTemplate', $ong, $options);
       $this->addStandardTab('NotificationTarget', $ong, $options);
       $this->addStandardTab('Log', $ong, $options);
 
@@ -207,8 +208,8 @@ class Notification extends CommonDBTM {
       Html::autocompletionTextField($this, "name");
       echo "</td>";
 
-      echo "<td rowspan='6' class='middle right'>".__('Comments')."</td>";
-      echo "<td class='center middle' rowspan='6'><textarea cols='45' rows='9' name='comment' >".
+      echo "<td rowspan='4' class='middle right'>".__('Comments')."</td>";
+      echo "<td class='center middle' rowspan='4'><textarea cols='45' rows='9' name='comment' >".
              $this->fields["comment"]."</textarea></td></tr>";
 
       echo "<tr class='tab_bg_1'><td>" . __('Active') . "</td>";
@@ -242,10 +243,6 @@ class Notification extends CommonDBTM {
                                     $params);
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_1'><td>" . __('Notification method') . "</td>";
-      echo "<td>";
-      self::dropdownMode(array('value'=>$this->fields['mode']));
-      echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'><td>" . NotificationEvent::getTypeName(1) . "</td>";
       echo "<td><span id='show_events'>";
@@ -253,11 +250,11 @@ class Notification extends CommonDBTM {
                                         array('value'=>$this->fields['event']));
       echo "</span></td></tr>";
 
-      echo "<tr class='tab_bg_1'><td>". NotificationTemplate::getTypeName(1)."</td>";
+      /*echo "<tr class='tab_bg_1'><td>". NotificationTemplate::getTypeName(1)."</td>";
       echo "<td><span id='show_templates'>";
       NotificationTemplate::dropdownTemplates('notificationtemplates_id', $this->fields['itemtype'],
                                               $this->fields['notificationtemplates_id']);
-      echo "</span></td></tr>";
+      echo "</span></td></tr>";*/
 
       $this->showFormButtons($options);
       return true;
@@ -284,7 +281,7 @@ class Notification extends CommonDBTM {
             break;
 
          case 'mode':
-            return self::getMode($values[$field]);
+            return NotificationTemplateTemplate::getMode($values[$field]);
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
@@ -465,35 +462,7 @@ class Notification extends CommonDBTM {
          }
       }
 
-      return Dropdown::showFromArray($p['name'], self::getModes(), $p);
-   }
-
-
-   /**
-    * Get notification method label (email only for the moment)
-    *
-    * @param $mode the mode to use
-    *
-    * @return the mode's label
-   **/
-   static function getMode($mode) {
-
-      $tab = self::getModes();
-      if (isset($tab[$mode])) {
-         return $tab[$mode];
-      }
-      return NOT_AVAILABLE;
-   }
-
-   /**
-    * Get notification method label (email only for the moment)
-    *
-    * @since versin 0.84
-    *
-    * @return the mode's label
-   **/
-   static function getModes() {
-      return array('mail' => __('Email'));
+      return Dropdown::showFromArray($p['name'], NotificationTemplateTemplate::getModes(), $p);
    }
 
 
@@ -588,5 +557,4 @@ class Notification extends CommonDBTM {
 
       return $input;
    }
-
 }

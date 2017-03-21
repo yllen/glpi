@@ -772,6 +772,26 @@ Regards,',
                                  true);
    }
 
+   if (!TableExists('glpi_notificationtemplatetemplates')) {
+      $query = "CREATE TABLE `glpi_notificationtemplatetemplates` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `notifications_id` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `mode` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+                  `notificationtemplates_id` int(11) NOT NULL DEFAULT '0',
+                  PRIMARY KEY (`id`),
+                  KEY `notifications_id` (`notifications_id`),
+                  KEY `notificationtemplates_id` (`notificationtemplates_id`),
+                  KEY `mode` (`mode`) COMMENT 'See NotificationTemplateTemplate::MODE_* constants'
+                  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+      $DB->queryOrDie($query, "9.2 add table glpi_notificationtemplatetemplates");
+      $migration->migrationOneTable('glpi_notificationtemplatetemplates');
+   }
+
+   //migrate any existing mode before removing the field
+   $migration->addPreQuery("INSERT INTO glpi_notificationtemplatetemplates (notifications_id, mode, notificationtemplates_id) SELECT id, mode, notificationtemplates_id FROM glpi_notifications");
+   $migration->dropField('glpi_notifications', 'mode');
+   $migration->dropField('glpi_notifications', 'notificationtemplates_id');
+
    // ************ Keep it at the end **************
    $migration->executeMigration();
 
