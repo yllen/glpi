@@ -1018,7 +1018,7 @@ INSERT INTO `glpi_configs` VALUES ('4','core','list_limit','15');
 INSERT INTO `glpi_configs` VALUES ('5','core','list_limit_max','50');
 INSERT INTO `glpi_configs` VALUES ('6','core','url_maxlength','30');
 INSERT INTO `glpi_configs` VALUES ('7','core','event_loglevel','5');
-INSERT INTO `glpi_configs` VALUES ('8','core','use_mailing','0');
+INSERT INTO `glpi_configs` VALUES ('8','core','notification_mailing','0');
 INSERT INTO `glpi_configs` VALUES ('9','core','admin_email','admsys@localhost');
 INSERT INTO `glpi_configs` VALUES ('10','core','admin_email_name','');
 INSERT INTO `glpi_configs` VALUES ('11','core','admin_reply','');
@@ -1177,6 +1177,8 @@ INSERT INTO `glpi_configs` VALUES ('169','core','enable_api_login_external_token
 INSERT INTO `glpi_configs` VALUES ('170','core','url_base_api','http://localhost/glpi/api');
 INSERT INTO `glpi_configs` VALUES ('171','core','login_remember_time','604800');
 INSERT INTO `glpi_configs` VALUES ('172','core','login_remember_default','1');
+INSERT INTO `glpi_configs` VALUES ('173','core','use_notifications','0');
+INSERT INTO `glpi_configs` VALUES ('174','core','notification_websockets','0');
 
 
 ### Dump table glpi_consumableitems
@@ -4466,6 +4468,7 @@ INSERT INTO `glpi_notifications` VALUES(77, 'New group in observers', 0, 'Ticket
 INSERT INTO `glpi_notifications` VALUES(78, 'New user in assignees', 0, 'Ticket', 'assign_user', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
 INSERT INTO `glpi_notifications` VALUES(79, 'New group in assignees', 0, 'Ticket', 'assign_group', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
 INSERT INTO `glpi_notifications` VALUES(80, 'New supplier in assignees', 0, 'Ticket', 'assign_supplier', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
+
 
 ### Dump table glpi_notificationtemplatetemplates
 

@@ -30,10 +30,6 @@
  * ---------------------------------------------------------------------
  */
 
-/** @file
-* @brief
-*/
-
 include ('../inc/includes.php');
 
 Session::checkSeveralRightsOr(array('notification' => READ,
@@ -41,49 +37,149 @@ Session::checkSeveralRightsOr(array('notification' => READ,
 
 Html::header(_n('Notification', 'Notifications', 2), $_SERVER['PHP_SELF'], "config", "notification");
 
-if (isset($_POST['activate'])) {
-   $config             = new Config();
-   $tmp['id']          = 1;
-   $tmp['use_mailing'] = 1;
-   $config->update($tmp);
-   Html::back();
+if (!Session::haveRight("config", READ)
+   && Session::haveRight("notification", READ)
+   && ($CFG_GLPI['notifications_mailing'] || $CFG_GLPI['notifications_websockets'])) {
+   Html::redirect($CFG_GLPI["root_doc"].'/front/notification.php');
 }
 
-if (!$CFG_GLPI['use_mailing']) {
-   if (Session::haveRight("config", UPDATE)) {
-      echo "<div class='center'>";
-      Html::showSimpleForm($_SERVER['PHP_SELF'], 'activate', __('Enable followup via email'));
-      echo "</div>";
-   }
-} else {
-   if (!Session::haveRight("config", READ)
-       && Session::haveRight("notification", READ)
-       && $CFG_GLPI['use_mailing']) {
-      Html::redirect($CFG_GLPI["root_doc"].'/front/notification.php');
+if (isset($_POST['use_notifications'])) {
+   $config             = new Config();
+   $tmp['id']          = 1;
+   $tmp['use_notifications'] = $_POST['use_notifications'];
+   $config->update($tmp);
+}
 
+if (isset($_POST['notifications_mailing'])) {
+   $config             = new Config();
+   $tmp['id']          = 1;
+   $tmp['notifications_mailing'] = $_POST['notifications_mailing'];
+   $config->update($tmp);
+}
+
+if (isset($_POST['notifications_websockets'])) {
+   $config             = new Config();
+   $tmp['id']          = 1;
+   $tmp['notifications_websockets'] = $_POST['notifications_websockets'];
+   $config->update($tmp);
+}
+
+if (Session::haveRight("config", UPDATE)) {
+   echo "<form method='POST' action='{$CFG_GLPI['root_doc']}/front/setup.notification.php'>";
+   echo "<div class='center'>";
+
+   echo "<table class='tab_cadre'>";
+   echo "<tr><th colspan='3'>" . __('Notifications configuration') . "</th></tr>";
+
+   echo "<tr>";
+   echo "<td>" . __('Enable followup') . "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='use_notifications' id='use_notifications_on' value='1'";
+   if ($CFG_GLPI['use_notifications']) {
+      echo " checked='checked'";
+   }
+   echo "/>";
+   echo "<label class='radio' for='use_notifications_on'>" . __('Yes') . "</label>";
+   echo "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='use_notifications' id='use_notifications_off' value='0'";
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " checked='checked'";
+   }
+   echo "/><label for='use_notifications_off'>" . __('No') . "</label>";
+   echo "</td>";
+   echo "</tr>";
+
+   echo "<tr>";
+   echo "<td>" .__('Enable followup via email') . "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_mailing' id='notifications_mailing_on' value='1'";
+   if ($CFG_GLPI['notifications_mailing']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/>";
+   echo "<label for='notifications_mailing_on'>" . __('Yes') . "</label>";
+   echo "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_mailing' id='notifications_mailing_off' value='0'";
+   if (!$CFG_GLPI['notifications_mailing']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/><label for='notifications_mailing_off'>" . __('No') . "</label>";
+   echo "</td>";
+   echo "</tr>";
+
+   echo "<tr>";
+   echo "<td>" .__('Enable followup via websockets') . "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_websockets' id='notifications_websockets_on' value='1'";
+   if ($CFG_GLPI['notifications_websockets']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/>";
+   echo "<label for='notifications_websockets_on'>" . __('Yes') . "</label>";
+   echo "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_websockets' id='notifications_websockets_off' value='0'";
+   if (!$CFG_GLPI['notifications_websockets']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/><label for='notifications_websockets_off'>" . __('No') . "</label>";
+   echo "</td>";
+   echo "</tr>";
+
+   echo "<tr><td colspan='3' class='center'><input class='submit' type='submit' value='" . __('Save')  . "'/></td></tr>";
+
+   echo "</table>";
+   echo "</div>";
+   echo "</form>";
+
+   $js = "$(function(){
+      $('input[name=use_notifications]').on('change', function() {
+         if ($(this).attr('value') == '1') {
+            $('input[type=radio][name!=use_notifications]').removeAttr('disabled');
+         } else {
+            $('input[type=radio][name!=use_notifications]').attr('disabled', 'disabled');
+         }
+      });
+   })";
+   echo Html::scriptBlock($js);
+}
+
+if ($CFG_GLPI['use_notifications'] && ($CFG_GLPI['notifications_mailing'] || $CFG_GLPI['notifications_websockets'])) {
+   echo "<table class='tab_cadre'>";
+   echo "<tr><th>" . _n('Notification', 'Notifications', 2)."</th></tr>";
+   if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_mailing']) {
+      echo "<tr class='tab_bg_1'><td class='center'>".
+            "<a href='notificationmailsetting.form.php'>". __('Email followups configuration') .
+            "</a></td></tr>";
+   }
+   if (Session::haveRight("config", READ)) {
+      echo "<tr class='tab_bg_1'><td class='center'><a href='notificationtemplate.php'>" .
+            _n('Notification template', 'Notification templates', 2) ."</a></td> </tr>";
+   }
+
+   if (Session::haveRight("notification", READ) && ($CFG_GLPI['notifications_mailing'] || $CFG_GLPI['notifications_websockets'])) {
+      echo "<tr class='tab_bg_1'><td class='center'>".
+            "<a href='notification.php'>". _n('Notification', 'Notifications', 2)."</a></td></tr>";
    } else {
-      echo "<table class='tab_cadre'>";
-      echo "<tr><th>" . _n('Notification', 'Notifications', 2)."</th></tr>";
-      if (Session::haveRight("config", UPDATE)) {
-         echo "<tr class='tab_bg_1'><td class='center'>".
-              "<a href='notificationmailsetting.form.php'>". __('Email followups configuration') .
-              "</a></td></tr>";
-      }
-      if (Session::haveRight("config", READ)) {
-         echo "<tr class='tab_bg_1'><td class='center'><a href='notificationtemplate.php'>" .
-               _n('Notification template', 'Notification templates', 2) ."</a></td> </tr>";
-      }
-
-      if (Session::haveRight("notification", READ) && $CFG_GLPI['use_mailing']) {
-         echo "<tr class='tab_bg_1'><td class='center'>".
-              "<a href='notification.php'>". _n('Notification', 'Notifications', 2)."</a></td></tr>";
-      } else {
-            echo "<tr class='tab_bg_1'><td class='center'>" .
-            __('Unable to configure notifications: please configure your email followup using the above configuration.') .
-                 "</td></tr>";
-      }
-      echo "</table>";
+         echo "<tr class='tab_bg_1'><td class='center'>" .
+         __('Unable to configure notifications: please configure your email followup using the above configuration.') .
+               "</td></tr>";
    }
+   echo "</table>";
 }
 
 Html::footer();
