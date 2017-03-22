@@ -117,8 +117,9 @@ class NotificationTemplateTemplate extends CommonDBChild {
 
       if ($iterator->numrows()) {
          $header = "<tr>";
-         $header .= "<th>".__('Mode')."</th>";
+         $header .= "<th>" . __('ID') . "</th>";
          $header .= "<th>".__('Template')."</th>";
+         $header .= "<th>".__('Mode')."</th>";
          $header .= "</tr>";
          echo $header;
 
@@ -137,6 +138,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
             echo "<tr class='tab_bg_2'>";
             echo "<td>".$notiftpl->getLink()."</td>";
             echo "<td>".$tpl->getLink()."</td>";
+            echo "<td>" . self::getMode($data['mode']) . "</td>";
             echo "</tr>";
             Session::addToNavigateListItems(__CLASS__, $data['id']);
          }
@@ -151,9 +153,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
 
 
    function getName($options = []) {
-      $tpl = new NotificationTemplate();
-      $tpl->getFromDB($this->getField('notificationtemplates_id'));
-      return $tpl->getName() . '/' . $this->getMode($this->getField('mode'));
+      return $this->getID();
    }
 
 

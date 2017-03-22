@@ -4479,6 +4479,7 @@ CREATE TABLE `glpi_notificationtemplatetemplates` (
   `mode` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `notificationtemplates_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `unicity` (`notifications_id`, `mode`, `notificationtemplates_id`),
   KEY `notifications_id` (`notifications_id`),
   KEY `notificationtemplates_id` (`notificationtemplates_id`),
   KEY `mode` (`mode`) COMMENT 'See NotificationTemplateTemplate::MODE_* constants'
