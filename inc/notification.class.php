@@ -243,18 +243,11 @@ class Notification extends CommonDBTM {
                                     $params);
       echo "</td></tr>";
 
-
       echo "<tr class='tab_bg_1'><td>" . NotificationEvent::getTypeName(1) . "</td>";
       echo "<td><span id='show_events'>";
       NotificationEvent::dropdownEvents($this->fields['itemtype'],
                                         array('value'=>$this->fields['event']));
       echo "</span></td></tr>";
-
-      /*echo "<tr class='tab_bg_1'><td>". NotificationTemplate::getTypeName(1)."</td>";
-      echo "<td><span id='show_templates'>";
-      NotificationTemplate::dropdownTemplates('notificationtemplates_id', $this->fields['itemtype'],
-                                              $this->fields['notificationtemplates_id']);
-      echo "</span></td></tr>";*/
 
       $this->showFormButtons($options);
       return true;
@@ -279,9 +272,6 @@ class Notification extends CommonDBTM {
                return NotificationEvent::getEventName($values['itemtype'], $values[$field]);
             }
             break;
-
-         case 'mode':
-            return NotificationTemplateTemplate::getMode($values[$field]);
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
@@ -311,11 +301,6 @@ class Notification extends CommonDBTM {
                return NotificationEvent::dropdownEvents($values['itemtype'], $options);
             }
             break;
-
-         case 'mode' :
-            $options['value'] = $values[$field];
-            $options['name']  = $name;
-            return self::dropdownMode($options);
       }
       return parent::getSpecificValueToSelect($field, $name, $values, $options);
    }
@@ -352,11 +337,15 @@ class Notification extends CommonDBTM {
 
       $tab[] = [
          'id'                 => '3',
-         'table'              => $this->getTable(),
+         'table'              => NotificationTemplateTemplate::getTable(),
          'field'              => 'mode',
          'name'               => __('Notification method'),
          'massiveaction'      => false,
+         'searchequalsonfield'=> true,
          'datatype'           => 'specific',
+         'joinparams'         => [
+            'jointype'  => 'child'
+         ],
          'searchtype'         => [
             '0'                  => 'equals',
             '1'                  => 'notequals'
@@ -368,7 +357,15 @@ class Notification extends CommonDBTM {
          'table'              => 'glpi_notificationtemplates',
          'field'              => 'name',
          'name'               => _n('Notification template', 'Notification templates', Session::getPluralNumber()),
-         'datatype'           => 'itemlink'
+         'datatype'           => 'itemlink',
+         'joinparams'         => [
+            'beforejoin'  => [
+               'table'        => NotificationTemplateTemplate::getTable(),
+               'joinparams'   => [
+                  'jointype'  => 'child'
+               ]
+            ]
+         ]
       ];
 
       $tab[] = [
@@ -442,27 +439,6 @@ class Notification extends CommonDBTM {
           return false;
       }
       return Session::haveAccessToEntity($this->getEntityID());
-   }
-
-
-   /**
-    * Display a dropdown with all the available notification modes
-    *
-    * @param $options array of options
-   **/
-   static function dropdownMode($options) {
-
-      $p['name']    = 'mode';
-      $p['display'] = true;
-      $p['value']   = '';
-
-      if (is_array($options) && count($options)) {
-         foreach ($options as $key => $val) {
-            $p[$key] = $val;
-         }
-      }
-
-      return Dropdown::showFromArray($p['name'], NotificationTemplateTemplate::getModes(), $p);
    }
 
 

@@ -272,4 +272,57 @@ class NotificationTemplateTemplate extends CommonDBChild {
          'sms'       => __('SMS')*/
       ];
    }
+
+
+   static function getSpecificValueToDisplay($field, $values, array $options=array()) {
+      if (!is_array($values)) {
+         $values = array($field => $values);
+      }
+      switch ($field) {
+         case 'mode':
+            return self::getMode($values[$field]);
+      }
+      return parent::getSpecificValueToDisplay($field, $values, $options);
+   }
+
+
+   static function getSpecificValueToSelect($field, $name='', $values='', array $options=array()) {
+
+      if (!is_array($values)) {
+         $values = array($field => $values);
+      }
+      $options['display'] = false;
+
+      switch ($field) {
+         case 'mode' :
+            $options['value']    = $values[$field];
+            $options['name']     = $name;
+            $options['multiple'] = false;
+            return self::dropdownMode($options);
+      }
+      return parent::getSpecificValueToSelect($field, $name, $values, $options);
+   }
+
+
+   /**
+    * Display a dropdown with all the available notification modes
+    *
+    * @param array $options array of options
+    *
+    * @return void
+    */
+   static function dropdownMode($options) {
+      $p['name']     = 'modes';
+      $p['display']  = true;
+      $p['values']   = '';
+      $p['multiple'] = true;
+
+      if (is_array($options) && count($options)) {
+         foreach ($options as $key => $val) {
+            $p[$key] = $val;
+         }
+      }
+
+      return Dropdown::showFromArray($p['name'], self::getModes(), $p);
+   }
 }
