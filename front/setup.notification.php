@@ -48,6 +48,11 @@ if (isset($_POST['use_notifications'])) {
    $tmp['id']          = 1;
    $tmp['use_notifications'] = $_POST['use_notifications'];
    $config->update($tmp);
+   //disable all notifications types if notifications has been disabled
+   if ($tmp['use_notifications'] == 0) {
+      $_POST['notifications_mailing'] = 0;
+      $_POST['notifications_websockets'] = 0;
+   }
 }
 
 if (isset($_POST['notifications_mailing'])) {
@@ -62,6 +67,11 @@ if (isset($_POST['notifications_websockets'])) {
    $tmp['id']          = 1;
    $tmp['notifications_websockets'] = $_POST['notifications_websockets'];
    $config->update($tmp);
+}
+
+if (count($_POST)) {
+   $current_config = Config::getConfigurationValues('core');
+   $CFG_GLPI = array_merge($CFG_GLPI, $current_config);
 }
 
 if (Session::haveRight("config", UPDATE)) {
