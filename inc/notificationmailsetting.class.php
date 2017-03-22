@@ -110,7 +110,7 @@ class NotificationMailSetting extends CommonDBTM {
       if (!Config::canUpdate()) {
          return false;
       }
-      if (!$CFG_GLPI['use_mailing']) {
+      if (!$CFG_GLPI['notifications_mailing']) {
          $options['colspan'] = 1;
       }
 
@@ -126,21 +126,15 @@ class NotificationMailSetting extends CommonDBTM {
       echo "<div>";
       echo "<input type='hidden' name='id' value='1'>";
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr class='tab_bg_1'><th colspan='4'>"._n('Notification', 'Notifications', Session::getPluralNumber())."</th></tr>";
+      echo "<tr class='tab_bg_1'><th colspan='4'>"._n('Email notification', 'Email notifications', Session::getPluralNumber())."</th></tr>";
 
-      echo "<tr class='tab_bg_2'><td>" . __('Enable followup via email') . "</td><td>";
-      Dropdown::showYesNo("use_mailing", $CFG_GLPI["use_mailing"]);
-      echo "</td>";
-
-      if ($CFG_GLPI['use_mailing']) {
-         echo "<td colspan='2'></td></tr>";
-
+      if ($CFG_GLPI['notifications_mailing']) {
          echo "<tr class='tab_bg_2'>";
          echo "<td>" . __('Administrator email') . "</td>";
          echo "<td><input type='text' name='admin_email' size='40' value='".
                     $CFG_GLPI["admin_email"]."'>";
          if (!NotificationMail::isUserAddressValid($CFG_GLPI["admin_email"])) {
-             echo "<span class='red'>&nbsp;".__('Invalid email address')."</span>";
+             echo "<br/><span class='red'>&nbsp;".__('Invalid email address')."</span>";
          }
          echo "</td>";
          echo "<td >" . __('Administrator name') . "</td>";
@@ -152,8 +146,8 @@ class NotificationMailSetting extends CommonDBTM {
          echo "<td >" . __('Administrator reply-to email (if needed)') . "</td>";
          echo "<td><input type='text' name='admin_reply' size='40' value='" .
                     $CFG_GLPI["admin_reply"] . "'>";
-         if (!NotificationMail::isUserAddressValid($CFG_GLPI["admin_reply"])) {
-            echo "<span class='red'>&nbsp;".__('Invalid email address')."</span>";
+         if (!empty($CFG_GLPI['admin_reply']) && !NotificationMail::isUserAddressValid($CFG_GLPI["admin_reply"])) {
+            echo "<br/><span class='red'>&nbsp;".__('Invalid email address')."</span>";
          }
          echo " </td>";
          echo "<td >" . __('Response name (if needed)') . "</td>";
@@ -222,10 +216,10 @@ class NotificationMailSetting extends CommonDBTM {
          echo "</tr>";
 
       } else {
-         echo "<td colspan='2'></td></tr>";
+         echo "<tr><td colspan='4'>" . __('Notifications are disabled.')  . " <a href='{$CFG_GLPI['root_doc']}/front/setup.notification.php'>" . _('See configuration') .  "</td></tr>";
       }
       $options['candel']     = false;
-      if ($CFG_GLPI['use_mailing']) {
+      if ($CFG_GLPI['notifications_mailing']) {
          $options['addbuttons'] = array('test_smtp_send' => __('Send a test email to the administrator'));
       }
       $this->showFormButtons($options);
