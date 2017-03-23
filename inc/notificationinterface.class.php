@@ -52,18 +52,20 @@ interface NotificationInterface {
 
 
    /**
-    * Check user address
+    * Check data
     *
-    * @param $address         the user's address to check
-    * @param $options   array with the special options (may be needed)
+    * @param mixed $value   The data to check (may differ for every notification mode)
+    * @param array $options Optionnal special options (may be needed)
     *
-    * @return true or false
+    * @return boolean
    **/
-   static function isUserAddressValid($address, $options=array());
+   static function check($value, $options = []);
 
 
    /**
     * Method to test notification
+    *
+    * @return mixed
    **/
    static function testNotification();
 }
