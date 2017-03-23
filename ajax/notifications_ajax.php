@@ -6,6 +6,8 @@ Session::checkLoginUser();
 
 header('Content-Type: application/json; charset=utf-8');
 
+$return = false;
+
 /*$return[] = [
    'title'  => 'New ticket',
    'body'   => 'This is a new ticket',
