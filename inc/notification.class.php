@@ -446,6 +446,11 @@ class Notification extends CommonDBTM {
       global $DB;
 
       $query = "DELETE
+                FROM `glpi_notificationtemplatetemplates`
+                WHERE `notifications_id` = '".$this->fields['id']."'";
+      $DB->query($query);
+
+      $query = "DELETE
                 FROM `glpi_notificationtargets`
                 WHERE `notifications_id` = '".$this->fields['id']."'";
       $DB->query($query);
