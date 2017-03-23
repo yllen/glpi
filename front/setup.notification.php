@@ -51,6 +51,7 @@ if (isset($_POST['use_notifications'])) {
    //disable all notifications types if notifications has been disabled
    if ($tmp['use_notifications'] == 0) {
       $_POST['notifications_mailing'] = 0;
+      $_POST['notifications_ajax'] = 0;
       $_POST['notifications_websockets'] = 0;
    }
 }
@@ -61,6 +62,14 @@ if (isset($_POST['notifications_mailing'])) {
    $tmp['notifications_mailing'] = $_POST['notifications_mailing'];
    $config->update($tmp);
 }
+
+if (isset($_POST['notifications_ajax'])) {
+   $config             = new Config();
+   $tmp['id']          = 1;
+   $tmp['notifications_ajax'] = $_POST['notifications_ajax'];
+   $config->update($tmp);
+}
+
 
 if (isset($_POST['notifications_websockets'])) {
    $config             = new Config();
@@ -126,6 +135,31 @@ if (Session::haveRight("config", UPDATE)) {
    echo "</tr>";
 
    echo "<tr>";
+   echo "<td>" .__('Enable followup via ajax calls') . "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_ajax' id='notifications_ajax_on' value='1'";
+   if ($CFG_GLPI['notifications_ajax']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/>";
+   echo "<label for='notifications_ajax_on'>" . __('Yes') . "</label>";
+   echo "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_ajax' id='notifications_ajax_off' value='0'";
+   if (!$CFG_GLPI['notifications_ajax']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/><label for='notifications_ajax_off'>" . __('No') . "</label>";
+   echo "</td>";
+   echo "</tr>";
+
+   echo "<tr>";
    echo "<td>" .__('Enable followup via websockets') . "</td>";
    echo "<td>";
    echo "<input type='radio' name='notifications_websockets' id='notifications_websockets_on' value='1'";
@@ -168,7 +202,9 @@ if (Session::haveRight("config", UPDATE)) {
    echo Html::scriptBlock($js);
 }
 
-if ($CFG_GLPI['use_notifications'] && ($CFG_GLPI['notifications_mailing'] || $CFG_GLPI['notifications_websockets'])) {
+$notifs_on = ($CFG_GLPI['notifications_mailing'] || $CFG_GLPI['notifications_ajax'] || $CFG_GLPI['notifications_websockets']);
+
+if ($CFG_GLPI['use_notifications'] && $notifs_on) {
    echo "<table class='tab_cadre'>";
    echo "<tr><th>" . _n('Notification', 'Notifications', 2)."</th></tr>";
    if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_mailing']) {
@@ -176,17 +212,30 @@ if ($CFG_GLPI['use_notifications'] && ($CFG_GLPI['notifications_mailing'] || $CF
             "<a href='notificationmailsetting.form.php'>". __('Email followups configuration') .
             "</a></td></tr>";
    }
+
+   if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_ajax']) {
+      echo "<tr class='tab_bg_1'><td class='center'>".
+            "<a href='notificationajaxsetting.form.php'>". __('Ajax followups configuration') .
+            "</a></td></tr>";
+   }
+
+   if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_websockets']) {
+      echo "<tr class='tab_bg_1'><td class='center'>".
+            "<a href='notificationwebsocketssetting.form.php'>". __('Websockets followups configuration') .
+            "</a></td></tr>";
+   }
+
    if (Session::haveRight("config", READ)) {
       echo "<tr class='tab_bg_1'><td class='center'><a href='notificationtemplate.php'>" .
             _n('Notification template', 'Notification templates', 2) ."</a></td> </tr>";
    }
 
-   if (Session::haveRight("notification", READ) && ($CFG_GLPI['notifications_mailing'] || $CFG_GLPI['notifications_websockets'])) {
+   if (Session::haveRight("notification", READ) && $notifs_on) {
       echo "<tr class='tab_bg_1'><td class='center'>".
             "<a href='notification.php'>". _n('Notification', 'Notifications', 2)."</a></td></tr>";
    } else {
          echo "<tr class='tab_bg_1'><td class='center'>" .
-         __('Unable to configure notifications: please configure your email followup using the above configuration.') .
+         __('Unable to configure notifications: please configure at least one followup type using the above configuration.') .
                "</td></tr>";
    }
    echo "</table>";

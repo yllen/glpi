@@ -1137,6 +1137,10 @@ class Html {
       echo Html::css('lib/jqueryplugins/qtip2/jquery.qtip.css');
       echo Html::css('lib/font-awesome-4.7.0/css/font-awesome.min.css');
 
+      if ($CFG_GLPI['notifications_ajax']) {
+         Html::requireJs('notifications_ajax');
+      }
+
       //on demand JS
       if ($sector != 'none' || $item != 'none' || $option != '') {
          $jslibs = [];
@@ -5969,6 +5973,9 @@ class Html {
             $_SESSION['glpi_js_toload']['charts'][] = 'lib/chartist-plugin-legend-0.6.0/chartist-plugin-legend.js';
             $_SESSION['glpi_js_toload']['charts'][] = 'lib/chartist-plugin-tooltip-0.0.17/chartist-plugin-tooltip.js';
             break;
+         case 'notifications_ajax';
+            $_SESSION['glpi_js_toload']['notifications_ajax'][] = 'js/notifications_ajax.js';
+            break;
          default:
             $found = false;
             if (isset($PLUGIN_HOOKS['javascript']) && isset($PLUGIN_HOOKS['javascript'][$name])) {
@@ -6041,6 +6048,19 @@ class Html {
             'root_doc': '".$CFG_GLPI["root_doc"]."',
          };
       ");
+
+      if ($CFG_GLPI['notifications_ajax']) {
+         $options = [
+            'interval'  => ($CFG_GLPI['notifications_ajax_check_interval'] ? $CFG_GLPI['notifications_ajax_check_interval'] : 5) * 1000,
+            'sound'     => $CFG_GLPI['notifications_ajax_sound'] ? $CFG_GLPI['notifications_ajax_sound'] : false,
+            'icon'      => ($CFG_GLPI["notifications_ajax_icon_url"] ? $CFG_GLPI['root_doc'] . $CFG_GLPI['notifications_ajax_icon_url'] : false)
+         ];
+         $js = "$(function() {
+            notifications_ajax = new GLPINotificationsAjax(". json_encode($options) . ");
+            notifications_ajax.start();
+         });";
+         echo Html::scriptBlock($js);
+      }
 
       // add Ajax display message after redirect
       Html::displayAjaxMessageAfterRedirect();

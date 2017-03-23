@@ -48,6 +48,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
    static public $mustBeAttached       = false;
 
    const MODE_MAIL      = 'mail';
+   const MODE_AJAX      = 'ajax';
    const MODE_WEBSOCKET = 'websocket';
    const MODE_SMS       = 'sms';
 
@@ -267,9 +268,10 @@ class NotificationTemplateTemplate extends CommonDBChild {
    **/
    static function getModes() {
       return [
-         'mail'      => __('Email'),
-         'websocket' => __('Websocket')/*,
-         'sms'       => __('SMS')*/
+         self::MODE_MAIL      => __('Email'),
+         self::MODE_AJAX      => __('Ajax'),
+         self::MODE_WEBSOCKET => __('Websocket')/*,
+         self::MODE_SMS       => __('SMS')*/
       ];
    }
 
