@@ -79,8 +79,7 @@ if (isset($_POST['notifications_websockets'])) {
 }
 
 if (count($_POST)) {
-   $current_config = Config::getConfigurationValues('core');
-   $CFG_GLPI = array_merge($CFG_GLPI, $current_config);
+   Html::back();
 }
 
 if (Session::haveRight("config", UPDATE)) {
