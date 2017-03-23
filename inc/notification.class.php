@@ -493,10 +493,13 @@ class Notification extends CommonDBTM {
    static function getNotificationsByEventAndType($event, $itemtype, $entity) {
       global $DB;
 
-      $query = "SELECT `glpi_notifications`.*
+      $query = "SELECT `glpi_notifications`.*,
+                  `glpi_notificationtemplatetemplates`.`mode`, `glpi_notificationtemplatetemplates`.`notificationtemplates_id`
                 FROM `glpi_notifications`
                 LEFT JOIN `glpi_entities`
                   ON (`glpi_entities`.`id` = `glpi_notifications`.`entities_id`)
+                LEFT JOIN `glpi_notificationtemplatetemplates`
+                  ON (`glpi_notifications`.`id`=`glpi_notificationtemplatetemplates`.`notifications_id`)
                 WHERE `glpi_notifications`.`itemtype` = '$itemtype'
                       AND `glpi_notifications`.`event` = '$event' ".
                       getEntitiesRestrictRequest("AND", "glpi_notifications", 'entities_id',
