@@ -82,9 +82,10 @@ if (count($_POST)) {
    Html::back();
 }
 
+echo "<div class='center notifs_setup'>";
+
 if (Session::haveRight("config", UPDATE)) {
    echo "<form method='POST' action='{$CFG_GLPI['root_doc']}/front/setup.notification.php'>";
-   echo "<div class='center'>";
 
    echo "<table class='tab_cadre'>";
    echo "<tr><th colspan='3'>" . __('Notifications configuration') . "</th></tr>";
@@ -186,7 +187,6 @@ if (Session::haveRight("config", UPDATE)) {
    echo "<tr><td colspan='3' class='center'><input class='submit' type='submit' value='" . __('Save')  . "'/></td></tr>";
 
    echo "</table>";
-   echo "</div>";
    echo "</form>";
 
    $js = "$(function(){
@@ -239,5 +239,7 @@ if ($CFG_GLPI['use_notifications'] && $notifs_on) {
    }
    echo "</table>";
 }
+
+echo "</div>";
 
 Html::footer();
