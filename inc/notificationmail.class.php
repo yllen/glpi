@@ -58,12 +58,11 @@ class NotificationMail implements NotificationInterface {
    /**
     * Determine if email is valid
     *
-    * @param $address         email to check
-    * @param $options   array of options used (by default 'checkdns'=>false)
+    * @param string $address email to check
+    * @param array  $options options used (by default 'checkdns'=>false)
     *     - checkdns :check dns entry
     *
     * @return boolean
-    * from http://www.linuxjournal.com/article/9585
    **/
    static function isUserAddressValid($address, $options=array('checkdns'=>false)) {
       $isValid = \PHPMailer::ValidateAddress($address);
@@ -103,9 +102,6 @@ class NotificationMail implements NotificationInterface {
    }
 
 
-   /**
-    * @param $options   array
-   **/
    function sendNotification($options=array()) {
 
       $data = array();
@@ -146,8 +142,8 @@ class NotificationMail implements NotificationInterface {
       $mailqueue = new QueuedMail();
 
       if (!$mailqueue->add(Toolbox::addslashes_deep($data))) {
-         $senderror = true;
-         Session::addMessageAfterRedirect(__('Error inserting email to queue'), true);
+         Session::addMessageAfterRedirect(__('Error inserting email to queue'), true, ERROR);
+         return false;
       } else {
          //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
          Toolbox::logInFile("mail",

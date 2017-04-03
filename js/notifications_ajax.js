@@ -17,7 +17,7 @@
 
       var _this = this;
 
-      function showNotification(title, body, url) {
+      function showNotification(id, title, body, url) {
          /**
           * Queue to prevent firefox bug
           * Show next notification after 100ms
@@ -35,7 +35,7 @@
                icon: _this.options.icon
             });
 
-            if (typeof(url) != 'undefined') {
+            if (typeof(url) != 'undefined' && url != null) {
                notification.url_item = CFG_GLPI.url_base + '/' + (url);
 
                notification.onclick = function (event) {
@@ -43,6 +43,14 @@
                   window.open(this.url_item, '_blank');
                };
             }
+
+            $.ajax({
+               url: CFG_GLPI.root_doc + '/ajax/notifications_ajax.php',
+               method: 'GET',
+               data: {
+                  delete: id
+               }
+            });
          });
 
       }
@@ -84,7 +92,7 @@
             if (data) {
                for (i = 0; i < data.length; i++) {
                   var item = data[i];
-                  showNotification(item.title, item.body, item.url);
+                  showNotification(item.id, item.title, item.body, item.url);
                }
 
 

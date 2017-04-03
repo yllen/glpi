@@ -46,10 +46,8 @@ class NotificationAjaxSetting extends CommonDBTM {
    static $rightname       = 'config';
 
 
-
-   // Temproray hack for this class in 0.84
-   static function getTable() {
-      return 'glpi_configs';
+   static function getTable($classname = null) {
+      return parent::getTable('Config');
    }
 
 
@@ -142,9 +140,7 @@ class NotificationAjaxSetting extends CommonDBTM {
             'emptylabel'          => __('Disabled'),
             'rand'                => $rand_sound,
          ]);
-         echo "</td><td>" . __('Show an example notification') . "</td><td>";
-         echo "<input type='button' onclick='browsernotification && browsernotification.showExample($(\"#dropdown_sound" . $rand_sound . "\").val())' class='submit' value=\"" . __('Show example') . "\">";
-         echo "</td></tr>";
+         echo "</td><td colspan='2'>&nbsp;</td></tr>";
 
          echo "<tr class='tab_bg_2'><td>" . __('Time to check for new notifications (in seconds)') . "</td>";
          echo "<td>";
@@ -160,7 +156,7 @@ class NotificationAjaxSetting extends CommonDBTM {
       }
       $options['candel']     = false;
       if ($CFG_GLPI['notifications_ajax']) {
-         $options['addbuttons'] = array('test_ajax_send' => __('Send a test ajax call to the administrator'));
+         $options['addbuttons'] = array('test_ajax_send' => __('Send a test ajax call to you'));
       }
       $this->showFormButtons($options);
 
