@@ -210,33 +210,6 @@ class NotificationTemplateTemplate extends CommonDBChild {
          $this->fields['notificationtemplates_id']
       );
       echo "</span></td></tr>";
-      /*echo "<td>".__('Name')."</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "name");
-      echo "</td><td>".__('Partition')."</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "device");
-      echo "</td></tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Mount point')."</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "mountpoint");
-      echo "</td><td>".__('File system')."</td>";
-      echo "<td>";
-      FileSystem::dropdown(array('value' => $this->fields["filesystems_id"]));
-      echo "</td></tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Global size')."</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "totalsize");
-      echo "&nbsp;".__('Mio')."</td>";
-
-      echo "<td>".__('Free size')."</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "freesize");
-      echo "&nbsp;".__('Mio')."</td></tr>";*/
 
       $this->showFormButtons($options);
 
