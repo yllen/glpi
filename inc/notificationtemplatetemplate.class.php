@@ -199,7 +199,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Mode') . "</td>";
       echo "<td>";
-      Dropdown::showFromArray('mode', NotificationTemplateTemplate::getModes(), $this->getField('mode'));
+      Dropdown::showFromArray('mode', self::getModes(), ['value' => $this->getField('mode')]);
       echo "</td>";
 
       echo "<td>". NotificationTemplate::getTypeName(1)."</td>";
