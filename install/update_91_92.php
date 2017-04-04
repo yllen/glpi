@@ -805,6 +805,13 @@ Regards,',
    $migration->dropField('glpi_notifications', 'mode');
    $migration->dropField('glpi_notifications', 'notificationtemplates_id');
 
+   $migration->addField('glpi_queuedmails', 'mode', 'varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT \'See NotificationTemplateTemplate::MODE_* constants\'');
+   $migration->addKey('glpi_queuedmails', 'mode');
+   $migration->addPostQuery(
+      'UPDATE glpi_queuedmails SET mode=\'' . NotificationTemplateTemplate::MODE_MAIL . '\'',
+      '9.2 set default mode in queue'
+   );
+
    // ************ Keep it at the end **************
    $migration->executeMigration();
 

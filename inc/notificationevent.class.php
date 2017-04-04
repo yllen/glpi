@@ -134,6 +134,7 @@ class NotificationEvent extends CommonDBTM {
 
          foreach ($notifications as $data) {
             $notificationtarget->clearAddressesList();
+            $notificationtarget->setMode($data['mode']);
             $template->getFromDB($data['notificationtemplates_id']);
             $template->resetComputedTemplates();
 

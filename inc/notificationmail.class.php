@@ -139,6 +139,8 @@ class NotificationMail implements NotificationInterface {
          $data['documents'] = $options['documents'];
       }
 
+      $data['mode'] = NotificationTemplateTemplate::MODE_MAIL;
+
       $mailqueue = new QueuedMail();
 
       if (!$mailqueue->add(Toolbox::addslashes_deep($data))) {

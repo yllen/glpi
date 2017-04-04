@@ -81,6 +81,8 @@ class NotificationAjax implements NotificationInterface {
       $data['body_text']                            = $options['content_text'];
       $data['recipient']                            = $options['to'];
 
+      $data['mode'] = NotificationTemplateTemplate::MODE_AJAX;
+
       $mailqueue = new QueuedMail();
 
       if (!$mailqueue->add(Toolbox::addslashes_deep($data))) {

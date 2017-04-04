@@ -351,6 +351,19 @@ class QueuedMail extends CommonDBTM {
       ];
 
       $tab[] = [
+         'id'                 => '23',
+         'table'              => 'glpi_queuedmails',
+         'field'              => 'mode',
+         'name'               => __('Mode'),
+         'massiveaction'      => false,
+         'datatype'           => 'specific',
+         'searchtype'         => [
+            0 => 'equals',
+            1 => 'notequals'
+         ]
+      ];
+
+      $tab[] = [
          'id'                 => '80',
          'table'              => 'glpi_entities',
          'field'              => 'completename',
@@ -384,9 +397,29 @@ class QueuedMail extends CommonDBTM {
             }
             return $out;
             break;
+         case 'mode':
+            $out = NotificationTemplateTemplate::getMode($values[$field]);
+            return $out;
+            break;
 
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
+   }
+
+
+   static function getSpecificValueToSelect($field, $name='', $values='', array $options=array()) {
+      if (!is_array($values)) {
+         $values = array($field => $values);
+      }
+      $options['display'] = false;
+
+      switch ($field) {
+         case 'mode' :
+            $options['name']  = $name;
+            $options['value'] = $values[$field];
+            return NotificationTemplateTemplate::dropdownMode($options);
+      }
+      return parent::getSpecificValueToSelect($field, $name, $values, $options);
    }
 
 
@@ -553,6 +586,7 @@ class QueuedMail extends CommonDBTM {
       $query       = "SELECT `glpi_queuedmails`.*
                       FROM `glpi_queuedmails`
                       WHERE NOT `glpi_queuedmails`.`is_deleted`
+                            AND `glpi_queuedmails`.`mode` = '" . NotificationTemplateTemplate::MODE_MAIL . "'
                             AND `glpi_queuedmails`.`send_time` < '".$send_time."'
                       ORDER BY `glpi_queuedmails`.`send_time` ASC
                       LIMIT 0, ".$task->fields['param'];
@@ -613,6 +647,7 @@ class QueuedMail extends CommonDBTM {
          $query = "SELECT `glpi_queuedmails`.*
                    FROM `glpi_queuedmails`
                    WHERE NOT `glpi_queuedmails`.`is_deleted`
+                        AND `glpi_queuedmails`.`mode` = '" . NotificationTemplateTemplate::MODE_MAIL . "'
                         AND `glpi_queuedmails`.`itemtype` = '$itemtype'
                         AND `glpi_queuedmails`.`items_id` = '$items_id'
                         AND `glpi_queuedmails`.`send_time` <= NOW()

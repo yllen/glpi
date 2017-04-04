@@ -4476,13 +4476,13 @@ DROP TABLE IF EXISTS `glpi_notificationtemplatetemplates`;
 CREATE TABLE `glpi_notificationtemplatetemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `notifications_id` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `mode` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `mode` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'See NotificationTemplateTemplate::MODE_* constants',
   `notificationtemplates_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unicity` (`notifications_id`, `mode`, `notificationtemplates_id`),
   KEY `notifications_id` (`notifications_id`),
   KEY `notificationtemplates_id` (`notificationtemplates_id`),
-  KEY `mode` (`mode`) COMMENT 'See NotificationTemplateTemplate::MODE_* constants'
+  KEY `mode` (`mode`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `glpi_notificationtemplatetemplates` VALUES(1, '1', 'mail', 6);
@@ -6897,6 +6897,7 @@ CREATE TABLE `glpi_queuedmails` (
   `body_text` longtext COLLATE utf8_unicode_ci,
   `messageid` text COLLATE utf8_unicode_ci,
   `documents` text COLLATE utf8_unicode_ci,
+  `mode` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'See NotificationTemplateTemplate::MODE_* constants',
   PRIMARY KEY (`id`),
   KEY `item` (`itemtype`,`items_id`,`notificationtemplates_id`),
   KEY `is_deleted` (`is_deleted`),
@@ -6904,7 +6905,8 @@ CREATE TABLE `glpi_queuedmails` (
   KEY `sent_try` (`sent_try`),
   KEY `create_time` (`create_time`),
   KEY `send_time` (`send_time`),
-  KEY `sent_time` (`sent_time`)
+  KEY `sent_time` (`sent_time`),
+  KEY `mode` (`mode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
