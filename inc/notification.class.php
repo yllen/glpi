@@ -458,13 +458,16 @@ class Notification extends CommonDBTM {
 
 
    /**
-    * @param $mailing_options
+    * Send notification
+    *
+    * @param array $mailing_options Options
+    *
+    * @return void
    **/
    static function send($mailing_options) {
-
-      $mail = new NotificationMail();
+      $classname = 'Notification' . ucfirst($mailing_options['mode']);
+      $mail = new $classname();
       $mail->sendNotification($mailing_options);
-      // $mail->ClearAddresses();
    }
 
 
@@ -491,7 +494,7 @@ class Notification extends CommonDBTM {
     * @param $entity
    **/
    static function getNotificationsByEventAndType($event, $itemtype, $entity) {
-      global $DB;
+      global $DB, $CFG_GLPI;
 
       $query = "SELECT `glpi_notifications`.*,
                   `glpi_notificationtemplatetemplates`.`mode`, `glpi_notificationtemplatetemplates`.`notificationtemplates_id`
@@ -504,8 +507,25 @@ class Notification extends CommonDBTM {
                       AND `glpi_notifications`.`event` = '$event' ".
                       getEntitiesRestrictRequest("AND", "glpi_notifications", 'entities_id',
                                                  $entity, true) ."
-                      AND `glpi_notifications`.`is_active`='1'
-                ORDER BY `glpi_entities`.`level` DESC";
+                      AND `glpi_notifications`.`is_active`='1'";
+
+      if (!$CFG_GLPI['notifications_mailing']) {
+         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_MAIL . "'";
+      }
+
+      if (!$CFG_GLPI['notifications_ajax']) {
+         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_AJAX . "'";
+      }
+
+      /*if (!$CFG_GLPI['notifications_websocket']) {
+         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_WEBSOCKET . "'";
+      }*/
+
+      /*if (!$CFG_GLPI['notifications_sms']) {
+         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_SMS . "'";
+      }*/
+
+      $query .= " ORDER BY `glpi_entities`.`level` DESC";
 
       return $DB->request($query);
    }

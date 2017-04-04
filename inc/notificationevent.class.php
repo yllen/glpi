@@ -232,6 +232,7 @@ class NotificationEvent extends CommonDBTM {
                            $send_data['_itemtype']                 = $item->getType();
                            $send_data['_items_id']                 = $item->getID();
                            $send_data['_entities_id']              = $entity;
+                           $send_data['mode']                      = $data['mode'];
 
                            Notification::send($send_data);
                         } else {
@@ -287,18 +288,68 @@ class NotificationEvent extends CommonDBTM {
    ) {
       global $CFG_GLPI;
       if ($CFG_GLPI['notifications_ajax']) {
-         /*$email_processed    = array();
-         $email_notprocessed = array();*/
+         $processed    = array();
+         $notprocessed = array();
 
          $targets = getAllDatasFromTable(
             'glpi_notificationtargets',
             "notifications_id = {$data['id']}"
          );
 
-         Toolbox::logDebug(__METHOD__ . ' not yet implemented');
+         //Foreach notification targets
+         foreach ($targets as $target) {
+            //Get all users affected by this notification
+            $notificationtarget->addForTarget($target, $options);
 
-         /*unset($email_processed);
-         unset($email_notprocessed);*/
+            foreach ($notificationtarget->getTargets() as $user_id => $users_infos) {
+               if ($label
+                     || $notificationtarget->validateSendTo($event, $users_infos, $notify_me)) {
+                  //If the user have not yet been notified
+                  if (!isset($processed[$users_infos['language']][$user_id])) {
+                     //If ther user's language is the same as the template's one
+                     if (isset($notprocessed[$users_infos['language']]
+                                                   [$user_id])) {
+                        unset($notprocessed[$users_infos['language']]
+                                                   [$user_id]);
+                     }
+                     $options['item'] = $item;
+                     if ($tid = $template->getTemplateByLanguage($notificationtarget,
+                                                                  $users_infos, $event,
+                                                                  $options)) {
+                        //Send notification to the user
+                        if ($label == '') {
+                           $send_data = $template->getDataToSend($notificationtarget, $tid,
+                                                               $users_infos, $options);
+                           $send_data['_notificationtemplates_id'] = $data['notificationtemplates_id'];
+                           $send_data['_itemtype']                 = $item->getType();
+                           $send_data['_items_id']                 = $item->getID();
+                           $send_data['_entities_id']              = $entity;
+                           $send_data['mode']                      = $data['mode'];
+
+                           Notification::send($send_data);
+                        } else {
+                           $notificationtarget->getFromDB($target['id']);
+                           echo "<tr class='tab_bg_2'><td>".$label."</td>";
+                           echo "<td>".$notificationtarget->getNameID()."</td>";
+                           echo "<td>".sprintf(__('%1$s (%2$s)'), $template->getName(),
+                                                $users_infos['language'])."</td>";
+                           echo "<td>".$user_id."</td>";
+                           echo "</tr>";
+                        }
+                        $processed[$users_infos['language']][$user_id]
+                                                                  = $users_infos;
+
+                     } else {
+                        $notprocessed[$users_infos['language']][$user_id]
+                                                                     = $users_infos;
+                     }
+                  }
+               }
+            }
+         }
+
+         unset($processed);
+         unset($notprocessed);
       }
    }
 
