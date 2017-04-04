@@ -1444,7 +1444,7 @@ class NotificationTarget extends CommonDBChild {
     * @return void
    **/
    function getItemGroupAddress() {
-      Toolbox::logDebug('getAddressesByGroup() method is deprecated');
+      Toolbox::logDebug('getItemGroupAddress() method is deprecated');
       $this->addItemGroup();
    }
 
@@ -1555,7 +1555,7 @@ class NotificationTarget extends CommonDBChild {
     * @return void
    **/
    function getAddressesByTarget($data, $options=array()) {
-      Toolbox::logDebug('getUserByField() method is deprecated');
+      Toolbox::logDebug('getAddressesByTarget() method is deprecated');
       $this->addForTarget($data, $options);
    }
 

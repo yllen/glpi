@@ -53,23 +53,23 @@ class NotificationTargetPlanningRecall extends NotificationTarget {
 
 
    /**
-    * @see NotificationTarget::getNotificationTargets()
+    * @see NotificationTarget::addNotificationTargets()
    **/
-   function getNotificationTargets($entity) {
+   function addNotificationTargets($entity) {
       $this->addTarget(Notification::AUTHOR, __('Requester'));
       $this->addTarget(Notification::TASK_ASSIGN_TECH, __('Technician in charge of the task'));
    }
 
    /**
-    * @see NotificationTarget::getSpecificTargets()
+    * @see NotificationTarget::addSpecificTargets()
    **/
-   function getSpecificTargets($data, $options) {
+   function addSpecificTargets($data, $options) {
       switch ($data['type']) {
          case Notification::USER_TYPE :
             switch ($data['items_id']) {
                //Send to the ITIL object followup author
                case Notification::TASK_ASSIGN_TECH :
-                  $this->getTaskAssignUser($options);
+                  $this->addTaskAssignUser($options);
                   break;
             }
          break;
@@ -81,7 +81,7 @@ class NotificationTargetPlanningRecall extends NotificationTarget {
     *
     * @param $options array
    **/
-   function getTaskAssignUser() {
+   function addTaskAssignUser() {
       $item = new $this->obj->fields['itemtype'];
       if ($item->getFromDB($this->obj->fields['items_id'])) {
          $user = new User();

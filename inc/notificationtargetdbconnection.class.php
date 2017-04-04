@@ -45,9 +45,9 @@ class NotificationTargetDBConnection extends NotificationTarget {
    /**
     * Overwrite the function in NotificationTarget because there's only one target to be notified
     *
-    * @see NotificationTarget::getNotificationTargets()
+    * @see NotificationTarget::addNotificationTargets()
    **/
-   function getNotificationTargets($entity) {
+   function addNotificationTargets($entity) {
 
       $this->addProfilesToTargets();
       $this->addGroupsToTargets($entity);

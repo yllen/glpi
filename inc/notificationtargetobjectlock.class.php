@@ -78,17 +78,17 @@ class NotificationTargetObjectLock extends NotificationTarget {
 
 
    /**
-    * @see NotificationTarget::getNotificationTargets()
+    * @see NotificationTarget::addNotificationTargets()
    **/
-   function getNotificationTargets($entity) {
+   function addNotificationTargets($entity) {
       $this->addTarget(Notification::USER, __('Locking User'));
    }
 
 
    /**
-    * @see NotificationTarget::getSpecificTargets()
+    * @see NotificationTarget::addSpecificTargets()
     **/
-   function getSpecificTargets($data, $options) {
+   function addSpecificTargets($data, $options) {
 
       $user = new User();
       if ($user->getFromDB($this->obj->fields['users_id'])) {

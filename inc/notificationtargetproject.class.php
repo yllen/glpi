@@ -80,9 +80,9 @@ class NotificationTargetProject extends NotificationTarget {
 
 
    /**
-    * @see NotificationTarget::getSpecificTargets()
+    * @see NotificationTarget::addSpecificTargets()
    **/
-   function getSpecificTargets($data, $options) {
+   function addSpecificTargets($data, $options) {
 
       //Look for all targets whose type is Notification::ITEM_USER
       switch ($data['type']) {
