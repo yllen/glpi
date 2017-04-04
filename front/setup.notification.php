@@ -53,6 +53,7 @@ if (isset($_POST['use_notifications'])) {
       $_POST['notifications_mailing'] = 0;
       $_POST['notifications_ajax'] = 0;
       $_POST['notifications_websockets'] = 0;
+      $_POST['notifications_sms'] = 0;
    }
 }
 
@@ -75,6 +76,13 @@ if (isset($_POST['notifications_websockets'])) {
    $config             = new Config();
    $tmp['id']          = 1;
    $tmp['notifications_websockets'] = $_POST['notifications_websockets'];
+   $config->update($tmp);
+}
+
+if (isset($_POST['notifications_sms'])) {
+   $config             = new Config();
+   $tmp['id']          = 1;
+   $tmp['notifications_sms'] = $_POST['notifications_sms'];
    $config->update($tmp);
 }
 
@@ -159,7 +167,7 @@ if (Session::haveRight("config", UPDATE)) {
    echo "</td>";
    echo "</tr>";
 
-   echo "<tr>";
+   /*echo "<tr>";
    echo "<td>" .__('Enable followup via websockets') . "</td>";
    echo "<td>";
    echo "<input type='radio' name='notifications_websockets' id='notifications_websockets_on' value='1'";
@@ -182,7 +190,33 @@ if (Session::haveRight("config", UPDATE)) {
    }
    echo "/><label for='notifications_websockets_off'>" . __('No') . "</label>";
    echo "</td>";
-   echo "</tr>";
+   echo "</tr>";*/
+
+   /*echo "<tr>";
+   echo "<td>" .__('Enable followup via SMS') . "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_sms' id='notifications_sms_on' value='1'";
+   if ($CFG_GLPI['notifications_sms']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/>";
+   echo "<label for='notifications_sms_on'>" . __('Yes') . "</label>";
+   echo "</td>";
+   echo "<td>";
+   echo "<input type='radio' name='notifications_sms' id='notifications_sms_off' value='0'";
+   if (!$CFG_GLPI['notifications_sms']) {
+      echo " checked='checked'";
+   }
+   if (!$CFG_GLPI['use_notifications']) {
+      echo " disabled='disabled'";
+   }
+   echo "/><label for='notifications_sms_off'>" . __('No') . "</label>";
+   echo "</td>";
+   echo "</tr>";*/
+
 
    echo "<tr><td colspan='3' class='center'><input class='submit' type='submit' value='" . __('Save')  . "'/></td></tr>";
 
@@ -201,7 +235,10 @@ if (Session::haveRight("config", UPDATE)) {
    echo Html::scriptBlock($js);
 }
 
-$notifs_on = ($CFG_GLPI['notifications_mailing'] || $CFG_GLPI['notifications_ajax'] || $CFG_GLPI['notifications_websockets']);
+$notifs_on = ($CFG_GLPI['notifications_mailing']
+   || $CFG_GLPI['notifications_ajax']
+   || $CFG_GLPI['notifications_websockets']
+   || $CFG_GLPI['notifications_sms']);
 
 if ($CFG_GLPI['use_notifications'] && $notifs_on) {
    echo "<table class='tab_cadre'>";
@@ -218,11 +255,18 @@ if ($CFG_GLPI['use_notifications'] && $notifs_on) {
             "</a></td></tr>";
    }
 
-   if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_websockets']) {
+   /*if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_websockets']) {
       echo "<tr class='tab_bg_1'><td class='center'>".
             "<a href='notificationwebsocketssetting.form.php'>". __('Websockets followups configuration') .
             "</a></td></tr>";
-   }
+   }*/
+
+   /*if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_sms']) {
+      echo "<tr class='tab_bg_1'><td class='center'>".
+            "<a href='notificationsmssetting.form.php'>". __('SMS followups configuration') .
+            "</a></td></tr>";
+   }*/
+
 
    if (Session::haveRight("config", READ)) {
       echo "<tr class='tab_bg_1'><td class='center'><a href='notificationtemplate.php'>" .

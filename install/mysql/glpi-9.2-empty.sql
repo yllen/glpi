@@ -1018,7 +1018,7 @@ INSERT INTO `glpi_configs` VALUES ('4','core','list_limit','15');
 INSERT INTO `glpi_configs` VALUES ('5','core','list_limit_max','50');
 INSERT INTO `glpi_configs` VALUES ('6','core','url_maxlength','30');
 INSERT INTO `glpi_configs` VALUES ('7','core','event_loglevel','5');
-INSERT INTO `glpi_configs` VALUES ('8','core','notification_mailing','0');
+INSERT INTO `glpi_configs` VALUES ('8','core','notifications_mailing','0');
 INSERT INTO `glpi_configs` VALUES ('9','core','admin_email','admsys@localhost');
 INSERT INTO `glpi_configs` VALUES ('10','core','admin_email_name','');
 INSERT INTO `glpi_configs` VALUES ('11','core','admin_reply','');
@@ -1178,7 +1178,9 @@ INSERT INTO `glpi_configs` VALUES ('170','core','url_base_api','http://localhost
 INSERT INTO `glpi_configs` VALUES ('171','core','login_remember_time','604800');
 INSERT INTO `glpi_configs` VALUES ('172','core','login_remember_default','1');
 INSERT INTO `glpi_configs` VALUES ('173','core','use_notifications','0');
-INSERT INTO `glpi_configs` VALUES ('174','core','notification_websockets','0');
+INSERT INTO `glpi_configs` VALUES ('174','core','notifications_websockets','0');
+INSERT INTO `glpi_configs` VALUES ('175','core','notifications_ajax','0');
+INSERT INTO `glpi_configs` VALUES ('176','core','notifications_sms','0');
 
 
 ### Dump table glpi_consumableitems

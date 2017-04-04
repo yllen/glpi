@@ -772,17 +772,18 @@ Regards,',
                                  true);
    }
 
-   /** Websockets notifications */
-   Config::setConfigurationValues(
-      'core', [
-         'use_notifications'        => $current_config['use_mailing'],
-         'notifications_websockets' => 0
-      ]
-   );
-   $migration->addPostQuery(
-      "UPDATE glpi_configs SET name='notifications_mailing' WHERE name='use_mailing'",
-      "9.2 renamed use_mailing configuration entry"
-   );
+   if (isset($current_config['use_mailing']) && !isset($current_config['use_notifications'])) {
+      /** Notifications modes */
+      Config::setConfigurationValues(
+         'core', [
+            'use_notifications'        => $current_config['use_mailing'],
+            'notifications_mailing'    => $current_config['use_mailing'],
+            'notifications_websockets' => 0,
+            'notifications_ajax'       => 0,
+            'notifications_sms'        => 0
+         ]
+      );
+   }
 
    if (!TableExists('glpi_notificationtemplatetemplates')) {
       $query = "CREATE TABLE `glpi_notificationtemplatetemplates` (

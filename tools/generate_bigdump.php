@@ -58,6 +58,7 @@ $CFG_GLPI["use_notifications"] = 0;
 $CFG_GLPI["notifications_mailing"] = 0;
 $CFG_GLPI["notifications_ajax"] = 0;
 $CFG_GLPI["notifications_websocket"] = 0;
+$CFG_GLPI["notifications_sms"] = 0;
 
 
 $entity_number = 10;
