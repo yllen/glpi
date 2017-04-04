@@ -93,6 +93,9 @@ class NotificationTarget extends CommonDBChild {
    const GLPI_USER                  = 1;
    const EXTERNAL_USER              = 2;
 
+   const TYPE_EMAIL                 = 0;
+   const TYPE_ID                    = 1;
+
    /**
     * @param string $entity  (default '')
     * @param string $event   (default '')
