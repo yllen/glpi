@@ -90,22 +90,22 @@ class NotificationTargetProject extends NotificationTarget {
 
             switch ($data['items_id']) {
                case Notification::MANAGER_USER :
-                  $this->getItemAuthorAddress();
+                  $this->addItemAuthor();
                   break;
 
                //Send to the manager group of the project
                case Notification::MANAGER_GROUP :
-                  $this->getItemGroupAddress();
+                  $this->addItemGroup();
                   break;
 
                //Send to the manager group supervisor of the project
                case Notification::MANAGER_GROUP_SUPERVISOR :
-                  $this->getItemGroupSupervisorAddress();
+                  $this->addItemGroupSupervisor();
                   break;
 
                //Send to the manager group without supervisor of the project
                case Notification::MANAGER_GROUP_WITHOUT_SUPERVISOR :
-                  $this->getItemGroupWithoutSupervisorAddress();
+                  $this->addItemGroupWithoutSupervisor();
                   break;
 
                //Send to the users in project team
@@ -176,7 +176,7 @@ class NotificationTargetProject extends NotificationTarget {
                 WHERE `glpi_projectteams`.`itemtype` = 'Group'
                       AND `glpi_projectteams`.`projects_id` = '".$this->obj->fields["id"]."'";
       foreach ($DB->request($query) as $data) {
-         $this->getAddressesByGroup($manager, $data['items_id']);
+         $this->addForGroup($manager, $data['items_id']);
       }
    }
 

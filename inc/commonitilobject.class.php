@@ -2324,7 +2324,7 @@ abstract class CommonITILObject extends CommonDBTM {
                $tmpname = Dropdown::getDropdownName($supplier->getTable(), $k, 1);
                Html::showToolTip($tmpname['comment']);
 
-               if ($CFG_GLPI['use_mailing']) {
+               if ($CFG_GLPI['use_notifications']) {
                   $text = __('Email followup')."&nbsp;".Dropdown::getYesNo($d['use_notification']).
                   '<br>';
 
@@ -3266,7 +3266,7 @@ abstract class CommonITILObject extends CommonDBTM {
                echo $userdata;
             }
 
-            if ($CFG_GLPI['use_mailing']) {
+            if ($CFG_GLPI['use_notifications']) {
                $text = __('Email followup')."&nbsp;".Dropdown::getYesNo($d['use_notification']).
                        '<br>';
 
@@ -3452,7 +3452,7 @@ abstract class CommonITILObject extends CommonDBTM {
          $params['_user_index'] = $options['_user_index'];
       }
 
-      if ($CFG_GLPI['use_mailing']) {
+      if ($CFG_GLPI['use_notifications']) {
          $paramscomment
             = array('value' => '__VALUE__',
                     'field' => "_users_id_".$typename."_notif",
@@ -3535,7 +3535,7 @@ abstract class CommonITILObject extends CommonDBTM {
          }
       }
 
-      if ($CFG_GLPI['use_mailing']) {
+      if ($CFG_GLPI['use_notifications']) {
          echo "<div id='notif_".$typename."_$rand'>";
          echo "</div>";
 
@@ -3576,7 +3576,7 @@ abstract class CommonITILObject extends CommonDBTM {
                       'value'       => $options["_suppliers_id_assign"],
                       'rand'        => $rand);
 
-      if ($CFG_GLPI['use_mailing']) {
+      if ($CFG_GLPI['use_notifications']) {
          $paramscomment = array('value'       => '__VALUE__',
                                 'field'       => "_suppliers_id_assign_notif",
                                 'allow_email' => true,
@@ -3624,7 +3624,7 @@ abstract class CommonITILObject extends CommonDBTM {
          echo "});</script>";
       }
 
-      if ($CFG_GLPI['use_mailing']) {
+      if ($CFG_GLPI['use_notifications']) {
          echo "<div id='notif_assign_$rand'>";
          echo "</div>";
 

@@ -152,7 +152,7 @@ class NotificationTargetProjectTask extends NotificationTarget {
                 WHERE `glpi_projecttaskteams`.`itemtype` = 'Group'
                       AND `glpi_projecttaskteams`.`projecttasks_id` = '".$this->obj->fields["id"]."'";
       foreach ($DB->request($query) as $data) {
-         $this->getAddressesByGroup($manager, $data['items_id']);
+         $this->addForGroup($manager, $data['items_id']);
       }
    }
 

@@ -115,9 +115,15 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
             if (empty($author_id)) {
                $author_id = -1;
             }
-            $this->addToAddressesList(array('email'    => $author_email,
-                                            'language' => $author_lang,
-                                            'users_id' => $author_id));
+
+            if ($this->isMailMode()) {
+               $this->addToAddressesList(array('email'    => $author_email,
+                                             'language' => $author_lang,
+                                             'users_id' => $author_id));
+            } else {
+               $this->addToIdList(array('language' => $author_lang,
+                                        'users_id' => $author_id));
+            }
          }
       }
 
@@ -129,10 +135,12 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                       AND `$userlinktable`.`use_notification` = 1
                       AND `$userlinktable`.`type` = '$type'";
       foreach ($DB->request($query) as $data) {
-         if (NotificationMail::isUserAddressValid($data['alternative_email'])) {
-            $this->addToAddressesList(array('email'    => $data['alternative_email'],
-                                            'language' => $CFG_GLPI["language"],
-                                            'users_id' => -1));
+         if ($this->isMailMode()) {
+            if (NotificationMail::isUserAddressValid($data['alternative_email'])) {
+               $this->addToAddressesList(array('email'    => $data['alternative_email'],
+                                               'language' => $CFG_GLPI["language"],
+                                               'users_id' => -1));
+            }
          }
       }
    }
@@ -157,7 +165,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
       foreach ($DB->request($query) as $data) {
          //Add the group in the notified users list
-         $this->getAddressesByGroup(0, $data['groups_id']);
+         $this->addForGroup(0, $data['groups_id']);
       }
    }
 
@@ -183,7 +191,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
       foreach ($DB->request($query) as $data) {
          //Add the group in the notified users list
-         $this->getAddressesByGroup(2, $data['groups_id']);
+         $this->addForGroup(2, $data['groups_id']);
       }
    }
 
@@ -206,7 +214,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
       foreach ($DB->request($query) as $data) {
          //Add the group in the notified users list
-         $this->getAddressesByGroup(1, $data['groups_id']);
+         $this->addForGroup(1, $data['groups_id']);
       }
    }
 
@@ -214,7 +222,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
    /**
     * Get the email of the item's user : Overloaded manual address used
    **/
-   function getItemAuthorAddress() {
+   function addItemAuthor() {
       $this->getLinkedUserByType(CommonITILActor::REQUESTER);
    }
 
@@ -245,9 +253,14 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
          if (empty($author_id)) {
             $author_id = -1;
          }
-         $this->addToAddressesList(array('email'    => $author_email,
-                                         'language' => $author_lang,
-                                         'users_id' => $author_id));
+         if ($this->isMailMode()) {
+            $this->addToAddressesList(array('email'    => $author_email,
+                                            'language' => $author_lang,
+                                            'users_id' => $author_id));
+         } else if ($author_id != -1) {
+            $this->addToIdList(array('language' => $author_lang,
+                                     'users_id' => $author_id));
+         }
       }
    }
 
@@ -256,7 +269,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
     * Get recipient
    **/
    function getRecipientAddress() {
-      return $this->getUserByField("users_id_recipient");
+      return $this->addUserByField("users_id_recipient");
    }
 
 
@@ -269,7 +282,8 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
       global $DB;
 
       if (!$sendprivate
-          && $this->obj->countSuppliers(CommonITILActor::ASSIGN)) {
+         && $this->obj->countSuppliers(CommonITILActor::ASSIGN)
+         && $this->isMailMode()) {
 
          $supplierlinktable = getTableForItemType($this->obj->supplierlinkclass);
          $fkfield           = $this->obj->getForeignKeyField();
@@ -307,7 +321,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$validationtable`.`id` = '".$options['validation_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            if ($this->isMailMode()) {
+               $this->addToAddressesList($data);
+            } else {
+               $this->addToIdList($data);
+            }
          }
       }
    }
@@ -331,7 +349,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$validationtable`.`id` = '".$options['validation_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            if ($this->isMailMode()) {
+               $this->addToAddressesList($data);
+            } else {
+               $this->addToIdList($data);
+            }
          }
       }
    }
@@ -356,7 +378,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$followuptable`.`id` = '".$options['followup_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            if ($this->isMailMode()) {
+               $this->addToAddressesList($data);
+            } else {
+               $this->addToIdList($data);
+            }
          }
       }
    }
@@ -378,7 +404,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `glpi_users`.`id` = '".$options['task_users_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            if ($this->isMailMode()) {
+               $this->addToAddressesList($data);
+            } else {
+               $this->addToIdList($data);
+            }
          }
       } else if (isset($options['task_id'])) {
          $tasktable = getTableForItemType($this->obj->getType().'Task');
@@ -390,7 +420,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$tasktable`.`id` = '".$options['task_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            if ($this->isMailMode()) {
+               $this->addToAddressesList($data);
+            } else {
+               $this->addToIdList($data);
+            }
          }
       }
    }
@@ -412,7 +446,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `glpi_users`.`id` = '".$options['task_users_id_tech']."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            if ($this->isMailMode()) {
+               $this->addToAddressesList($data);
+            } else {
+               $this->addToIdList($data);
+            }
          }
       } else if (isset($options['task_id'])) {
          $tasktable = getTableForItemType($this->obj->getType().'Task');
@@ -425,7 +463,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$tasktable`.`id` = '".$options['task_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            if ($this->isMailMode()) {
+               $this->addToAddressesList($data);
+            } else {
+               $this->addToIdList($data);
+            }
          }
       }
    }
@@ -443,14 +485,14 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
       // In case of delete task pass user id
       if (isset($options['task_groups_id_tech'])) {
-         $this->getAddressesByGroup(0, $options['task_groups_id_tech']);
+         $this->addForGroup(0, $options['task_groups_id_tech']);
 
       } else if (isset($options['task_id'])) {
          $tasktable = getTableForItemType($this->obj->getType().'Task');
          foreach ($DB->request(array($tasktable, 'glpi_groups'),
                                "`glpi_groups`.`id` = `$tasktable`.`groups_id_tech`
                                 AND `$tasktable`.`id` = '".$options['task_id']."'") as $data) {
-            $this->getAddressesByGroup(0, $data['groups_id_tech']);
+            $this->addForGroup(0, $data['groups_id_tech']);
          }
       }
    }

@@ -207,7 +207,7 @@ class NotificationEvent extends CommonDBTM {
          //Foreach notification targets
          foreach ($targets as $target) {
             //Get all users affected by this notification
-            $notificationtarget->getAddressesByTarget($target, $options);
+            $notificationtarget->addForTarget($target, $options);
 
             foreach ($notificationtarget->getTargets() as $user_email => $users_infos) {
                if ($label

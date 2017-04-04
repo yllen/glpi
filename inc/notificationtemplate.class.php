@@ -514,7 +514,7 @@ class NotificationTemplate extends CommonDBTM {
    function getDataToSend(NotificationTarget $target, $tid, array $user_infos, array $options) {
 
       $language   = $user_infos['language'];
-      $user_email = $user_infos['email'];
+      $user_email = isset($user_infos['email']) ? $user_infos['email'] : $user_infos['users_id'];
       $user_name  = $user_infos['username'];
 
       $sender     = $target->getSender($options);

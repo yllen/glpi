@@ -284,9 +284,10 @@ class TicketFollowup  extends CommonDBTM {
 
          if (count($this->updates)) {
             if (!isset($this->input['_disablenotif'])
-                && $CFG_GLPI["use_mailing"]
+                && $CFG_GLPI["use_notifications"]
                 && (in_array("content", $this->updates)
                     || isset($this->input['_need_send_mail']))) {
+               //FIXME: _need_send_mail does not seems to be used
 
                $options = array('followup_id' => $this->fields["id"],
                                 'is_private'  => $this->fields['is_private']);
@@ -392,7 +393,7 @@ class TicketFollowup  extends CommonDBTM {
       // Add document if needed, without notification
       $this->input = $this->addFiles($this->input, ['force_update' => true]);
 
-      $donotif = !isset($this->input['_disablenotif']) && $CFG_GLPI["use_mailing"];
+      $donotif = !isset($this->input['_disablenotif']) && $CFG_GLPI["use_notifications"];
 
       $this->input["_job"]->updateDateMod($this->input["tickets_id"], false,
                                           $this->input["users_id"]);
