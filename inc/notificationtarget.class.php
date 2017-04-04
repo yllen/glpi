@@ -857,19 +857,23 @@ class NotificationTarget extends CommonDBChild {
     * Allows to add more notification targets
     * Can be overridden in some case (for example Ticket)
     *
-    * @param $event specif event to get additional targets (default '')
-   **/
+    * @param string $event specif event to get additional targets (default '')
+    *
+    * @return void
+    */
    function addAdditionalTargets($event='') {
    }
 
 
    /**
-    * Get addresses by a method not defined in NotificationTarget (specific to an itemtype)
+    * Add targets by a method not defined in NotificationTarget (specific to an itemtype)
     *
-    * @param $data
-    * @param $options
+    * @param array $data    Data
+    * @param array $options Options
+    *
+    * @return void
    **/
-   function getSpecificTargets($data, $options) {
+   function addSpecificTargets($data, $options) {
    }
 
 
@@ -1083,7 +1087,7 @@ class NotificationTarget extends CommonDBChild {
 
                default :
                   //Maybe a target specific to a type
-                  $this->getSpecificTargets($data, $options);
+                  $this->addSpecificTargets($data, $options);
             }
             break;
 
@@ -1104,7 +1108,7 @@ class NotificationTarget extends CommonDBChild {
 
          default :
             //Maybe a target specific to a type
-            $this->getSpecificTargets($data, $options);
+            $this->addSpecificTargets($data, $options);
       }
       // action for target from plugin
       $this->data = $data;
@@ -1573,7 +1577,11 @@ class NotificationTarget extends CommonDBChild {
     * Can be updated by implementing the addAdditionnalTargets() method
     * Can be overwitten (like dbconnection)
     *
-    * @param $entity the entity on which the event is raised
+    * @param integer $entity the entity on which the event is raised
+    *
+    * @deprecated Use NotificationTarget::addNotificationTargets()
+    *
+    * @return void
     */
    function getNotificationTargets($entity) {
       Toolbox::logDebug('getNotificationTargets() method is deprecated');
@@ -1581,17 +1589,17 @@ class NotificationTarget extends CommonDBChild {
    }
 
    /**
-    * Allows to add more notification targets
-    * Can be overridden in some case (for example Ticket)
+    * Add targets by a method not defined in NotificationTarget (specific to an itemtype)
     *
-    * @param $event specif event to get additional targets (default '')
+    * @param array $data    Data
+    * @param array $options Options
     *
-    * @deprecated Use NotificationTarget::addAdditionalTargets()
+    * @deprecated Use NotificationTarget::addSpecificTargets()
     *
     * @return void
    **/
-   function getAdditionalTargets($event='') {
-      Toolbox::logDebug('getAdditionalTargets() method is deprecated');
+   function getSpecificTargets($data, $options) {
+      Toolbox::logDebug('getSpecificTargets() method is deprecated');
+      $this->addSpecificTargets($data, $options);
    }
-
 }

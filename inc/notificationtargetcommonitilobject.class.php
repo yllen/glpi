@@ -79,9 +79,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
    /**
     * Add linked users to the notified users list
     *
-    * @param $type type of linked users
-   **/
-   function getLinkedUserByType($type) {
+    * @param integer $type type of linked users
+    *
+    * @return void
+    */
+   function addLinkedUserByType($type) {
       global $DB, $CFG_GLPI;
 
       $userlinktable = getTableForItemType($this->obj->userlinkclass);
@@ -149,9 +151,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
    /**
     * Add linked group to the notified user list
     *
-    * @param $type type of linked groups
-   **/
-   function getLinkedGroupByType($type) {
+    * @param integer $type type of linked groups
+    *
+    * @return void
+    */
+   function addLinkedGroupByType($type) {
       global $DB;
 
       $grouplinktable = getTableForItemType($this->obj->grouplinkclass);
@@ -176,9 +180,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
     *
     * @since version 0.84.1
     *
-    * @param $type type of linked groups
-   **/
-   function getLinkedGroupWithoutSupervisorByType($type) {
+    * @param integer $type type of linked groups
+    *
+    * @return void
+    */
+   function addLinkedGroupWithoutSupervisorByType($type) {
       global $DB;
 
       $grouplinktable = getTableForItemType($this->obj->grouplinkclass);
@@ -199,9 +205,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
    /**
     * Add linked group supervisor to the notified user list
     *
-    * @param $type type of linked groups
-   **/
-   function getLinkedGroupSupervisorByType($type) {
+    * @param integer $type type of linked groups
+    *
+    * @return void
+    */
+   function addLinkedGroupSupervisorByType($type) {
       global $DB;
 
       $grouplinktable = getTableForItemType($this->obj->grouplinkclass);
@@ -223,11 +231,16 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
     * Get the email of the item's user : Overloaded manual address used
    **/
    function addItemAuthor() {
-      $this->getLinkedUserByType(CommonITILActor::REQUESTER);
+      $this->addLinkedUserByType(CommonITILActor::REQUESTER);
    }
 
 
-   function getOldAssignTechnicianAddress() {
+   /**
+    * Add previous technician in charge (before reassign)
+    *
+    * @return void
+    */
+   function addOldAssignTechnician() {
       global $CFG_GLPI;
 
       if (isset($this->options['_old_user'])
@@ -266,9 +279,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get recipient
-   **/
-   function getRecipientAddress() {
+    * Add recipient
+    *
+    * @return void
+    */
+   function addRecipientAddress() {
       return $this->addUserByField("users_id_recipient");
    }
 
@@ -276,9 +291,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
    /**
     * Get supplier related to the ITIL object
     *
-    * @param $sendprivate  (false by default)
-   **/
-   function getSupplierAddress($sendprivate=false) {
+    * @param boolean $sendprivate (false by default)
+    *
+    * @return void
+    */
+   function adSupplier($sendprivate=false) {
       global $DB;
 
       if (!$sendprivate
@@ -303,11 +320,13 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get approuver related to the ITIL object validation
+    * Get Add approver related to the ITIL object validation
     *
     * @param $options array
-   **/
-   function getValidationApproverAddress($options=array()) {
+    *
+    * @return void
+    */
+   function addValidationApprover($options=array()) {
       global $DB;
 
       if (isset($options['validation_id'])) {
@@ -331,11 +350,13 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
    }
 
    /**
-    * Get requester related to the ITIL object validation
+    * Add requester related to the ITIL object validation
     *
-    * @param $options array
+    * @param array $options Options
+    *
+    * @return void
    **/
-   function getValidationRequesterAddress($options=array()) {
+   function addValidationRequester($options=array()) {
       global $DB;
 
       if (isset($options['validation_id'])) {
@@ -360,11 +381,13 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get author related to the followup
+    * Add author related to the followup
     *
-    * @param $options array
-   **/
-   function getFollowupAuthor($options=array()) {
+    * @param array $options Options
+    *
+    * @return void
+    */
+   function addFollowupAuthor($options=array()) {
       global $DB;
 
       if (isset($options['followup_id'])) {
@@ -389,11 +412,13 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get author related to the task
+    * Add task author
     *
-    * @param $options array
-   **/
-   function getTaskAuthor($options=array()) {
+    * @param array $options Options
+    *
+    * @return void
+    */
+   function addTaskAuthor($options=array()) {
       global $DB;
 
             // In case of delete task pass user id
@@ -431,11 +456,13 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get author related to the task
+    * Add user assigned to task
     *
-    * @param $options array
-   **/
-   function getTaskAssignUser($options=array()) {
+    * @param array $options Options
+    *
+    * @return void
+    */
+   function addTaskAssignUser($options=array()) {
       global $DB;
 
       // In case of delete task pass user id
@@ -474,13 +501,15 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get group assigned to the task
+    * Add group assigned to the task
     *
     * @since version 9.1
     *
-    * @param $options array
-    **/
-   function getTaskAssignGroup($options=array()) {
+    * @param array $options Options
+    *
+    * @return void
+    */
+   function addTaskAssignGroup($options=array()) {
       global $DB;
 
       // In case of delete task pass user id
@@ -499,11 +528,13 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get additionnals targets for ITIL objects
+    * Add additionnals targets for ITIL objects
     *
-    * @param $event  (default '')
+    * @param string $event specif event to get additional targets (default '')
+    *
+    * @return void
    **/
-   function getAdditionalTargets($event='') {
+   function addAdditionalTargets($event='') {
 
       if ($event=='update') {
          $this->addTarget(Notification::OLD_TECH_IN_CHARGE,
@@ -561,10 +592,12 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
    /**
     * Get specifics targets for ITIL objects
     *
-    * @param $data      array
-    * @param $options   array
+    * @param array $data    Data
+    * @param array $options Options
+    *
+    * @return void
    **/
-   function getSpecificTargets($data, $options) {
+   function addSpecificTargets($data, $options) {
 
       //Look for all targets whose type is Notification::ITEM_USER
       switch ($data['type']) {
@@ -572,100 +605,100 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
             switch ($data['items_id']) {
                case Notification::ASSIGN_TECH :
-                  $this->getLinkedUserByType(CommonITILActor::ASSIGN);
+                  $this->addLinkedUserByType(CommonITILActor::ASSIGN);
                   break;
 
                //Send to the supervisor of group in charge of the ITIL object
                case Notification::SUPERVISOR_ASSIGN_GROUP :
-                  $this->getLinkedGroupSupervisorByType(CommonITILActor::ASSIGN);
+                  $this->addLinkedGroupSupervisorByType(CommonITILActor::ASSIGN);
                   break;
 
                //Notification to the group in charge of the ITIL object without supervisor
                case Notification::ASSIGN_GROUP_WITHOUT_SUPERVISOR :
-                  $this->getLinkedGroupWithoutSupervisorByType(CommonITILActor::ASSIGN);
+                  $this->addLinkedGroupWithoutSupervisorByType(CommonITILActor::ASSIGN);
                   break;
 
                //Send to the user who's got the issue
                case Notification::RECIPIENT :
-                  $this->getRecipientAddress();
+                  $this->addRecipientAddress();
                   break;
 
                //Send to the supervisor of the requester's group
                case Notification::SUPERVISOR_REQUESTER_GROUP :
-                  $this->getLinkedGroupSupervisorByType(CommonITILActor::REQUESTER);
+                  $this->addLinkedGroupSupervisorByType(CommonITILActor::REQUESTER);
                   break;
 
                //Send to the technician previously in charge of the ITIL object (before reassignation)
                case Notification::OLD_TECH_IN_CHARGE :
-                  $this->getOldAssignTechnicianAddress();
+                  $this->addOldAssignTechnician();
                   break;
 
                //Assign to a supplier
                case Notification::SUPPLIER :
-                  $this->getSupplierAddress($this->options['sendprivate']);
+                  $this->addSupplier($this->options['sendprivate']);
                   break;
 
                case Notification::REQUESTER_GROUP :
-                  $this->getLinkedGroupByType(CommonITILActor::REQUESTER);
+                  $this->addLinkedGroupByType(CommonITILActor::REQUESTER);
                   break;
 
                //Notification to the requester group without supervisor
                case Notification::REQUESTER_GROUP_WITHOUT_SUPERVISOR :
-                  $this->getLinkedGroupWithoutSupervisorByType(CommonITILActor::REQUESTER);
+                  $this->addLinkedGroupWithoutSupervisorByType(CommonITILActor::REQUESTER);
                   break;
 
                case Notification::ASSIGN_GROUP :
-                  $this->getLinkedGroupByType(CommonITILActor::ASSIGN);
+                  $this->addLinkedGroupByType(CommonITILActor::ASSIGN);
                   break;
 
                //Send to the ITIL object validation approver
                case Notification::VALIDATION_APPROVER :
-                  $this->getValidationApproverAddress($options);
+                  $this->addValidationApprover($options);
                   break;
 
                //Send to the ITIL object validation requester
                case Notification::VALIDATION_REQUESTER :
-                  $this->getValidationRequesterAddress($options);
+                  $this->addValidationRequester($options);
                   break;
 
                //Send to the ITIL object followup author
                case Notification::FOLLOWUP_AUTHOR :
-                  $this->getFollowupAuthor($options);
+                  $this->addFollowupAuthor($options);
                   break;
 
                //Send to the ITIL object followup author
                case Notification::TASK_AUTHOR :
-                  $this->getTaskAuthor($options);
+                  $this->addTaskAuthor($options);
                   break;
 
                //Send to the ITIL object followup author
                case Notification::TASK_ASSIGN_TECH :
-                  $this->getTaskAssignUser($options);
+                  $this->addTaskAssignUser($options);
                   break;
 
                //Send to the ITIL object task group assigned
                case Notification::TASK_ASSIGN_GROUP :
-                  $this->getTaskAssignGroup($options);
+                  $this->addTaskAssignGroup($options);
                   break;
 
                //Notification to the ITIL object's observer group
                case Notification::OBSERVER_GROUP :
-                  $this->getLinkedGroupByType(CommonITILActor::OBSERVER);
+                  $this->addLinkedGroupByType(CommonITILActor::OBSERVER);
                   break;
 
                //Notification to the ITIL object's observer user
                case Notification::OBSERVER :
-                  $this->getLinkedUserByType(CommonITILActor::OBSERVER);
+                  $this->addLinkedUserByType(CommonITILActor::OBSERVER);
                   break;
 
                //Notification to the supervisor of the ITIL object's observer group
                case Notification::SUPERVISOR_OBSERVER_GROUP :
-                  $this->getLinkedGroupSupervisorByType(CommonITILActor::OBSERVER);
+                  $this->addLinkedGroupSupervisorByType(CommonITILActor::OBSERVER);
                   break;
 
                //Notification to the observer group without supervisor
                case Notification::OBSERVER_GROUP_WITHOUT_SUPERVISOR :
-                  $this->getLinkedGroupWithoutSupervisorByType(CommonITILActor::OBSERVER);
+                  $this->addLinkedGroupWithoutSupervisorByType(CommonITILActor::OBSERVER);
                   break;
 
             }
@@ -1355,5 +1388,184 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                                    'lang'           => false,
                                    'allowed_values' => $label['allowed_values']));
       }
+   }
+
+   /**
+    * Add linked users to the notified users list
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addLinkedUserByType()
+    *
+    * @param integer $type type of linked users
+    *
+    * @return void
+   **/
+   function getLinkedUserByType($type) {
+      Toolbox::logDebug('getLinkedUserByType() method is deprecated');
+      $this->addLinkedUserByType($type);
+   }
+
+   /**
+    * Add linked group to the notified user list
+    *
+    * @param integer $type type of linked groups
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addLinkedGroupByType()
+    *
+    * @return void
+   **/
+   function getLinkedGroupByType($type) {
+      Toolbox::logDebug('getLinkedGroupByType() method is deprecated');
+      $this->addLinkedGroupByType();
+   }
+
+   /**
+    * Add linked group without supervisor to the notified user list
+    *
+    * @since version 0.84.1
+    *
+    * @param integer $type type of linked groups
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addLinkedGroupWithoutSupervisorByType()
+    *
+    * @return void
+    */
+   function getLinkedGroupWithoutSupervisorByType($type) {
+      Toolbox::logDebug('getLinkedGroupWithoutSupervisorByType() method is deprecated');
+      $this->addLinkedGroupWithoutSupervisorByType($type);
+   }
+
+
+   /**
+    * Add linked group supervisor to the notified user list
+    *
+    * @param integer $type type of linked groups
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addLinkedGroupSupervisorByType()
+    *
+    * @return void
+    */
+   function getLinkedGroupSupervisorByType($type) {
+      Toolbox::logDebug('getLinkedGroupSupervisorByType() method is deprecated');
+      $this->addLinkedGroupSupervisorByType($type);
+   }
+
+   /**
+    * Add recipient
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addRecipientAddress()
+    *
+    * @return void
+    */
+   function getRecipientAddress() {
+      Toolbox::logDebug('getRecipientAddress() method is deprecated');
+      return $this->addRecipientAddress();
+   }
+
+   /**
+    * @deprecated Use NotificationTargetCommonITILObject::addOldAssignTechnician()
+    *
+    * @return void
+    */
+   function getOldAssignTechnicianAddress() {
+      Toolbox::logDebug('getOldAssignTechnicianAddress() method is deprecated');
+      $this->addOldAssignTechnician();
+   }
+
+   /**
+    * Get supplier related to the ITIL object
+    *
+    * @param boolean $sendprivate (false by default)
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addSupplier()
+    *
+    * @return void
+   **/
+   function getSupplierAddress($sendprivate=false) {
+      Toolbox::logDebug('getSupplierAddress() method is deprecated');
+      $this->addSupplier($sendprivate);
+   }
+
+   /**
+    * Get approuver related to the ITIL object validation
+    *
+    * @param array $options Options
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addValidationApprover()
+    *
+    * @return void
+   **/
+   function getValidationApproverAddress($options=array()) {
+      Toolbox::logDebug('getValidationApproverAddress() method is deprecated');
+      $this->addValidationApprover($options);
+   }
+
+   /**
+    * Add requester related to the ITIL object validation
+    *
+    * @param array $options Options
+    *
+    * @return void
+   **/
+   function getValidationRequesterAddress($options=array()) {
+      Toolbox::logDebug('getValidationRequesterAddress() method is deprecated');
+      $this->addValidationRequester($options);
+   }
+
+   /**
+    * Add author related to the followup
+    *
+    * @param array $options Options
+    *
+    * @return void
+    */
+   function getFollowupAuthor($options=array()) {
+      Toolbox::logDebug('getFollowupAuthor() method is deprecated');
+      $this->addFollowupAuthor($options);
+   }
+
+   /**
+    * Add task author
+    *
+    * @param array $options Options
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addTaskAuthor()
+    *
+    * @return void
+    */
+   function getTaskAuthor($options=array()) {
+      Toolbox::logDebug('getTaskAuthor() method is deprecated');
+      $this->addTaskAuthor($options);
+   }
+
+
+   /**
+    * Add user assigned to task
+    *
+    * @param array $options Options
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addTaskAssignUser()
+    *
+    * @return void
+    */
+   function getTaskAssignUser($options=array()) {
+      Toolbox::logDebug('getTaskAssignUser() method is deprecated');
+      $this->addTaskAssignUser($options);
+   }
+
+
+   /**
+    * Add group assigned to the task
+    *
+    * @since version 9.1
+    *
+    * @param array $options Options
+    *
+    * @deprecated Use NotificationTargetCommonITILObject::addTaskAssignGroup()
+    *
+    * @return void
+    */
+   function getTaskAssignGroup($options=array()) {
+      Toolbox::logDebug('getTaskAssignGroup() method is deprecated');
+      $this->addTaskAssignGroup($options);
    }
 }
