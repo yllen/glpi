@@ -675,7 +675,7 @@ class NotificationTargetTicket extends NotificationTargetCommonITILObject {
    static function isAuthorMailingActivatedForHelpdesk() {
       global $DB,$CFG_GLPI;
 
-      if ($CFG_GLPI['use_mailing']) {
+      if ($CFG_GLPI['notifications_mailing']) {
          $query = "SELECT COUNT(`glpi_notifications`.`id`)
                    FROM `glpi_notifications`
                    INNER JOIN `glpi_notificationtargets`

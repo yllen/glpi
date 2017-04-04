@@ -1666,7 +1666,7 @@ class MailCollector  extends CommonDBTM {
    static function cronMailgateError($task) {
       global $DB, $CFG_GLPI;
 
-      if (!$CFG_GLPI["use_mailing"]) {
+      if (!$CFG_GLPI["use_notifications"]) {
          return 0;
       }
       $cron_status   = 0;

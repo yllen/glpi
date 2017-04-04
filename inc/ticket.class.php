@@ -526,7 +526,7 @@ class Ticket extends CommonITILObject {
    function pre_deleteItem() {
       global $CFG_GLPI;
 
-      if (!isset($this->input['_disablenotif']) && $CFG_GLPI['use_mailing']) {
+      if (!isset($this->input['_disablenotif']) && $CFG_GLPI['use_notifications']) {
          NotificationEvent::raiseEvent('delete', $this);
       }
       return true;
@@ -1349,7 +1349,7 @@ class Ticket extends CommonITILObject {
          $donotif = false;
       }
 
-      if ($donotif && $CFG_GLPI["use_mailing"]) {
+      if ($donotif && $CFG_GLPI["use_notifications"]) {
          $mailtype = "update";
 
          if (isset($this->input["status"])
@@ -1842,7 +1842,7 @@ class Ticket extends CommonITILObject {
       $this->manageValidationAdd($this->input);
 
       // Processing Email
-      if (!isset($this->input['_disablenotif']) && $CFG_GLPI["use_mailing"]) {
+      if (!isset($this->input['_disablenotif']) && $CFG_GLPI["use_notifications"]) {
          // Clean reload of the ticket
          $this->getFromDB($this->fields['id']);
 
@@ -5768,7 +5768,7 @@ class Ticket extends CommonITILObject {
    static function cronAlertNotClosed($task) {
       global $DB, $CFG_GLPI;
 
-      if (!$CFG_GLPI["use_mailing"]) {
+      if (!$CFG_GLPI["use_notifications"]) {
          return 0;
       }
       // Recherche des entit??s

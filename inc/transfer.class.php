@@ -125,7 +125,11 @@ class Transfer extends CommonDBTM {
       global $CFG_GLPI;
 
       // unset mailing
-      $CFG_GLPI["use_mailing"] = 0;
+      $CFG_GLPI["use_notifications"] = 0;
+      $CFG_GLPI['notifications_mailing'] = 0;
+      $CFG_GLPI['notifications_ajax'] = 0;
+      $CFG_GLPI['notifications_websockets'] = 0;
+      $CFG_GLPI['notifications_sms'] = 0;
 
       $this->options = array('keep_ticket'         => 0,
                              'keep_networklink'    => 0,
