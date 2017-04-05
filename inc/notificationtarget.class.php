@@ -1615,7 +1615,7 @@ class NotificationTarget extends CommonDBChild {
 
    public function __set($name, $value) {
       if ($name == 'datas') {
-         Toolbox::logDebug('"datas" property has been renamed to "data"' . get_called_class() . '()!');
+         Toolbox::logDebug('"datas" property has been renamed to "data" (' . get_called_class() . ')!');
          $this->data = $value;
       } else {
          $this->$name = $value;
@@ -1624,7 +1624,7 @@ class NotificationTarget extends CommonDBChild {
 
    public function &__get($name) {
       if ($name == 'datas') {
-         Toolbox::logDebug('"datas" property has been renamed to "data"' . get_called_class() . '()!');
+         Toolbox::logDebug('"datas" property has been renamed to "data" (' . get_called_class() . ')!');
          return $this->data;
       } else {
          return $this->$name;
