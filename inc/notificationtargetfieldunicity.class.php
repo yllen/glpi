@@ -47,13 +47,7 @@ class NotificationTargetFieldUnicity extends NotificationTarget {
    }
 
 
-   /**
-    * Get all data needed for template processing
-    *
-    * @param $event
-    * @param $options   array
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
 
       //User who tries to add or update an item in DB
       $action = ($options['action_user'] ?__('Add the item') :__('Update the item'));

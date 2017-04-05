@@ -47,7 +47,9 @@ class NotificationTargetProjectTask extends NotificationTarget {
 
 
    /**
-    *Get events related to tickets
+    * Get events related to tickets
+    *
+    * @return array
    **/
    function getEvents() {
 
@@ -59,10 +61,7 @@ class NotificationTargetProjectTask extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::getAdditionalTargets()
-   **/
-   function getAdditionalTargets($event='') {
+   function addAdditionalTargets($event='') {
 
       $this->addTarget(Notification::TEAM_USER, __('Project team user'));
       $this->addTarget(Notification::TEAM_GROUP, __('Project team group'));
@@ -74,9 +73,6 @@ class NotificationTargetProjectTask extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::addSpecificTargets()
-   **/
    function addSpecificTargets($data, $options) {
 
       //Look for all targets whose type is Notification::ITEM_USER
@@ -86,32 +82,32 @@ class NotificationTargetProjectTask extends NotificationTarget {
             switch ($data['items_id']) {
                //Send to the users in project team
                case Notification::TEAM_USER :
-                  $this->getTeamUsers();
+                  $this->addTeamUsers();
                   break;
 
                //Send to the groups in project team
                case Notification::TEAM_GROUP :
-                  $this->getTeamGroups(0);
+                  $this->addTeamGroups(0);
                   break;
 
                //Send to the groups supervisors in project team
                case Notification::TEAM_GROUP_SUPERVISOR :
-                  $this->getTeamGroups(1);
+                  $this->addTeamGroups(1);
                   break;
 
                //Send to the groups without supervisors in project team
                case Notification::TEAM_GROUP_WITHOUT_SUPERVISOR :
-                  $this->getTeamGroups(2);
+                  $this->addTeamGroups(2);
                   break;
 
                //Send to the contacts in project team
                case Notification::TEAM_CONTACT :
-                  $this->getTeamContacts();
+                  $this->addTeamContacts();
                   break;
 
                   //Send to the suppliers in project team
                case Notification::TEAM_SUPPLIER :
-                  $this->getTeamSuppliers();
+                  $this->addTeamSuppliers();
                   break;
 
             }
@@ -121,8 +117,10 @@ class NotificationTargetProjectTask extends NotificationTarget {
 
    /**
     * Add team users to the notified user list
+    *
+    * @return void
    **/
-   function getTeamUsers() {
+   function addTeamUsers() {
       global $DB;
 
       $query = "SELECT `items_id`
@@ -142,9 +140,11 @@ class NotificationTargetProjectTask extends NotificationTarget {
    /**
     * Add team groups to the notified user list
     *
-    * @param $manager      0 all users, 1 only supervisors, 2 all users without supervisors
+    * @param integer $manager 0 all users, 1 only supervisors, 2 all users without supervisors
+    *
+    * @return void
    **/
-   function getTeamGroups($manager) {
+   function addTeamGroups($manager) {
       global $DB;
 
       $query = "SELECT `items_id`
@@ -159,8 +159,10 @@ class NotificationTargetProjectTask extends NotificationTarget {
 
    /**
     * Add team contacts to the notified user list
+    *
+    * @return void
    **/
-   function getTeamContacts() {
+   function addTeamContacts() {
       global $DB, $CFG_GLPI;
 
       $query = "SELECT `items_id`
@@ -181,8 +183,10 @@ class NotificationTargetProjectTask extends NotificationTarget {
 
    /**
     * Add team suppliers to the notified user list
+    *
+    * @return void
    **/
-   function getTeamSuppliers() {
+   function addTeamSuppliers() {
       global $DB, $CFG_GLPI;
 
       $query = "SELECT `items_id`
@@ -201,10 +205,7 @@ class NotificationTargetProjectTask extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::getDatasForTemplate()
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
       global $CFG_GLPI, $DB;
 
       //----------- Reservation infos -------------- //
@@ -582,4 +583,56 @@ class NotificationTargetProjectTask extends NotificationTarget {
       asort($this->tag_descriptions);
    }
 
+   /**
+    * Add team users to the notified user list
+    *
+    * @deprecated Use NotificationTargetProjectTask::addTeamUsers()
+    *
+    * @return void
+   **/
+   function getTeamUsers() {
+      Toolbox::logDebug('getTeamUsers() method is deprecated');
+      $this->addTeamUsers();
+   }
+
+
+   /**
+    * Add team groups to the notified user list
+    *
+    * @param integer $manager 0 all users, 1 only supervisors, 2 all users without supervisors
+    *
+    * @deprecated Use NotificationTargetProjectTask::addTeamGroups()
+    *
+    * @return void
+   **/
+   function getTeamGroups($manager) {
+      Toolbox::logDebug('getTeamGroups() method is deprecated');
+      $this->addTeamGroups($manager);
+   }
+
+
+   /**
+    * Add team contacts to the notified user list
+    *
+    * @deprecated Use NotificationTargetProjectTask::addTeamContacts()
+    *
+    * @return void
+   **/
+   function getTeamContacts() {
+      Toolbox::logDebug('getTeamContacts() method is deprecated');
+      $this->addTeamContacts();
+   }
+
+
+   /**
+    * Add team suppliers to the notified user list
+    *
+    * @deprecated Use NotificationTargetProjectTask::addTeamSuppliers()
+    *
+    * @return void
+   **/
+   function getTeamSuppliers() {
+      Toolbox::logDebug('getTeamContacts() method is deprecated');
+      $this->addTeamSuppliers();
+   }
 }

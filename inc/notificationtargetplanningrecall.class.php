@@ -94,10 +94,7 @@ class NotificationTargetPlanningRecall extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::getDatasForTemplate()
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
 
       $events                             = $this->getAllEvents();
       $target_object                      = reset($this->target_object);;

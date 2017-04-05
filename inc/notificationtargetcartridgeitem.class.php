@@ -51,13 +51,8 @@ class NotificationTargetCartridgeItem extends NotificationTarget {
       return array('alert' => __('Cartridges alarm'));
    }
 
-   /**
-    * Get all data needed for template processing
-    *
-    * @param $event
-    * @param $options   array
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+
+   function addtDataForTemplate($event, $options=array()) {
 
       $events = $this->getAllEvents();
 

@@ -81,13 +81,7 @@ class NotificationTargetUser extends NotificationTarget {
    }
 
 
-   /**
-    * Get all data needed for template processing
-    *
-    * @param $event
-    * @param $options   array
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
       global $CFG_GLPI;
 
       $events = $this->getEvents();

@@ -51,13 +51,7 @@ class NotificationTargetMailCollector extends NotificationTarget {
    }
 
 
-   /**
-    * Get all data needed for template processing
-    *
-    * @param $event
-    * @param $options   array
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
 
       $events                                  = $this->getEvents();
       $this->datas['##mailcollector.action##'] = $events[$event];

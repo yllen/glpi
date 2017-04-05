@@ -46,7 +46,6 @@ class NotificationTargetReservation extends NotificationTarget {
 
 
    function getEvents() {
-
       return array('new'    => __('New reservation'),
                    'update' => __('Update of a reservation'),
                    'delete' => __('Deletion of a reservation'),
@@ -54,11 +53,7 @@ class NotificationTargetReservation extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::getAdditionalTargets()
-   **/
-   function getAdditionalTargets($event='') {
-
+   function addAdditionalTargets($event='') {
       if ($event != 'alert') {
          $this->addTarget(Notification::ITEM_TECH_IN_CHARGE,
                           __('Technician in charge of the hardware'));
@@ -73,10 +68,7 @@ class NotificationTargetReservation extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::getDatasForTemplate()
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
       //----------- Reservation infos -------------- //
       $events                                  = $this->getAllEvents();
 
@@ -203,7 +195,7 @@ class NotificationTargetReservation extends NotificationTarget {
    /**
     * Get item associated with the object on which the event was raised
     *
-    * @param $event  (default '')
+    * @param string $event (default '')
     *
     * @return the object associated with the itemtype
    **/

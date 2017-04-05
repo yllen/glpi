@@ -59,10 +59,7 @@ class NotificationTargetProject extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::getAdditionalTargets()
-   **/
-   function getAdditionalTargets($event='') {
+   function addAdditionalTargets($event='') {
 
       $this->addTarget(Notification::MANAGER_USER, __('Manager'));
       $this->addTarget(Notification::MANAGER_GROUP, __('Manager group'));
@@ -225,10 +222,7 @@ class NotificationTargetProject extends NotificationTarget {
    }
 
 
-   /**
-    * @see NotificationTarget::getDatasForTemplate()
-   **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
       global $CFG_GLPI, $DB;
 
       //----------- Reservation infos -------------- //

@@ -1122,10 +1122,12 @@ class NotificationTarget extends CommonDBChild {
     * Provides minimum information for alerts
     * Can be overridden by each NotificationTartget class if needed
     *
-    * @param $event
-    * @param $options   array
+    * @param string $event   Event name
+    * @param array  $options Options
+    *
+    * @return void
    **/
-   function getDatasForTemplate($event, $options=array()) {
+   function addDataForTemplate($event, $options=array()) {
    }
 
 
@@ -1165,7 +1167,13 @@ class NotificationTarget extends CommonDBChild {
                                 'value' => $CFG_GLPI['root_doc'],
                                 'label' => __('URL of the application')));
 
-      $this->getDatasForTemplate($event, $options);
+      $this->addDataForTemplate($event, $options);
+
+      if (method_exists($this, 'getDatasForTemplate')) {
+         Toolbox::logDebug('getDatasForTemplate() method is deprecated (' . get_called_class() . ')');
+         $this->getDatasForTemplate($event, $options);
+      }
+
       Plugin::doHook('item_get_datas', $this);
 
       return $this->datas;
