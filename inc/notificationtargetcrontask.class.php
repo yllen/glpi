@@ -53,7 +53,7 @@ class NotificationTargetCrontask extends NotificationTarget {
    function addDataForTemplate($event, $options=array()) {
 
       $events                             = $this->getAllEvents();
-      $this->datas['##crontask.action##'] = $events[$event];
+      $this->data['##crontask.action##'] = $events[$event];
 
       $cron                               = new Crontask();
       foreach ($options['items'] as $id => $crontask) {
@@ -68,13 +68,13 @@ class NotificationTargetCrontask extends NotificationTarget {
          $tmp['##crontask.description##'] = $cron->getDescription($id);
          $tmp['##crontask.url##']         = $this->formatURL($options['additionnaloption']['usertype'],
                                                              "Crontask_".$id);
-         $this->datas['crontasks'][] = $tmp;
+         $this->data['crontasks'][] = $tmp;
       }
 
       $this->getTags();
       foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
-         if (!isset($this->datas[$tag])) {
-            $this->datas[$tag] = $values['label'];
+         if (!isset($this->data[$tag])) {
+            $this->data[$tag] = $values['label'];
          }
       }
    }

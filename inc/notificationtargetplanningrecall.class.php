@@ -99,75 +99,75 @@ class NotificationTargetPlanningRecall extends NotificationTarget {
       $events                             = $this->getAllEvents();
       $target_object                      = reset($this->target_object);;
 
-      $this->datas['##recall.action##']   = $events[$event];
-      $this->datas['##recall.itemtype##'] = $target_object->getTypeName(1);
-      $this->datas['##recall.item.URL##'] = '';
+      $this->data['##recall.action##']   = $events[$event];
+      $this->data['##recall.itemtype##'] = $target_object->getTypeName(1);
+      $this->data['##recall.item.URL##'] = '';
       // For task show parent link
       if (($target_object instanceof CommonDBChild)
           || ($target_object instanceof CommonITILTask)) {
 
          $item2   = $target_object->getItem();
-         $this->datas['##recall.item.url##']
+         $this->data['##recall.item.url##']
                   = $this->formatURL($options['additionnaloption']['usertype'],
                                      $item2->getType()."_".$item2->getID());
 
       } else {
-         $this->datas['##recall.item.url##']
+         $this->data['##recall.item.url##']
                   = $this->formatURL($options['additionnaloption']['usertype'],
                                      $target_object->getType().
                                           "_".$target_object->getID());
       }
-      $this->datas['##recall.item.name##'] = '';
+      $this->data['##recall.item.name##'] = '';
 
       if ($target_object->isField('name')) {
-         $this->datas['##recall.item.name##'] = $target_object->getField('name');
+         $this->data['##recall.item.name##'] = $target_object->getField('name');
       } else {
          if (($item2 = $target_object->getItem())
              && $item2->isField('name')) {
-            $this->datas['##recall.item.name##'] = $item2->getField('name');
+            $this->data['##recall.item.name##'] = $item2->getField('name');
          }
       }
 
-      $this->datas['##recall.item.content##'] = '';
+      $this->data['##recall.item.content##'] = '';
       if ($target_object->isField('content')) {
-         $this->datas['##recall.item.content##'] = $target_object->getField('content');
+         $this->data['##recall.item.content##'] = $target_object->getField('content');
       }
       if ($target_object->isField('text')) {
-         $this->datas['##recall.item.content##'] = $target_object->getField('text');
+         $this->data['##recall.item.content##'] = $target_object->getField('text');
       }
-      $this->datas['##recall.item.private##'] = '';
+      $this->data['##recall.item.private##'] = '';
       if ($target_object->isField('is_private')) {
-         $this->datas['##recall.item.private##']
+         $this->data['##recall.item.private##']
                      = Dropdown::getYesNo($target_object->getField('is_private'));
       }
 
-      $this->datas['##recall.item.date_mod##'] = '';
+      $this->data['##recall.item.date_mod##'] = '';
       if ($target_object->isField('date_mod')) {
-         $this->datas['##recall.item.date_mod##']
+         $this->data['##recall.item.date_mod##']
                      = Html::convDateTime($target_object->getField('date_mod'));
       }
 
-      $this->datas['##recall.item.user##'] = '';
+      $this->data['##recall.item.user##'] = '';
       $user_tmp                            = new User();
       if ($user_tmp->getFromDB($target_object->getField('users_id'))) {
-         $this->datas['##recall.item.user##'] = $user_tmp->getName();
+         $this->data['##recall.item.user##'] = $user_tmp->getName();
       }
 
-      $this->datas['##recall.planning.state##'] = '';
+      $this->data['##recall.planning.state##'] = '';
       if ($target_object->isField('state')) {
-         $this->datas['##recall.planning.state##']
+         $this->data['##recall.planning.state##']
                      = Planning::getState($target_object->getField('state'));
       }
 
-      $this->datas['##recall.planning.begin##']
+      $this->data['##recall.planning.begin##']
                   = Html::convDateTime($target_object->getField('begin'));
-      $this->datas['##recall.planning.end##']
+      $this->data['##recall.planning.end##']
                   = Html::convDateTime($target_object->getField('end'));
 
       $this->getTags();
       foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
-         if (!isset($this->datas[$tag])) {
-            $this->datas[$tag] = $values['label'];
+         if (!isset($this->data[$tag])) {
+            $this->data[$tag] = $values['label'];
          }
       }
    }

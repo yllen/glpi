@@ -54,7 +54,7 @@ class NotificationTargetMailCollector extends NotificationTarget {
    function addDataForTemplate($event, $options=array()) {
 
       $events                                  = $this->getEvents();
-      $this->datas['##mailcollector.action##'] = $events[$event];
+      $this->data['##mailcollector.action##'] = $events[$event];
 
       foreach ($options['items'] as $id => $mailcollector) {
          $tmp                             = array();
@@ -62,13 +62,13 @@ class NotificationTargetMailCollector extends NotificationTarget {
          $tmp['##mailcollector.errors##'] = $mailcollector['errors'];
          $tmp['##mailcollector.url##']    = $this->formatURL($options['additionnaloption']['usertype'],
                                                              "MailCollector_".$id);
-         $this->datas['mailcollectors'][] = $tmp;
+         $this->data['mailcollectors'][] = $tmp;
       }
 
       $this->getTags();
       foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
-         if (!isset($this->datas[$tag])) {
-            $this->datas[$tag] = $values['label'];
+         if (!isset($this->data[$tag])) {
+            $this->data[$tag] = $values['label'];
          }
       }
    }

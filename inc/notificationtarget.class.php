@@ -1164,7 +1164,7 @@ class NotificationTarget extends CommonDBChild {
    function &getForTemplate($event, $options) {
       global $CFG_GLPI;
 
-      $this->datas = array();
+      $this->data = array();
       $this->addTagToList(array('tag'   => 'glpi.url',
                                 'value' => $CFG_GLPI['root_doc'],
                                 'label' => __('URL of the application')));
@@ -1178,7 +1178,7 @@ class NotificationTarget extends CommonDBChild {
 
       Plugin::doHook('item_get_datas', $this);
 
-      return $this->datas;
+      return $this->data;
    }
 
 

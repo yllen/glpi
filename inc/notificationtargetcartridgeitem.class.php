@@ -56,9 +56,9 @@ class NotificationTargetCartridgeItem extends NotificationTarget {
 
       $events = $this->getAllEvents();
 
-      $this->datas['##cartridge.entity##'] = Dropdown::getDropdownName('glpi_entities',
+      $this->data['##cartridge.entity##'] = Dropdown::getDropdownName('glpi_entities',
                                                                        $options['entities_id']);
-      $this->datas['##cartridge.action##'] = $events[$event];
+      $this->data['##cartridge.action##'] = $events[$event];
 
       foreach ($options['items'] as $id => $cartridge) {
          $tmp                            = array();
@@ -67,13 +67,13 @@ class NotificationTargetCartridgeItem extends NotificationTarget {
          $tmp['##cartridge.remaining##'] = cartridge::getUnusedNumber($id);
          $tmp['##cartridge.url##']       = $this->formatURL($options['additionnaloption']['usertype'],
                                                             "CartridgeItem_".$id);
-         $this->datas['cartridges'][] = $tmp;
+         $this->data['cartridges'][] = $tmp;
       }
 
       $this->getTags();
       foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
-         if (!isset($this->datas[$tag])) {
-            $this->datas[$tag] = $values['label'];
+         if (!isset($this->data[$tag])) {
+            $this->data[$tag] = $values['label'];
          }
       }
    }

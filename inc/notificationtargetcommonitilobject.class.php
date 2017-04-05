@@ -714,15 +714,15 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
       // Get datas from ITIL objects
       if ($event != 'alertnotclosed') {
-         $this->datas = $this->getDatasForObject($this->obj, $options);
+         $this->data = $this->getDatasForObject($this->obj, $options);
 
       } else {
          if (isset($options['entities_id'])
              && isset($options['items'])) {
             $entity = new Entity();
             if ($entity->getFromDB($options['entities_id'])) {
-               $this->datas["##$objettype.entity##"]      = $entity->getField('completename');
-               $this->datas["##$objettype.shortentity##"] = $entity->getField('name');
+               $this->data["##$objettype.entity##"]      = $entity->getField('completename');
+               $this->data["##$objettype.shortentity##"] = $entity->getField('name');
             }
             if ($item = getItemForItemtype($objettype)) {
                $objettypes = Toolbox::strtolower(getPlural($objettype));
@@ -730,7 +730,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                foreach ($options['items'] as $object) {
                   $item->getFromDB($object['id']);
                   $tmp = $this->getDatasForObject($item, $options, true);
-                  $this->datas[$objettypes][] = $tmp;
+                  $this->data[$objettypes][] = $tmp;
                }
             }
          }
@@ -738,19 +738,19 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
       if (($event == 'validation')
           && isset($options['validation_status'])) {
-         $this->datas["##$objettype.action##"]
+         $this->data["##$objettype.action##"]
                      //TRANS: %s id of the approval's state
                      = sprintf(__('%1$s - %2$s'), __('Approval'),
                                TicketValidation::getStatus($options['validation_status']));
       } else {
-         $this->datas["##$objettype.action##"] = $events[$event];
+         $this->data["##$objettype.action##"] = $events[$event];
       }
 
       $this->getTags();
 
       foreach ($this->tag_descriptions[parent::TAG_LANGUAGE] as $tag => $values) {
-         if (!isset($this->datas[$tag])) {
-            $this->datas[$tag] = $values['label'];
+         if (!isset($this->data[$tag])) {
+            $this->data[$tag] = $values['label'];
          }
       }
 
