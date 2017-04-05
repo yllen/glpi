@@ -38,10 +38,10 @@ class NotificationTargetTicketTest extends DbTestCase {
    /**
     * @covers NotificationTargetTicket::getTags
     * @covers NotificationTargetCommonITILObject::getTags
-    * @covers NotificationTargetTicket::getDatasForObject
-    * @covers NotificationTargetCommonITILObject::getDatasForObject
+    * @covers NotificationTargetTicket::getDataForObject
+    * @covers NotificationTargetCommonITILObject::getDataForObject
     */
-   public function testgetDatasForObject() {
+   public function testgetDataForObject() {
       global $CFG_GLPI;
 
       $tkt = getItemByTypeName('Ticket', '_ticket01');
@@ -76,7 +76,7 @@ class NotificationTargetTicketTest extends DbTestCase {
       $this->assertEquals($expected, $notiftargetticket->tag_descriptions['tag']['##task.categoryid##']);
 
       // advanced test for ##task.categorycomment## and ##task.categoryid## tags
-      // test of the getDatasForObject for default language en_GB
+      // test of the getDataForObject for default language en_GB
       $taskcat = getItemByTypeName('TaskCategory', '_subcat_1');
       $expected = [
                      [
@@ -97,16 +97,16 @@ class NotificationTargetTicketTest extends DbTestCase {
                      ]
                   ];
 
-      $ret = $notiftargetticket->getDatasForObject( $tkt, array() );
+      $ret = $notiftargetticket->getDataForObject( $tkt, array() );
 
       $this->assertEquals($expected, $ret['tasks']);
 
-      // test of the getDatasForObject for default language fr_FR
+      // test of the getDataForObject for default language fr_FR
       $CFG_GLPI['translate_dropdowns'] = 1;
       $_SESSION["glpilanguage"] = Session::loadLanguage( 'fr_FR' );
       $_SESSION['glpi_dropdowntranslations'] = DropdownTranslation::getAvailableTranslations($_SESSION["glpilanguage"]);
 
-      $ret = $notiftargetticket->getDatasForObject( $tkt, array() );
+      $ret = $notiftargetticket->getDataForObject( $tkt, array() );
 
       $expected = [
                      [

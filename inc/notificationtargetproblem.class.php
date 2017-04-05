@@ -69,25 +69,22 @@ class NotificationTargetProblem extends NotificationTargetCommonITILObject {
    }
 
 
-   /**
-    * @see NotificationTargetCommonITILObject::getDatasForObject()
-   **/
-   function getDatasForObject(CommonDBTM $item, array $options, $simple=false) {
+   function getDataForObject(CommonDBTM $item, array $options, $simple=false) {
       global $CFG_GLPI;
 
-      // Common ITIL datas
-      $datas                         = parent::getDatasForObject($item, $options, $simple);
+      // Common ITIL data
+      $data = parent::getDataForObject($item, $options, $simple);
 
-      $datas["##problem.impacts##"]  = $item->getField('impactcontent');
-      $datas["##problem.causes##"]   = $item->getField('causecontent');
-      $datas["##problem.symptoms##"] = $item->getField('symptomcontent');
+      $data["##problem.impacts##"]  = $item->getField('impactcontent');
+      $data["##problem.causes##"]   = $item->getField('causecontent');
+      $data["##problem.symptoms##"] = $item->getField('symptomcontent');
 
       // Complex mode
       if (!$simple) {
          $restrict = "`problems_id`='".$item->getField('id')."'";
          $tickets  = getAllDatasFromTable('glpi_problems_tickets', $restrict);
 
-         $datas['tickets'] = array();
+         $data['tickets'] = array();
          if (count($tickets)) {
             $ticket = new Ticket();
             foreach ($tickets as $data) {
@@ -106,17 +103,17 @@ class NotificationTargetProblem extends NotificationTargetCommonITILObject {
                   $tmp['##ticket.content##']
                                     = $ticket->getField('content');
 
-                  $datas['tickets'][] = $tmp;
+                  $data['tickets'][] = $tmp;
                }
             }
          }
 
-         $datas['##problem.numberoftickets##'] = count($datas['tickets']);
+         $data['##problem.numberoftickets##'] = count($data['tickets']);
 
          $restrict = "`problems_id`='".$item->getField('id')."'";
          $changes  = getAllDatasFromTable('glpi_changes_problems', $restrict);
 
-         $datas['changes'] = array();
+         $data['changes'] = array();
          if (count($changes)) {
             $change = new Change();
             foreach ($changes as $data) {
@@ -134,17 +131,17 @@ class NotificationTargetProblem extends NotificationTargetCommonITILObject {
                   $tmp['##change.content##']
                                     = $change->getField('content');
 
-                  $datas['changes'][] = $tmp;
+                  $data['changes'][] = $tmp;
                }
             }
          }
 
-         $datas['##problem.numberofchanges##'] = count($datas['changes']);
+         $data['##problem.numberofchanges##'] = count($data['changes']);
 
          $restrict = "`problems_id` = '".$item->getField('id')."'";
          $items    = getAllDatasFromTable('glpi_items_problems', $restrict);
 
-         $datas['items'] = array();
+         $data['items'] = array();
          if (count($items)) {
             foreach ($items as $data) {
                if ($item2 = getItemForItemtype($data['itemtype'])) {
@@ -190,16 +187,16 @@ class NotificationTargetProblem extends NotificationTargetCommonITILObject {
                         $tmp['##item.model##'] = $item2->getField($modelfield);
                      }
 
-                     $datas['items'][] = $tmp;
+                     $data['items'][] = $tmp;
                   }
                }
             }
          }
 
-         $datas['##problem.numberofitems##'] = count($datas['items']);
+         $data['##problem.numberofitems##'] = count($data['items']);
 
       }
-      return $datas;
+      return $data;
    }
 
 
