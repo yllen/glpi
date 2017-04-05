@@ -59,9 +59,11 @@ class NotificationTarget extends CommonDBChild {
    // Tags which have data in HTML : do not try to clean them
    public $html_tags                   = array();
 
+   /** Deprecated since 9.2 */
+   private $datas                      = array();
    // Data from the objet which can be used by the template
    // See https://forge.indepnet.net/projects/5/wiki/NotificationTemplatesTags
-   public $datas                       = array();
+   public $data                        = array();
    public $tag_descriptions            = array();
 
    // From CommonDBTM
@@ -1609,5 +1611,23 @@ class NotificationTarget extends CommonDBChild {
    function getSpecificTargets($data, $options) {
       Toolbox::logDebug('getSpecificTargets() method is deprecated');
       $this->addSpecificTargets($data, $options);
+   }
+
+   public function __set($name, $value) {
+      if ($name == 'datas') {
+         Toolbox::logDebug('"datas" property has been renamed to "data"' . get_called_class() . '()!');
+         $this->data = $value;
+      } else {
+         $this->$name = $value;
+      }
+   }
+
+   public function &__get($name) {
+      if ($name == 'datas') {
+         Toolbox::logDebug('"datas" property has been renamed to "data"' . get_called_class() . '()!');
+         return $this->data;
+      } else {
+         return $this->$name;
+      }
    }
 }
