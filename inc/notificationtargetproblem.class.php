@@ -87,19 +87,19 @@ class NotificationTargetProblem extends NotificationTargetCommonITILObject {
          $data['tickets'] = array();
          if (count($tickets)) {
             $ticket = new Ticket();
-            foreach ($tickets as $data) {
-               if ($ticket->getFromDB($data['tickets_id'])) {
+            foreach ($tickets as $row) {
+               if ($ticket->getFromDB($row['tickets_id'])) {
                   $tmp = array();
 
                   $tmp['##ticket.id##']
-                                    = $data['tickets_id'];
+                                    = $row['tickets_id'];
                   $tmp['##ticket.date##']
                                     = $ticket->getField('date');
                   $tmp['##ticket.title##']
                                     = $ticket->getField('name');
                   $tmp['##ticket.url##']
                                     = $this->formatURL($options['additionnaloption']['usertype'],
-                                                       "Ticket_".$data['tickets_id']);
+                                                       "Ticket_".$row['tickets_id']);
                   $tmp['##ticket.content##']
                                     = $ticket->getField('content');
 
@@ -116,18 +116,18 @@ class NotificationTargetProblem extends NotificationTargetCommonITILObject {
          $data['changes'] = array();
          if (count($changes)) {
             $change = new Change();
-            foreach ($changes as $data) {
-               if ($change->getFromDB($data['changes_id'])) {
+            foreach ($changes as $row) {
+               if ($change->getFromDB($row['changes_id'])) {
                   $tmp = array();
                   $tmp['##change.id##']
-                                    = $data['changes_id'];
+                                    = $row['changes_id'];
                   $tmp['##change.date##']
                                     = $change->getField('date');
                   $tmp['##change.title##']
                                     = $change->getField('name');
                   $tmp['##change.url##']
                                     = $this->formatURL($options['additionnaloption']['usertype'],
-                                                       "Change_".$data['changes_id']);
+                                                       "Change_".$row['changes_id']);
                   $tmp['##change.content##']
                                     = $change->getField('content');
 
@@ -143,9 +143,9 @@ class NotificationTargetProblem extends NotificationTargetCommonITILObject {
 
          $data['items'] = array();
          if (count($items)) {
-            foreach ($items as $data) {
-               if ($item2 = getItemForItemtype($data['itemtype'])) {
-                  if ($item2->getFromDB($data['items_id'])) {
+            foreach ($items as $row) {
+               if ($item2 = getItemForItemtype($row['itemtype'])) {
+                  if ($item2->getFromDB($row['items_id'])) {
                      $tmp = array();
                      $tmp['##item.itemtype##']    = $item2->getTypeName();
                      $tmp['##item.name##']        = $item2->getField('name');

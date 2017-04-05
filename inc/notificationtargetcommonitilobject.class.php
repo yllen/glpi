@@ -1015,12 +1015,12 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
       if (!$simple) {
          $data['log'] = array();
          // Use list_limit_max or load the full history ?
-         foreach (Log::getHistoryData($item, 0, $CFG_GLPI['list_limit_max']) as $data) {
+         foreach (Log::getHistoryData($item, 0, $CFG_GLPI['list_limit_max']) as $log) {
             $tmp                               = array();
-            $tmp["##$objettype.log.date##"]    = $data['date_mod'];
-            $tmp["##$objettype.log.user##"]    = $data['user_name'];
-            $tmp["##$objettype.log.field##"]   = $data['field'];
-            $tmp["##$objettype.log.content##"] = $data['change'];
+            $tmp["##$objettype.log.date##"]    = $log['date_mod'];
+            $tmp["##$objettype.log.user##"]    = $log['user_name'];
+            $tmp["##$objettype.log.field##"]   = $log['field'];
+            $tmp["##$objettype.log.content##"] = $log['change'];
             $data['log'][]                    = $tmp;
          }
 
@@ -1054,26 +1054,26 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
             $addtodownloadurl = "%2526tickets_id=".$item->fields['id'];
          }
          if ($result = $DB->query($query)) {
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($row = $DB->fetch_assoc($result)) {
                $tmp                      = array();
-               $tmp['##document.id##']   = $data['id'];
-               $tmp['##document.name##'] = $data['name'];
+               $tmp['##document.id##']   = $row['id'];
+               $tmp['##document.name##'] = $row['name'];
                $tmp['##document.weblink##']
-                                         = $data['link'];
+                                         = $row['link'];
 
                $tmp['##document.url##']  = $this->formatURL($options['additionnaloption']['usertype'],
-                                                            "document_".$data['id']);
-               $downloadurl              = "/front/document.send.php?docid=".$data['id'];
+                                                            "document_".$row['id']);
+               $downloadurl              = "/front/document.send.php?docid=".$row['id'];
 
                $tmp['##document.downloadurl##']
                                          = $this->formatURL($options['additionnaloption']['usertype'],
                                                             $downloadurl.$addtodownloadurl);
                $tmp['##document.heading##']
                                          = Dropdown::getDropdownName('glpi_documentcategories',
-                                                                     $data['documentcategories_id']);
+                                                                     $row['documentcategories_id']);
 
                $tmp['##document.filename##']
-                                         = $data['filename'];
+                                         = $row['filename'];
 
                $data['documents'][]     = $tmp;
             }

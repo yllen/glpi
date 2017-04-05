@@ -479,17 +479,17 @@ class NotificationTargetTicket extends NotificationTargetCommonITILObject {
          $data['linkedtickets'] = array();
          if (count($linked_tickets)) {
             $linkedticket = new Ticket();
-            foreach ($linked_tickets as $data) {
-               if ($linkedticket->getFromDB($data['tickets_id'])) {
+            foreach ($linked_tickets as $row) {
+               if ($linkedticket->getFromDB($row['tickets_id'])) {
                   $tmp = array();
 
                   $tmp['##linkedticket.id##']
-                                    = $data['tickets_id'];
+                                    = $row['tickets_id'];
                   $tmp['##linkedticket.link##']
-                                    = Ticket_Ticket::getLinkName($data['link']);
+                                    = Ticket_Ticket::getLinkName($row['link']);
                   $tmp['##linkedticket.url##']
                                     = $this->formatURL($options['additionnaloption']['usertype'],
-                                                       "ticket_".$data['tickets_id']);
+                                                       "ticket_".$row['tickets_id']);
 
                   $tmp['##linkedticket.title##']
                                     = $linkedticket->getField('name');
@@ -508,19 +508,19 @@ class NotificationTargetTicket extends NotificationTargetCommonITILObject {
          $data['problems'] = array();
          if (count($problems)) {
             $problem = new Problem();
-            foreach ($problems as $data) {
+            foreach ($problems as $row) {
                if ($problem->getFromDB($data['problems_id'])) {
                   $tmp = array();
 
                   $tmp['##problem.id##']
-                                 = $data['problems_id'];
+                                 = $row['problems_id'];
                   $tmp['##problem.date##']
                                  = $problem->getField('date');
                   $tmp['##problem.title##']
                                  = $problem->getField('name');
                   $tmp['##problem.url##']
                                  = $this->formatURL($options['additionnaloption']['usertype'],
-                                                    "problem_".$data['problems_id']);
+                                                    "problem_".$row['problems_id']);
                   $tmp['##problem.content##']
                                  = $problem->getField('content');
 
@@ -536,19 +536,19 @@ class NotificationTargetTicket extends NotificationTargetCommonITILObject {
          $data['changes'] = array();
          if (count($changes)) {
             $change = new Change();
-            foreach ($changes as $data) {
-               if ($change->getFromDB($data['changes_id'])) {
+            foreach ($changes as $row) {
+               if ($change->getFromDB($row['changes_id'])) {
                   $tmp = array();
 
                   $tmp['##change.id##']
-                                 = $data['changes_id'];
+                                 = $row['changes_id'];
                   $tmp['##change.date##']
                                  = $change->getField('date');
                   $tmp['##change.title##']
                                  = $change->getField('name');
                   $tmp['##change.url##']
                                  = $this->formatURL($options['additionnaloption']['usertype'],
-                                                    "change_".$data['changes_id']);
+                                                    "change_".$row['changes_id']);
                   $tmp['##change.content##']
                                  = $change->getField('content');
 
@@ -586,10 +586,10 @@ class NotificationTargetTicket extends NotificationTargetCommonITILObject {
          // Approbation of solution
          $restrict .= " LIMIT 1";
          $replysolved = getAllDatasFromTable('glpi_ticketfollowups', $restrict);
-         $data = current($replysolved);
-         $data['##ticket.solution.approval.description##'] = $data['content'];
-         $data['##ticket.solution.approval.date##']        = Html::convDateTime($data['date']);
-         $data['##ticket.solution.approval.author##']      = Html::clean(getUserName($data['users_id']));
+         $current = current($replysolved);
+         $data['##ticket.solution.approval.description##'] = $current['content'];
+         $data['##ticket.solution.approval.date##']        = Html::convDateTime($current['date']);
+         $data['##ticket.solution.approval.author##']      = Html::clean(getUserName($current['users_id']));
 
          //Validation infos
          $restrict = "`tickets_id`='".$item->getField('id')."'";
