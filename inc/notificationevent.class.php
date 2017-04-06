@@ -241,6 +241,7 @@ class NotificationEvent extends CommonDBTM {
                            echo "<td>".$notificationtarget->getNameID()."</td>";
                            echo "<td>".sprintf(__('%1$s (%2$s)'), $template->getName(),
                                                 $users_infos['language'])."</td>";
+                           echo "<td>".$options['mode']."</td>";
                            echo "<td>".$users_infos['email']."</td>";
                            echo "</tr>";
                         }
@@ -333,6 +334,7 @@ class NotificationEvent extends CommonDBTM {
                            echo "<td>".$notificationtarget->getNameID()."</td>";
                            echo "<td>".sprintf(__('%1$s (%2$s)'), $template->getName(),
                                                 $users_infos['language'])."</td>";
+                           echo "<td>".$options['mode']."</td>";
                            echo "<td>".$user_id."</td>";
                            echo "</tr>";
                         }
@@ -364,7 +366,7 @@ class NotificationEvent extends CommonDBTM {
 
       echo "<div class='spaced'>";
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='2'>"._n('Notification', 'Notifications', Session::getPluralNumber()).
+      echo "<tr><th colspan='3'>"._n('Notification', 'Notifications', Session::getPluralNumber()).
             "</th><th colspan='2'><font color='blue'> (".$item->getTypeName(1).")</font></th></tr>";
 
       $events = array();
@@ -374,7 +376,8 @@ class NotificationEvent extends CommonDBTM {
          if (count($events)>0) {
             echo "<tr><th>".self::getTypeName(Session::getPluralNumber()).'</th><th>'._n('Recipient', 'Recipients', Session::getPluralNumber())."</th>";
             echo "<th>"._n('Notification template', 'Notification templates', Session::getPluralNumber())."</th>".
-                 "<th>"._n('Email', 'Emails', Session::getPluralNumber())."</th></tr>";
+                 "<th>".__('Mode')."</th>" .
+                 "<th>".__('To contact')."</th></tr>";
 
             foreach ($events as $event => $label) {
                self::raiseEvent($event, $item, $options, $label);
