@@ -95,7 +95,6 @@
                   showNotification(item.id, item.title, item.body, item.url);
                }
 
-
                if (_this.options.sound) {
                   playAudio(_this.options.sound);
                }
@@ -113,9 +112,8 @@
          // Let's check whether notification permissions have already been granted
          if (Notification.permission === "granted") {
             startMonitoring();
-         }
-         // Otherwise, we need to ask the user for permission
-         else if (Notification.permission !== 'denied') {
+         } else if (Notification.permission !== 'denied') {
+            // Otherwise, we need to ask the user for permission
             Notification.requestPermission(function (permission) {
                // If the user accepts, let's create a notification
                if (permission === "granted") {
