@@ -49,8 +49,10 @@ class NotificationEvent extends CommonDBTM {
 
 
    /**
-    * @param $itemtype
-    * @param $options   array to pass to showFromArray or $value
+    * @param string $itemtype Item type
+    * @param array  $options  array to pass to showFromArray or $value
+    *
+    * @return string
    **/
    static function dropdownEvents($itemtype, $options=array()) {
 
@@ -79,8 +81,8 @@ class NotificationEvent extends CommonDBTM {
     *
     * @since version 0.83
     *
-    * @param $itemtype string name of the type
-    * @param $event   string name of the event
+    * @param string $itemtype name of the type
+    * @param string $event    name of the event
     *
     * @return string
    **/
@@ -148,8 +150,8 @@ class NotificationEvent extends CommonDBTM {
             }
 
             $options['mode'] = $data['mode'];
-            $raisetype = 'raise' . ucfirst($data['mode']) . 'Event';
-            self::$raisetype(
+            $eventclass = 'NotificationEvent' . ucfirst($data['mode']);
+            $eventclass::raise(
                $event,
                $item,
                $options,
@@ -165,202 +167,14 @@ class NotificationEvent extends CommonDBTM {
       return true;
    }
 
-   /**
-    * Raise a mail notification event
-    *
-    * @param string               $event              Event
-    * @param CommonDBTM           $item               Item
-    * @param array                $options            Options
-    * @param string               $label              Label
-    * @param array                $data               Notification data
-    * @param NotificationTarget   $notificationtarget Target
-    * @param NotificationTemplate $template           Template
-    * @param boolean              $notify_me          Whether to notify current user
-    *
-    * @return void
-    */
-   static private function raiseMailEvent(
-      $event,
-      CommonDBTM $item,
-      array $options,
-      $label,
-      array $data,
-      NotificationTarget $notificationtarget,
-      NotificationTemplate $template,
-      $notify_me
-   ) {
-      global $CFG_GLPI;
-
-      if ($CFG_GLPI['notifications_mailing']) {
-         $entity = $notificationtarget->getEntity();
-         $email_processed    = array();
-         $email_notprocessed = array();
-
-         $targets = getAllDatasFromTable(
-            'glpi_notificationtargets',
-            "notifications_id = {$data['id']}"
-         );
-
-         //Set notification's signature (the one which corresponds to the entity)
-         $template->setSignature(Notification::getMailingSignature($entity));
-
-         //Foreach notification targets
-         foreach ($targets as $target) {
-            //Get all users affected by this notification
-            $notificationtarget->addForTarget($target, $options);
-
-            foreach ($notificationtarget->getTargets() as $user_email => $users_infos) {
-               if ($label
-                     || $notificationtarget->validateSendTo($event, $users_infos, $notify_me)) {
-                  //If the user have not yet been notified
-                  if (!isset($email_processed[$users_infos['language']][$users_infos['email']])) {
-                     //If ther user's language is the same as the template's one
-                     if (isset($email_notprocessed[$users_infos['language']]
-                                                   [$users_infos['email']])) {
-                        unset($email_notprocessed[$users_infos['language']]
-                                                   [$users_infos['email']]);
-                     }
-                     $options['item'] = $item;
-                     if ($tid = $template->getTemplateByLanguage($notificationtarget,
-                                                                  $users_infos, $event,
-                                                                  $options)) {
-                        //Send notification to the user
-                        if ($label == '') {
-                           $send_data = $template->getDataToSend($notificationtarget, $tid,
-                                                               $users_infos, $options);
-                           $send_data['_notificationtemplates_id'] = $data['notificationtemplates_id'];
-                           $send_data['_itemtype']                 = $item->getType();
-                           $send_data['_items_id']                 = $item->getID();
-                           $send_data['_entities_id']              = $entity;
-                           $send_data['mode']                      = $data['mode'];
-
-                           Notification::send($send_data);
-                        } else {
-                           $notificationtarget->getFromDB($target['id']);
-                           echo "<tr class='tab_bg_2'><td>".$label."</td>";
-                           echo "<td>".$notificationtarget->getNameID()."</td>";
-                           echo "<td>".sprintf(__('%1$s (%2$s)'), $template->getName(),
-                                                $users_infos['language'])."</td>";
-                           echo "<td>".$options['mode']."</td>";
-                           echo "<td>".$users_infos['email']."</td>";
-                           echo "</tr>";
-                        }
-                        $email_processed[$users_infos['language']][$users_infos['email']]
-                                                                  = $users_infos;
-
-                     } else {
-                        $email_notprocessed[$users_infos['language']][$users_infos['email']]
-                                                                     = $users_infos;
-                     }
-                  }
-               }
-            }
-         }
-
-         unset($email_processed);
-         unset($email_notprocessed);
-      }
-   }
-
-
-   /**
-    * Raise an ajax notification event
-    *
-    * @param string               $event              Event
-    * @param CommonDBTM           $item               Notification data
-    * @param array                $options            Options
-    * @param string               $label              Label
-    * @param array                $data               Notification data
-    * @param NotificationTarget   $notificationtarget Target
-    * @param NotificationTemplate $template           Template
-    * @param boolean              $notify_me          Whether to notify current user
-    *
-    * @return void
-    */
-   static private function raiseAjaxEvent(
-      $event,
-      CommonDBTM $item,
-      array $options,
-      $label,
-      array $data,
-      NotificationTarget $notificationtarget,
-      NotificationTemplate $template,
-      $notify_me
-   ) {
-      global $CFG_GLPI;
-      if ($CFG_GLPI['notifications_ajax']) {
-         $processed    = array();
-         $notprocessed = array();
-
-         $targets = getAllDatasFromTable(
-            'glpi_notificationtargets',
-            "notifications_id = {$data['id']}"
-         );
-
-         //Foreach notification targets
-         foreach ($targets as $target) {
-            //Get all users affected by this notification
-            $notificationtarget->addForTarget($target, $options);
-
-            foreach ($notificationtarget->getTargets() as $user_id => $users_infos) {
-               if ($label
-                     || $notificationtarget->validateSendTo($event, $users_infos, $notify_me)) {
-                  //If the user have not yet been notified
-                  if (!isset($processed[$users_infos['language']][$user_id])) {
-                     //If ther user's language is the same as the template's one
-                     if (isset($notprocessed[$users_infos['language']]
-                                                   [$user_id])) {
-                        unset($notprocessed[$users_infos['language']]
-                                                   [$user_id]);
-                     }
-                     $options['item'] = $item;
-                     if ($tid = $template->getTemplateByLanguage($notificationtarget,
-                                                                  $users_infos, $event,
-                                                                  $options)) {
-                        //Send notification to the user
-                        if ($label == '') {
-                           $send_data = $template->getDataToSend($notificationtarget, $tid,
-                                                               $users_infos, $options);
-                           $send_data['_notificationtemplates_id'] = $data['notificationtemplates_id'];
-                           $send_data['_itemtype']                 = $item->getType();
-                           $send_data['_items_id']                 = $item->getID();
-                           $send_data['_entities_id']              = $entity;
-                           $send_data['mode']                      = $data['mode'];
-
-                           Notification::send($send_data);
-                        } else {
-                           $notificationtarget->getFromDB($target['id']);
-                           echo "<tr class='tab_bg_2'><td>".$label."</td>";
-                           echo "<td>".$notificationtarget->getNameID()."</td>";
-                           echo "<td>".sprintf(__('%1$s (%2$s)'), $template->getName(),
-                                                $users_infos['language'])."</td>";
-                           echo "<td>".$options['mode']."</td>";
-                           echo "<td>".$user_id."</td>";
-                           echo "</tr>";
-                        }
-                        $processed[$users_infos['language']][$user_id]
-                                                                  = $users_infos;
-
-                     } else {
-                        $notprocessed[$users_infos['language']][$user_id]
-                                                                     = $users_infos;
-                     }
-                  }
-               }
-            }
-         }
-
-         unset($processed);
-         unset($notprocessed);
-      }
-   }
-
 
    /**
     * Display debug information for an object
     *
-    * @param $item            the object
-    * @param $options   array
+    * @param CommonDBTM $item    Object instance
+    * @param array      $options Options
+    *
+    * @return void
    **/
    static function debugEvent($item, $options=array()) {
 
