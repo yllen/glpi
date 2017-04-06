@@ -12,6 +12,7 @@ The present file will list all changes made to the project; according to the
 - Load minified CSS and JS files (core and plugins) that are generated on release
 - Link beetween software licenses
 - Alerts on saved searches
+- Add ajax browsers notifications in addition to emails
 
 ### Changed
 - Display knowledge base category items in tickets using a popup instead of a
@@ -35,6 +36,8 @@ The following methods have been deprecated:
 - `_ex()`
 - `Bookmark::mark_default()`
 - `Bookmark::unmark_default()`
+- `NotificationTarget*::get*Address()`
+- many `NotificationTarget*::get*()`
 
 #### Removals
 
