@@ -289,7 +289,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
    static function dropdownMode($options) {
       $p['name']     = 'modes';
       $p['display']  = true;
-      $p['values']   = '';
+      $p['value']    = '';
       $p['multiple'] = true;
 
       if (is_array($options) && count($options)) {

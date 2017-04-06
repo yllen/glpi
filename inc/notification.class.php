@@ -358,6 +358,7 @@ class Notification extends CommonDBTM {
          'field'              => 'name',
          'name'               => _n('Notification template', 'Notification templates', Session::getPluralNumber()),
          'datatype'           => 'itemlink',
+         'forcegroupby'       => true,
          'joinparams'         => [
             'beforejoin'  => [
                'table'        => NotificationTemplateTemplate::getTable(),

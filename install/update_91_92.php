@@ -80,7 +80,8 @@ function update91to92() {
       'glpi_devicefirmwares',
       'glpi_items_devicefirmwares',
       'glpi_devicefirmwaretypes',
-      'glpi_savedsearches_alerts'
+      'glpi_savedsearches_alerts',
+      'glpi_notificationtemplatetemplates'
    );
 
    $has_backups = $migration->backupTables($newtables);
@@ -780,6 +781,9 @@ Regards,',
             'notifications_mailing'    => $current_config['use_mailing'],
             'notifications_websockets' => 0,
             'notifications_ajax'       => 0,
+            'notifications_ajax_check_interval' => '5',
+            'notifications_ajax_sound' => null,
+            'notifications_ajax_icon_url' => '/pics/glpi.png',
             'notifications_sms'        => 0
          ]
       );
@@ -803,6 +807,7 @@ Regards,',
 
    //migrate any existing mode before removing the field
    $migration->addPreQuery("INSERT INTO glpi_notificationtemplatetemplates (notifications_id, mode, notificationtemplates_id) SELECT id, mode, notificationtemplates_id FROM glpi_notifications");
+   $migration->addPreQuery("INSERT INTO glpi_notificationtemplatetemplates (notifications_id, mode, notificationtemplates_id) SELECT id, 'ajax', notificationtemplates_id FROM glpi_notifications");
    $migration->dropField('glpi_notifications', 'mode');
    $migration->dropField('glpi_notifications', 'notificationtemplates_id');
 
