@@ -51,6 +51,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
    const MODE_AJAX      = 'ajax';
    const MODE_WEBSOCKET = 'websocket';
    const MODE_SMS       = 'sms';
+   const MODE_XMPP      = 'xmpp';
 
    static function getTypeName($nb=0) {
       return _n('Template', 'Templates', $nb);
@@ -233,6 +234,21 @@ class NotificationTemplateTemplate extends CommonDBChild {
    }
 
    /**
+    * Register a new notification mode (for plugins)
+    *
+    * @param string $mode  Mode
+    * @param string $label Mode's label
+    *
+    * @return void
+    */
+   static public function registerMode($mode, $label) {
+      global $CFG_GLPI;
+
+      self::getModes();
+      $CFG_GLPI['notifications_modes'][$mode] = $label;
+   }
+
+   /**
     * Get notification method label
     *
     * @since version 0.84
@@ -240,12 +256,27 @@ class NotificationTemplateTemplate extends CommonDBChild {
     * @return the mode's label
    **/
    static function getModes() {
-      return [
+      global $CFG_GLPI;
+
+      $core_modes = [
          self::MODE_MAIL      => __('Email'),
          self::MODE_AJAX      => __('Ajax'),
-         self::MODE_WEBSOCKET => __('Websocket')/*,
+         /*self::MODE_WEBSOCKET => __('Websocket'),
          self::MODE_SMS       => __('SMS')*/
       ];
+
+      if (!isset($CFG_GLPI['notifications_modes'])) {
+         $CFG_GLPI['notifications_modes'] = $core_modes;
+      } else {
+         //check that core modes are part of the config
+         foreach ($core_modes as $mode => $label) {
+            if (!isset($CFG_GLPI['notifications_modes'][$mode])) {
+               $CFG_GLPI['notifications_modes'][$mode] = $label;
+            }
+         }
+      }
+
+      return $CFG_GLPI['notifications_modes'];
    }
 
 
