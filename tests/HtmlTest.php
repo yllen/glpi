@@ -440,6 +440,9 @@ class HtmlTest extends PHPUnit\Framework\TestCase {
    public function testCss() {
       global $CFG_GLPI;
 
+      $orig_mode = $_SESSION['glpi_use_mode'];
+      $_SESSION['glpi_use_mode'] = Session::NORMAL_MODE;
+
       //fake files
       $fake_files = [
          'file.css',
@@ -544,6 +547,8 @@ class HtmlTest extends PHPUnit\Framework\TestCase {
       foreach ($fake_files as $fake_file) {
          unlink(GLPI_TMP_DIR . '/' . $fake_file);
       }
+
+      $_SESSION['glpi_use_mode'] = $orig_mode;
    }
 
    /**
@@ -551,6 +556,9 @@ class HtmlTest extends PHPUnit\Framework\TestCase {
     */
    public function testScript() {
       global $CFG_GLPI;
+
+      $orig_mode = $_SESSION['glpi_use_mode'];
+      $_SESSION['glpi_use_mode'] = Session::NORMAL_MODE;
 
       //fake files
       $fake_files = [
@@ -631,6 +639,8 @@ class HtmlTest extends PHPUnit\Framework\TestCase {
       foreach ($fake_files as $fake_file) {
          unlink(GLPI_TMP_DIR . '/' . $fake_file);
       }
+
+      $_SESSION['glpi_use_mode'] = $orig_mode;
    }
 
    /**
