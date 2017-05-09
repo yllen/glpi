@@ -126,7 +126,7 @@ class NotificationTarget extends CommonDBChild {
       $this->options    = $options;
 
       if (method_exists($this, 'getNotificationTargets')) {
-         Toolbox::logDebug('getAdditionalTargets() method is deprecated (' . get_called_class() . ')');
+         Toolbox::logDebug('getNotificationTargets() method is deprecated (' . get_called_class() . ')');
          $this->getNotificationTargets($entity);
       } else {
          $this->addNotificationTargets($entity);
@@ -1095,7 +1095,12 @@ class NotificationTarget extends CommonDBChild {
 
                default :
                   //Maybe a target specific to a type
-                  $this->addSpecificTargets($data, $options);
+                  if (method_exists($this, 'getSpecificTargets')) {
+                     Toolbox::logDebug('getSpecificTargets() method is deprecated (' . get_called_class() . ')');
+                     $this->getSpecificTargets($data, $options);
+                  } else {
+                     $this->addSpecificTargets($data, $options);
+                  }
             }
             break;
 
@@ -1116,7 +1121,12 @@ class NotificationTarget extends CommonDBChild {
 
          default :
             //Maybe a target specific to a type
-            $this->addSpecificTargets($data, $options);
+            if (method_exists($this, 'getSpecificTargets')) {
+               Toolbox::logDebug('getSpecificTargets() method is deprecated (' . get_called_class() . ')');
+               $this->getSpecificTargets($data, $options);
+            } else {
+               $this->addSpecificTargets($data, $options);
+            }
       }
       // action for target from plugin
       $this->data = $data;
@@ -1588,21 +1598,6 @@ class NotificationTarget extends CommonDBChild {
    }
 
    /**
-    * Add targets by a method not defined in NotificationTarget (specific to an itemtype)
-    *
-    * @param array $data    Data
-    * @param array $options Options
-    *
-    * @deprecated Use NotificationTarget::addSpecificTargets()
-    *
-    * @return void
-   **/
-   function getSpecificTargets($data, $options) {
-      Toolbox::logDebug('getSpecificTargets() method is deprecated');
-      $this->addSpecificTargets($data, $options);
-   }
-
-   /**
     * Magic call to handle deprecated and removed methods
     *
     * @param string $name      Method name
@@ -1627,6 +1622,20 @@ class NotificationTarget extends CommonDBChild {
          case 'getNotificationTargets':
             Toolbox::logDebug('getNotificationTargets() method is deprecated (' . get_called_class() . ')');
             call_user_func_array([$this, 'addNotificationTargets'], $arguments);
+            break;
+         /**
+         * Add targets by a method not defined in NotificationTarget (specific to an itemtype)
+         *
+         * @param array $data    Data
+         * @param array $options Options
+         *
+         * @deprecated Use NotificationTarget::addSpecificTargets()
+         *
+         * @return void
+         **/
+         case 'getSpecificTargets':
+            Toolbox::logDebug('getSpecificTargets() method is deprecated');
+            call_user_func_array([$this, 'addSpecificTargets'], $arguments);
             break;
          default:
             throw new \RuntimeException('Unknown method ' . get_called_class() . '::' . $name);
