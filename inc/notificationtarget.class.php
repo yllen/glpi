@@ -124,9 +124,14 @@ class NotificationTarget extends CommonDBChild {
 
       $this->raiseevent = $event;
       $this->options    = $options;
-      $this->addNotificationTargets($entity);
-      $this->addAdditionalTargets($event);
 
+      $this->addNotificationTargets($entity);
+      if (method_exists($this, 'getNotificationTargets')) {
+         Toolbox::logDebug('getAdditionalTargets() method is deprecated (' . get_called_class() . ')');
+         $this->getNotificationTargets($entity);
+      }
+
+      $this->addAdditionalTargets($event);
       if (method_exists($this, 'getAdditionalTargets')) {
          Toolbox::logDebug('getAdditionalTargets() method is deprecated (' . get_called_class() . ')');
          $this->getAdditionalTargets();
@@ -1582,23 +1587,6 @@ class NotificationTarget extends CommonDBChild {
    }
 
    /**
-    * Return all the targets for this notification
-    * Values returned by this method are the ones for the alerts
-    * Can be updated by implementing the addAdditionnalTargets() method
-    * Can be overwitten (like dbconnection)
-    *
-    * @param integer $entity the entity on which the event is raised
-    *
-    * @deprecated Use NotificationTarget::addNotificationTargets()
-    *
-    * @return void
-    */
-   function getNotificationTargets($entity) {
-      Toolbox::logDebug('getNotificationTargets() method is deprecated');
-      $this->addNotificationTargets($entity);
-   }
-
-   /**
     * Add targets by a method not defined in NotificationTarget (specific to an itemtype)
     *
     * @param array $data    Data
@@ -1611,6 +1599,37 @@ class NotificationTarget extends CommonDBChild {
    function getSpecificTargets($data, $options) {
       Toolbox::logDebug('getSpecificTargets() method is deprecated');
       $this->addSpecificTargets($data, $options);
+   }
+
+   /**
+    * Magic call to handle deprecated and removed methods
+    *
+    * @param string $name      Method name
+    * @param array  $arguments Passed args
+    *
+    * @return mixed
+    */
+   public function __call($name, $arguments) {
+      switch ($name) {
+         /**
+         * Return all the targets for this notification
+         * Values returned by this method are the ones for the alerts
+         * Can be updated by implementing the addAdditionnalTargets() method
+         * Can be overwitten (like dbconnection)
+         *
+         * @param integer $entity the entity on which the event is raised
+         *
+         * @deprecated Use NotificationTarget::addNotificationTargets()
+         *
+         * @return void
+         */
+         case 'getNotificationTargets':
+            Toolbox::logDebug('getNotificationTargets() method is deprecated (' . get_called_class() . ')');
+            call_user_func_array([$this, 'addNotificationTargets'], $arguments);
+            break;
+         default:
+            throw new \RuntimeException('Unknown method ' . get_called_class() . '::' . $name);
+      }
    }
 
    public function __set($name, $value) {
