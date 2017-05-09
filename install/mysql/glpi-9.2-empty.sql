@@ -4455,21 +4455,7 @@ INSERT INTO `glpi_notifications` VALUES(62, 'New group in observers', 0, 'Ticket
 INSERT INTO `glpi_notifications` VALUES(63, 'New user in assignees', 0, 'Ticket', 'assign_user', '', 1, 1, '2016-02-08 16:57:46', NULL);
 INSERT INTO `glpi_notifications` VALUES(64, 'New group in assignees', 0, 'Ticket', 'assign_group', '', 1, 1, '2016-02-08 16:57:46', NULL);
 INSERT INTO `glpi_notifications` VALUES(65, 'New supplier in assignees', 0, 'Ticket', 'assign_supplier', '', 1, 1, '2016-02-08 16:57:46', NULL);
-INSERT INTO `glpi_notifications` VALUES(66, 'Saved searches', '0', 'SavedSearch_Alert', 'alert', 'mail', '24', '', '1', '1', '2016-02-08 16:57:46', NULL);
-INSERT INTO `glpi_notifications` VALUES(67, 'New user in requesters', 0, 'Ticket', 'requester_user', NULL, 1, 0, '2017-03-21 14:33:34', '2017-03-21 14:33:34');
-INSERT INTO `glpi_notifications` VALUES(68, 'New group in requesters', 0, 'Ticket', 'requester_group', NULL, 1, 0, '2017-03-21 14:33:34', '2017-03-21 14:33:34');
-INSERT INTO `glpi_notifications` VALUES(69, 'New user in observers', 0, 'Ticket', 'observer_user', NULL, 1, 0, '2017-03-21 14:33:34', '2017-03-21 14:33:34');
-INSERT INTO `glpi_notifications` VALUES(70, 'New group in observers', 0, 'Ticket', 'observer_group', NULL, 1, 0, '2017-03-21 14:33:34', '2017-03-21 14:33:34');
-INSERT INTO `glpi_notifications` VALUES(71, 'New user in assignees', 0, 'Ticket', 'assign_user', NULL, 1, 0, '2017-03-21 14:33:34', '2017-03-21 14:33:34');
-INSERT INTO `glpi_notifications` VALUES(72, 'New group in assignees', 0, 'Ticket', 'assign_group', NULL, 1, 0, '2017-03-21 14:33:34', '2017-03-21 14:33:34');
-INSERT INTO `glpi_notifications` VALUES(73, 'New supplier in assignees', 0, 'Ticket', 'assign_supplier', NULL, 1, 0, '2017-03-21 14:33:34', '2017-03-21 14:33:34');
-INSERT INTO `glpi_notifications` VALUES(74, 'New user in requesters', 0, 'Ticket', 'requester_user', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
-INSERT INTO `glpi_notifications` VALUES(75, 'New group in requesters', 0, 'Ticket', 'requester_group', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
-INSERT INTO `glpi_notifications` VALUES(76, 'New user in observers', 0, 'Ticket', 'observer_user', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
-INSERT INTO `glpi_notifications` VALUES(77, 'New group in observers', 0, 'Ticket', 'observer_group', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
-INSERT INTO `glpi_notifications` VALUES(78, 'New user in assignees', 0, 'Ticket', 'assign_user', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
-INSERT INTO `glpi_notifications` VALUES(79, 'New group in assignees', 0, 'Ticket', 'assign_group', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
-INSERT INTO `glpi_notifications` VALUES(80, 'New supplier in assignees', 0, 'Ticket', 'assign_supplier', NULL, 1, 0, '2017-03-21 14:33:55', '2017-03-21 14:33:55');
+INSERT INTO `glpi_notifications` VALUES(66, 'Saved searches', 0, 'SavedSearch_Alert', 'alert', '', 1, 1, '2016-02-08 16:57:46', NULL);
 
 
 ### Dump table glpi_notificationtemplatetemplates
@@ -4552,20 +4538,7 @@ INSERT INTO `glpi_notificationtemplatetemplates` VALUES(62, '62', 'mail', 4);
 INSERT INTO `glpi_notificationtemplatetemplates` VALUES(63, '63', 'mail', 4);
 INSERT INTO `glpi_notificationtemplatetemplates` VALUES(64, '64', 'mail', 4);
 INSERT INTO `glpi_notificationtemplatetemplates` VALUES(65, '65', 'mail', 4);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(66, '66', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(67, '67', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(68, '68', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(69, '69', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(70, '70', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(71, '71', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(72, '72', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(73, '73', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(74, '74', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(75, '75', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(76, '76', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(77, '77', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(78, '78', 'mail', 0);
-INSERT INTO `glpi_notificationtemplatetemplates` VALUES(79, '79', 'mail', 0);
+INSERT INTO `glpi_notificationtemplatetemplates` VALUES(66, '66', 'mail', 24);
 
 
 ### Dump table glpi_notificationtargets
