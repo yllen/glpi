@@ -125,10 +125,11 @@ class NotificationTarget extends CommonDBChild {
       $this->raiseevent = $event;
       $this->options    = $options;
 
-      $this->addNotificationTargets($entity);
       if (method_exists($this, 'getNotificationTargets')) {
          Toolbox::logDebug('getAdditionalTargets() method is deprecated (' . get_called_class() . ')');
          $this->getNotificationTargets($entity);
+      } else {
+         $this->addNotificationTargets($entity);
       }
 
       $this->addAdditionalTargets($event);
