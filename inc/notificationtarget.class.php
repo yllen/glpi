@@ -613,9 +613,11 @@ class NotificationTarget extends CommonDBChild {
 
 
    /**
-    * Get GLPI's global administrator email
-   **/
-   function addAdmin() {
+    * Add GLPI's global administrator email
+    *
+    * @return void
+    */
+   final protected function addAdmin() {
       global $CFG_GLPI;
 
       $this->addToAddressesList(array("email"    => $CFG_GLPI["admin_email"],
@@ -626,13 +628,13 @@ class NotificationTarget extends CommonDBChild {
 
 
    /**
-    * Get item's author
+    * Add item's author
     *
     * @since 9.2
     *
     * @return void
     */
-   function addItemAuthor() {
+   protected function addItemAuthor() {
       $user = new User();
       if ($this->obj->isField('users_id')
           && $user->getFromDB($this->obj->getField('users_id'))) {
@@ -649,7 +651,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
     */
-   function addItemGroup() {
+   final protected function addItemGroup() {
 
       if (!empty($this->target_object)) {
          foreach ($this->target_object as $val) {
@@ -668,7 +670,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
     */
-   function addItemGroupSupervisor() {
+   final protected function addItemGroupSupervisor() {
       if (!empty($this->target_object)) {
          foreach ($this->target_object as $val) {
             if ($val->fields['groups_id'] > 0) {
@@ -686,7 +688,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
     */
-   function addItemGroupWithoutSupervisor() {
+   final protected function addItemGroupWithoutSupervisor() {
 
       if (!empty($this->target_object)) {
          foreach ($this->target_object as $val) {
@@ -703,7 +705,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
     */
-   function addEntityAdmin() {
+   final protected function addEntityAdmin() {
       global $DB, $CFG_GLPI;
 
       foreach ($DB->request('glpi_entities', array('id' => $this->entity)) as $row) {
@@ -726,7 +728,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addForGroup($manager, $group_id) {
+   final protected function addForGroup($manager, $group_id) {
       global $DB;
 
       // members/managers of the group allowed on object entity
@@ -751,7 +753,7 @@ class NotificationTarget extends CommonDBChild {
    }
 
 
-   function getDistinctUserSql() {
+   final protected function getDistinctUserSql() {
 
       return  "SELECT DISTINCT `glpi_users`.`id` AS users_id,
                                `glpi_users`.`language` AS language";
@@ -812,7 +814,7 @@ class NotificationTarget extends CommonDBChild {
    /**
     * @param $entity
    **/
-   function addGroupsToTargets($entity) {
+   final protected function addGroupsToTargets($entity) {
       global $DB;
 
       // Filter groups which can be notified and have members (as notifications are sent to members)
@@ -849,7 +851,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addNotificationTargets($entity) {
+   protected function addNotificationTargets($entity) {
 
       if (Session::haveRight("config", UPDATE)) {
          $this->addTarget(Notification::GLOBAL_ADMINISTRATOR, __('Administrator'));
@@ -869,7 +871,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
     */
-   function addAdditionalTargets($event='') {
+   protected function addAdditionalTargets($event='') {
    }
 
 
@@ -881,7 +883,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addSpecificTargets($data, $options) {
+   protected function addSpecificTargets($data, $options) {
    }
 
 
@@ -940,7 +942,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addItemTechnicianInCharge() {
+   final protected function addItemTechnicianInCharge() {
       $this->addUserByField('users_id_tech', true);
    }
 
@@ -950,7 +952,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
     */
-   function addItemGroupTechInCharge() {
+   final protected function addItemGroupTechInCharge() {
       if (!empty($this->target_object)) {
          foreach ($this->target_object as $val) {
             if ($val->fields['groups_id_tech'] > 0) {
@@ -966,7 +968,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addItemOwner() {
+   final protected function addItemOwner() {
       $this->addUserByField('users_id', true);
    }
 
@@ -978,7 +980,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
     */
-   function addForProfile($profiles_id) {
+   final protected function addForProfile($profiles_id) {
       global $DB;
 
       $query = $this->getDistinctUserSql().",
@@ -1025,7 +1027,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return the reply to address
    **/
-   function getReplyTo($options=array()) {
+   final public function getReplyTo($options=array()) {
       global $DB, $CFG_GLPI;
 
       //If the entity administrator's address is defined, return it
@@ -1051,7 +1053,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addForTarget($data, $options=array()) {
+   final public function addForTarget($data, $options=array()) {
 
       //Look for all targets whose type is Notification::USER_TYPE
       switch ($data['type']) {
@@ -1145,11 +1147,11 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addDataForTemplate($event, $options=array()) {
+   protected function addDataForTemplate($event, $options=array()) {
    }
 
 
-   function getTargets() {
+   final public function getTargets() {
       return $this->target;
    }
 
@@ -1164,7 +1166,7 @@ class NotificationTarget extends CommonDBChild {
    }
 
 
-   function getProfileJoinSql() {
+   protected function getProfileJoinSql() {
 
       return " INNER JOIN `glpi_profiles_users`
                      ON (`glpi_profiles_users`.`users_id` = `glpi_users`.`id` ".
