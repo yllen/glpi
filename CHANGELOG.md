@@ -51,5 +51,7 @@ The following methods have been dropped:
 - `Toolbox::get_magic_quotes_gpc`
 - `Bookmark::changeBookmarkOrder()`
 - `Bookmark::moveBookmark()`
+- `Html::showDateFormItem()`
+- `Html::showDateTimeFormItem()`
 
 For older entries, please check [GLPI website](http://glpi-project.org).
