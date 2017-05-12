@@ -41,56 +41,20 @@ if (!defined('GLPI_ROOT')) {
 /**
  *  This class manages the mail settings
  */
-class NotificationMailSetting extends CommonDBTM {
+class NotificationMailingSetting extends NotificationSetting {
 
-   public $table           = 'glpi_configs';
-
-   protected $displaylist  = false;
-
-   static $rightname       = 'config';
-
-
-
-   static function getTable($classname = null) {
-      return parent::getTable('Config');
-   }
-
-
-   static function getTypeName($nb=0) {
+   static public function getTypeName($nb=0) {
       return __('Email followups configuration');
    }
 
 
-   function defineTabs($options=array()) {
-
-      $ong = array();
-      $this->addStandardTab(__CLASS__, $ong, $options);
-
-      return $ong;
+   public function getEnableLabel() {
+      return __('Enable followups via email');
    }
 
 
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-
-      switch ($item->getType()) {
-         case __CLASS__ :
-            $tabs[1] = __('Setup');
-            return $tabs;
-      }
-      return '';
-   }
-
-
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-
-      if ($item->getType() == __CLASS__) {
-         switch ($tabnum) {
-            case 1 :
-               $item->showFormMailServerConfig();
-               break;
-         }
-      }
-      return true;
+   static public function getMode() {
+      return NotificationTemplateTemplate::MODE_MAIL;
    }
 
 
@@ -119,7 +83,7 @@ class NotificationMailSetting extends CommonDBTM {
    }
 
 
-   function showFormMailServerConfig() {
+   function showFormConfig() {
       global $CFG_GLPI;
 
       echo "<form action='".Toolbox::getItemTypeFormURL(__CLASS__)."' method='post'>";

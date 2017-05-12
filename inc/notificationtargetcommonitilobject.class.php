@@ -320,7 +320,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
 
    /**
-    * Get Add approver related to the ITIL object validation
+    * Add approver related to the ITIL object validation
     *
     * @param $options array
     *

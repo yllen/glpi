@@ -37,80 +37,20 @@ if (!defined('GLPI_ROOT')) {
 /**
  *  This class manages the ajax notifications settings
  */
-class NotificationAjaxSetting extends CommonDBTM {
+class NotificationAjaxSetting extends NotificationSetting {
 
-   public $table           = 'glpi_configs';
-
-   protected $displaylist  = false;
-
-   static $rightname       = 'config';
-
-
-   static function getTable($classname = null) {
-      return parent::getTable('Config');
-   }
-
-
-   static function getTypeName($nb=0) {
+   static public function getTypeName($nb=0) {
       return __('Ajax followups configuration');
    }
 
 
-   function defineTabs($options=array()) {
-
-      $ong = array();
-      $this->addStandardTab(__CLASS__, $ong, $options);
-
-      return $ong;
+   public function getEnableLabel() {
+      return __('Enable followups via ajax calls');
    }
 
 
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-
-      switch ($item->getType()) {
-         case __CLASS__ :
-            $tabs[1] = __('Setup');
-            return $tabs;
-      }
-      return '';
-   }
-
-
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-
-      if ($item->getType() == __CLASS__) {
-         switch ($tabnum) {
-            case 1 :
-               $item->showFormConfig();
-               break;
-         }
-      }
-      return true;
-   }
-
-
-   /**
-    * Print the config form
-    *
-    * @param integer $ID      integer ID of the item
-    * @param array   $options array
-    *     - target filename : where to go when done.
-    *     - tabs integer : ID of the tab to display
-    *
-    * @return void
-   **/
-   function showForm($ID, $options=array()) {
-      global $CFG_GLPI;
-
-      if (!Config::canUpdate()) {
-         return false;
-      }
-      if (!$CFG_GLPI['notifications_ajax']) {
-         $options['colspan'] = 1;
-      }
-
-      $this->getFromDB($ID);
-      return true;
+   static public function getMode() {
+      return NotificationTemplateTemplate::MODE_AJAX;
    }
 
 
@@ -161,5 +101,4 @@ class NotificationAjaxSetting extends CommonDBTM {
       $this->showFormButtons($options);
 
    }
-
 }

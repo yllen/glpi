@@ -43,54 +43,44 @@ if (!Session::haveRight("config", READ)
    Html::redirect($CFG_GLPI["root_doc"].'/front/notification.php');
 }
 
+$modes = NotificationTemplateTemplate::getModes();
+
 if (isset($_POST['use_notifications'])) {
    $config             = new Config();
-   $tmp['id']          = 1;
-   $tmp['use_notifications'] = $_POST['use_notifications'];
+   $tmp = [
+      'id'                 => 1,
+      'use_notifications'  => $_POST['use_notifications']
+   ];
    $config->update($tmp);
    //disable all notifications types if notifications has been disabled
    if ($tmp['use_notifications'] == 0) {
-      $_POST['notifications_mailing'] = 0;
-      $_POST['notifications_ajax'] = 0;
-      $_POST['notifications_websockets'] = 0;
-      $_POST['notifications_sms'] = 0;
+      foreach (array_keys($modes) as $mode) {
+         $_POST['notifications_' . $mode] = 0;
+      }
    }
 }
 
-if (isset($_POST['notifications_mailing'])) {
-   $config             = new Config();
-   $tmp['id']          = 1;
-   $tmp['notifications_mailing'] = $_POST['notifications_mailing'];
-   $config->update($tmp);
-}
-
-if (isset($_POST['notifications_ajax'])) {
-   $config             = new Config();
-   $tmp['id']          = 1;
-   $tmp['notifications_ajax'] = $_POST['notifications_ajax'];
-   $config->update($tmp);
-}
-
-
-if (isset($_POST['notifications_websockets'])) {
-   $config             = new Config();
-   $tmp['id']          = 1;
-   $tmp['notifications_websockets'] = $_POST['notifications_websockets'];
-   $config->update($tmp);
-}
-
-if (isset($_POST['notifications_sms'])) {
-   $config             = new Config();
-   $tmp['id']          = 1;
-   $tmp['notifications_sms'] = $_POST['notifications_sms'];
-   $config->update($tmp);
-}
-
 if (count($_POST)) {
+   $config = new Config();
+   foreach ($_POST as $k => $v) {
+      if (substr($k, 0, strlen('notifications_')) === 'notifications_') {
+         $tmp = [
+            'id'  => 1,
+            $k    => $v
+         ];
+         $config->update($tmp);
+      }
+   }
+
    Html::back();
 }
 
 echo "<div class='center notifs_setup'>";
+
+/** TODO:
+ *    - get forms from settings classes
+ *    - add hook for plugins to add their own settings
+ */
 
 if (Session::haveRight("config", UPDATE)) {
    echo "<form method='POST' action='{$CFG_GLPI['root_doc']}/front/setup.notification.php'>";
@@ -117,109 +107,37 @@ if (Session::haveRight("config", UPDATE)) {
    echo "</td>";
    echo "</tr>";
 
-   echo "<tr>";
-   echo "<td>" .__('Enable followup via email') . "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_mailing' id='notifications_mailing_on' value='1'";
-   if ($CFG_GLPI['notifications_mailing']) {
-      echo " checked='checked'";
-   }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/>";
-   echo "<label for='notifications_mailing_on'>" . __('Yes') . "</label>";
-   echo "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_mailing' id='notifications_mailing_off' value='0'";
-   if (!$CFG_GLPI['notifications_mailing']) {
-      echo " checked='checked'";
-   }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/><label for='notifications_mailing_off'>" . __('No') . "</label>";
-   echo "</td>";
-   echo "</tr>";
+   foreach ($modes as $mode => $label) {
+      $settings_class = 'Notification' . ucfirst($mode) . 'Setting';
+      $settings = new $settings_class();
 
-   echo "<tr>";
-   echo "<td>" .__('Enable followup via ajax calls') . "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_ajax' id='notifications_ajax_on' value='1'";
-   if ($CFG_GLPI['notifications_ajax']) {
-      echo " checked='checked'";
+      echo "<tr>";
+      echo "<td>" . $settings->getEnableLabel() . "</td>";
+      echo "<td>";
+      echo "<input type='radio' name='notifications_$mode' id='notifications_{$mode}_on' value='1'";
+      if ($CFG_GLPI['notifications_' . $mode]) {
+         echo " checked='checked'";
+      }
+      if (!$CFG_GLPI['use_notifications']) {
+         echo " disabled='disabled'";
+      }
+      echo "/>";
+      echo "<label for='notifications_{$mode}_on'>" . __('Yes') . "</label>";
+      echo "</td>";
+      echo "<td>";
+      echo "<input type='radio' name='notifications_$mode' id='notifications_{$mode}_off' value='0'";
+      if (!$CFG_GLPI['notifications_' . $mode]) {
+         echo " checked='checked'";
+      }
+      if (!$CFG_GLPI['use_notifications']) {
+         echo " disabled='disabled'";
+      }
+      echo "/><label for='notifications_{$mode}_off'>" . __('No') . "</label>";
+      echo "</td>";
+      echo "</tr>";
    }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/>";
-   echo "<label for='notifications_ajax_on'>" . __('Yes') . "</label>";
-   echo "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_ajax' id='notifications_ajax_off' value='0'";
-   if (!$CFG_GLPI['notifications_ajax']) {
-      echo " checked='checked'";
-   }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/><label for='notifications_ajax_off'>" . __('No') . "</label>";
-   echo "</td>";
-   echo "</tr>";
-
-   /*echo "<tr>";
-   echo "<td>" .__('Enable followup via websockets') . "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_websockets' id='notifications_websockets_on' value='1'";
-   if ($CFG_GLPI['notifications_websockets']) {
-      echo " checked='checked'";
-   }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/>";
-   echo "<label for='notifications_websockets_on'>" . __('Yes') . "</label>";
-   echo "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_websockets' id='notifications_websockets_off' value='0'";
-   if (!$CFG_GLPI['notifications_websockets']) {
-      echo " checked='checked'";
-   }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/><label for='notifications_websockets_off'>" . __('No') . "</label>";
-   echo "</td>";
-   echo "</tr>";*/
-
-   /*echo "<tr>";
-   echo "<td>" .__('Enable followup via SMS') . "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_sms' id='notifications_sms_on' value='1'";
-   if ($CFG_GLPI['notifications_sms']) {
-      echo " checked='checked'";
-   }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/>";
-   echo "<label for='notifications_sms_on'>" . __('Yes') . "</label>";
-   echo "</td>";
-   echo "<td>";
-   echo "<input type='radio' name='notifications_sms' id='notifications_sms_off' value='0'";
-   if (!$CFG_GLPI['notifications_sms']) {
-      echo " checked='checked'";
-   }
-   if (!$CFG_GLPI['use_notifications']) {
-      echo " disabled='disabled'";
-   }
-   echo "/><label for='notifications_sms_off'>" . __('No') . "</label>";
-   echo "</td>";
-   echo "</tr>";*/
-
 
    echo "<tr><td colspan='3' class='center'><input class='submit' type='submit' value='" . __('Save')  . "'/></td></tr>";
-
    echo "</table>";
    echo "</form>";
 
@@ -235,39 +153,21 @@ if (Session::haveRight("config", UPDATE)) {
    echo Html::scriptBlock($js);
 }
 
-$notifs_on = ($CFG_GLPI['notifications_mailing']
-   || $CFG_GLPI['notifications_ajax']
-   || $CFG_GLPI['notifications_websockets']
-   || $CFG_GLPI['notifications_sms']);
+$notifs_on = false;
+if ($CFG_GLPI['use_notifications']) {
+   foreach (array_keys($modes) as $mode) {
+      if ($CFG_GLPI['notifications_' . $mode]) {
+         $notifs_on = true;
+         break;
+      }
+   }
+}
 
-if ($CFG_GLPI['use_notifications'] && $notifs_on) {
+if ($notifs_on) {
    echo "<table class='tab_cadre'>";
    echo "<tr><th>" . _n('Notification', 'Notifications', 2)."</th></tr>";
-   if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_mailing']) {
-      echo "<tr class='tab_bg_1'><td class='center'>".
-            "<a href='notificationmailsetting.form.php'>". __('Email followups configuration') .
-            "</a></td></tr>";
-   }
 
-   if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_ajax']) {
-      echo "<tr class='tab_bg_1'><td class='center'>".
-            "<a href='notificationajaxsetting.form.php'>". __('Ajax followups configuration') .
-            "</a></td></tr>";
-   }
-
-   /*if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_websockets']) {
-      echo "<tr class='tab_bg_1'><td class='center'>".
-            "<a href='notificationwebsocketssetting.form.php'>". __('Websockets followups configuration') .
-            "</a></td></tr>";
-   }*/
-
-   /*if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_sms']) {
-      echo "<tr class='tab_bg_1'><td class='center'>".
-            "<a href='notificationsmssetting.form.php'>". __('SMS followups configuration') .
-            "</a></td></tr>";
-   }*/
-
-
+   /* Glocal parameters */
    if (Session::haveRight("config", READ)) {
       echo "<tr class='tab_bg_1'><td class='center'><a href='notificationtemplate.php'>" .
             _n('Notification template', 'Notification templates', 2) ."</a></td> </tr>";
@@ -281,6 +181,18 @@ if ($CFG_GLPI['use_notifications'] && $notifs_on) {
          __('Unable to configure notifications: please configure at least one followup type using the above configuration.') .
                "</td></tr>";
    }
+
+   /* Per notification parameters */
+   foreach (array_keys($modes) as $mode) {
+      if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_' . $mode]) {
+         $settings_class = 'Notification' . ucfirst($mode) . 'Setting';
+         $settings = new $settings_class();
+         echo "<tr class='tab_bg_1'><td class='center'>".
+            "<a href='" . $settings->getFormURL() ."'>". $settings->getTypeName() .
+            "</a></td></tr>";
+      }
+   }
+
    echo "</table>";
 }
 

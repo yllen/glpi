@@ -37,7 +37,7 @@
 include ('../inc/includes.php');
 
 Session::checkRight("config", UPDATE);
-$notificationmail = new NotificationMailSetting();
+$notificationmail = new NotificationMailingSetting();
 
 if (!empty($_POST["test_smtp_send"])) {
    NotificationMail::testNotification();

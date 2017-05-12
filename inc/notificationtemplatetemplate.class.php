@@ -36,7 +36,7 @@ if (!defined('GLPI_ROOT')) {
 
 
 /**
- * NotificationTemplateTemplates Class
+ * NotificationTemplateTemplate Class
  *
  * @since version 9.2
 **/
@@ -47,7 +47,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
    //WHY? Can edit but not create without that one
    static public $mustBeAttached       = false;
 
-   const MODE_MAIL      = 'mail';
+   const MODE_MAIL      = 'mailing';
    const MODE_AJAX      = 'ajax';
    const MODE_WEBSOCKET = 'websocket';
    const MODE_SMS       = 'sms';
