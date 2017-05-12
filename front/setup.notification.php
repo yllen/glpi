@@ -44,6 +44,7 @@ if (!Session::haveRight("config", READ)
 }
 
 $modes = NotificationTemplateTemplate::getModes();
+$classes = [];
 
 if (isset($_POST['use_notifications'])) {
    $config             = new Config();
@@ -109,7 +110,11 @@ if (Session::haveRight("config", UPDATE)) {
 
    foreach ($modes as $mode => $label) {
       $settings_class = 'Notification' . ucfirst($mode) . 'Setting';
+      if (isset($CFG_GLPI["class_notifications_{$mode}setting"])) {
+         $settings_class = $CFG_GLPI["class_notifications_{$mode}setting"];
+      }
       $settings = new $settings_class();
+      $classes[$mode] = $settings;
 
       echo "<tr>";
       echo "<td>" . $settings->getEnableLabel() . "</td>";
@@ -185,8 +190,7 @@ if ($notifs_on) {
    /* Per notification parameters */
    foreach (array_keys($modes) as $mode) {
       if (Session::haveRight("config", UPDATE) && $CFG_GLPI['notifications_' . $mode]) {
-         $settings_class = 'Notification' . ucfirst($mode) . 'Setting';
-         $settings = new $settings_class();
+         $settings = $classes[$mode];
          echo "<tr class='tab_bg_1'><td class='center'>".
             "<a href='" . $settings->getFormURL() ."'>". $settings->getTypeName() .
             "</a></td></tr>";
