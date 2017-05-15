@@ -108,10 +108,10 @@ if (Session::haveRight("config", UPDATE)) {
    echo "</td>";
    echo "</tr>";
 
-   foreach ($modes as $mode => $label) {
+   foreach ($modes as $mode => $conf) {
       $settings_class = 'Notification' . ucfirst($mode) . 'Setting';
-      if (isset($CFG_GLPI["class_notifications_{$mode}setting"])) {
-         $settings_class = $CFG_GLPI["class_notifications_{$mode}setting"];
+      if ($conf['from'] != 'core') {
+         $settings_class = 'Plugin' . ucfirst($conf['from']) . $settings_class;
       }
       $settings = new $settings_class();
       $classes[$mode] = $settings;

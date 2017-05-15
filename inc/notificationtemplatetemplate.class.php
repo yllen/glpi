@@ -238,14 +238,18 @@ class NotificationTemplateTemplate extends CommonDBChild {
     *
     * @param string $mode  Mode
     * @param string $label Mode's label
+    * @param strign $from  Plugin which registers the mode
     *
     * @return void
     */
-   static public function registerMode($mode, $label) {
+   static public function registerMode($mode, $label, $from) {
       global $CFG_GLPI;
 
       self::getModes();
-      $CFG_GLPI['notifications_modes'][$mode] = $label;
+      $CFG_GLPI['notifications_modes'][$mode] = [
+         'label'  => $label,
+         'from'   => $from
+      ];
    }
 
    /**
@@ -259,19 +263,31 @@ class NotificationTemplateTemplate extends CommonDBChild {
       global $CFG_GLPI;
 
       $core_modes = [
-         self::MODE_MAIL      => __('Email'),
-         self::MODE_AJAX      => __('Ajax'),
-         /*self::MODE_WEBSOCKET => __('Websocket'),
-         self::MODE_SMS       => __('SMS')*/
+         self::MODE_MAIL      => [
+            'label'  => __('Email'),
+            'from'   => 'core'
+         ],
+         self::MODE_AJAX      => [
+            'label'  => __('Ajax'),
+            'from'   => 'core'
+         ]
+         /*self::MODE_WEBSOCKET => [
+            'label'  => __('Websocket'),
+            'from'   => 'core'
+         ],
+         self::MODE_SMS       => [
+            'label'  => __('SMS'),
+            'from'   => 'core'
+         ]*/
       ];
 
       if (!isset($CFG_GLPI['notifications_modes'])) {
          $CFG_GLPI['notifications_modes'] = $core_modes;
       } else {
          //check that core modes are part of the config
-         foreach ($core_modes as $mode => $label) {
+         foreach ($core_modes as $mode => $conf) {
             if (!isset($CFG_GLPI['notifications_modes'][$mode])) {
-               $CFG_GLPI['notifications_modes'][$mode] = $label;
+               $CFG_GLPI['notifications_modes'][$mode] = $conf;
             }
          }
       }
