@@ -128,4 +128,20 @@ abstract class NotificationSetting extends CommonDBTM {
       $this->getFromDB($ID);
       return true;
    }
+
+   /**
+    * Disable (temporary) all notifications
+    *
+    * @return void
+    */
+   static public function disableAll() {
+      global $CFG_GLPI;
+
+      $CFG_GLPI['use_notifications'] = 0;
+      foreach (array_keys($CFG_GLPI) as $key) {
+         if (substr($key, 0, strlen('notifications_')) === 'notifications_') {
+            $CFG_GLPI[$key] = 0;
+         }
+      }
+   }
 }

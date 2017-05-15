@@ -124,12 +124,8 @@ class Transfer extends CommonDBTM {
    function moveItems($items, $to, $options) {
       global $CFG_GLPI;
 
-      // unset mailing
-      $CFG_GLPI["use_notifications"] = 0;
-      $CFG_GLPI['notifications_mailing'] = 0;
-      $CFG_GLPI['notifications_ajax'] = 0;
-      $CFG_GLPI['notifications_websockets'] = 0;
-      $CFG_GLPI['notifications_sms'] = 0;
+      // unset notifications
+      NotificationSetting::disableAll();
 
       $this->options = array('keep_ticket'         => 0,
                              'keep_networklink'    => 0,

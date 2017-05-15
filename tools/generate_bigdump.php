@@ -53,13 +53,8 @@ if (!$auth->Login('glpi', 'glpi', true)) {
     exit('Authentication failed!');
 }
 
-// Force notifications to false
-$CFG_GLPI["use_notifications"] = 0;
-$CFG_GLPI["notifications_mailing"] = 0;
-$CFG_GLPI["notifications_ajax"] = 0;
-$CFG_GLPI["notifications_websocket"] = 0;
-$CFG_GLPI["notifications_sms"] = 0;
-
+// unset notifications
+NotificationSetting::disableAll();
 
 $entity_number = 10;
 
