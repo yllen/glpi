@@ -631,7 +631,7 @@ abstract class CommonITILObject extends CommonDBTM {
                   if (!empty($this->userlinkclass)) {
                      if (isset($input['_itil_requester']['alternative_email'])
                          && $input['_itil_requester']['alternative_email']
-                         && !NotificationMail::isUserAddressValid($input['_itil_requester']['alternative_email'])) {
+                         && !NotificationMailing::isUserAddressValid($input['_itil_requester']['alternative_email'])) {
 
                         $input['_itil_requester']['alternative_email'] = '';
                         Session::addMessageAfterRedirect(__('Invalid email address'), false, ERROR);
@@ -687,7 +687,7 @@ abstract class CommonITILObject extends CommonDBTM {
                   if (!empty($this->userlinkclass)) {
                      if (isset($input['_itil_observer']['alternative_email'])
                          && $input['_itil_observer']['alternative_email']
-                         && !NotificationMail::isUserAddressValid($input['_itil_observer']['alternative_email'])) {
+                         && !NotificationMailing::isUserAddressValid($input['_itil_observer']['alternative_email'])) {
 
                         $input['_itil_observer']['alternative_email'] = '';
                         Session::addMessageAfterRedirect(__('Invalid email address'), false, ERROR);
@@ -3276,7 +3276,7 @@ abstract class CommonITILObject extends CommonDBTM {
                      $uemail = $user->getDefaultEmail();
                   }
                   $text .= sprintf(__('%1$s: %2$s'), __('Email'), $uemail);
-                  if (!NotificationMail::isUserAddressValid($uemail)) {
+                  if (!NotificationMailing::isUserAddressValid($uemail)) {
                      $text .= "&nbsp;<span class='red'>".__('Invalid email address')."</span>";
                   }
                }

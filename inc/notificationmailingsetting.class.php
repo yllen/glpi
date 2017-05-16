@@ -97,7 +97,7 @@ class NotificationMailingSetting extends NotificationSetting {
          echo "<td>" . __('Administrator email') . "</td>";
          echo "<td><input type='text' name='admin_email' size='40' value='".
                     $CFG_GLPI["admin_email"]."'>";
-         if (!NotificationMail::isUserAddressValid($CFG_GLPI["admin_email"])) {
+         if (!NotificationMailing::isUserAddressValid($CFG_GLPI["admin_email"])) {
              echo "<br/><span class='red'>&nbsp;".__('Invalid email address')."</span>";
          }
          echo "</td>";
@@ -110,7 +110,7 @@ class NotificationMailingSetting extends NotificationSetting {
          echo "<td >" . __('Administrator reply-to email (if needed)') . "</td>";
          echo "<td><input type='text' name='admin_reply' size='40' value='" .
                     $CFG_GLPI["admin_reply"] . "'>";
-         if (!empty($CFG_GLPI['admin_reply']) && !NotificationMail::isUserAddressValid($CFG_GLPI["admin_reply"])) {
+         if (!empty($CFG_GLPI['admin_reply']) && !NotificationMailing::isUserAddressValid($CFG_GLPI["admin_reply"])) {
             echo "<br/><span class='red'>&nbsp;".__('Invalid email address')."</span>";
          }
          echo " </td>";

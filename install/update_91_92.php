@@ -605,7 +605,7 @@ function update91to92() {
          'name'                     => $notif_options['label'],
          'itemtype'                 => 'Ticket',
          'event'                    => $event,
-         'mode'                     => 'mail',
+         'mode'                     => NotificationTemplateTemplate::MODE_MAIL,
          'notificationtemplates_id' => 0,
          'is_recursive'             => 1,
          'is_active'                => 0,
@@ -726,7 +726,7 @@ function update91to92() {
 
    if (!countElementsInTable('glpi_notifications',
                              "`itemtype`='SavedSearch_Alert'")) {
-      $query = "INSERT INTO `glpi_notifications` VALUES (null,'Saved searches','0','SavedSearch_Alert','alert','mail','24','','1','1','2016-02-08 16:57:46',NULL);";
+      $query = "INSERT INTO `glpi_notifications` VALUES (null,'Saved searches','0','SavedSearch_Alert','alert','" . NotificationTemplateTemplate::MODE_MAIL . "','24','','1','1','2016-02-08 16:57:46',NULL);";
       $DB->queryOrDie($query, "9.2 Add saved search alerts notification");
       $notid = $DB->insert_id();
 

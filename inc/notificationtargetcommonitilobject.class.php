@@ -108,7 +108,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
             if (!empty($data['altemail'])
                 && ($data['altemail'] != $author_email)
-                && NotificationMail::isUserAddressValid($data['altemail'])) {
+                && NotificationMailing::isUserAddressValid($data['altemail'])) {
                $author_email = $data['altemail'];
             }
             if (empty($author_lang)) {
@@ -138,7 +138,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                       AND `$userlinktable`.`type` = '$type'";
       foreach ($DB->request($query) as $data) {
          if ($this->isMailMode()) {
-            if (NotificationMail::isUserAddressValid($data['alternative_email'])) {
+            if (NotificationMailing::isUserAddressValid($data['alternative_email'])) {
                $this->addToAddressesList(array('email'    => $data['alternative_email'],
                                                'language' => $CFG_GLPI["language"],
                                                'users_id' => -1));
@@ -256,7 +256,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
 
          if (!empty($this->options['_old_user']['alternative_email'])
              && ($this->options['_old_user']['alternative_email'] != $author_email)
-             && NotificationMail::isUserAddressValid($this->options['_old_user']['alternative_email'])) {
+             && NotificationMailing::isUserAddressValid($this->options['_old_user']['alternative_email'])) {
 
             $author_email = $this->options['_old_user']['alternative_email'];
          }

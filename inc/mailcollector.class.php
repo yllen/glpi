@@ -148,7 +148,7 @@ class MailCollector  extends CommonDBTM {
          $input["host"] = Toolbox::constructMailServerConfig($input);
       }
 
-      if (isset($input['name']) && !NotificationMail::isUserAddressValid($input['name'])) {
+      if (isset($input['name']) && !NotificationMailing::isUserAddressValid($input['name'])) {
          Session::addMessageAfterRedirect(__('Invalid email address'), false, ERROR);
       }
 
@@ -173,7 +173,7 @@ class MailCollector  extends CommonDBTM {
          $input["host"] = Toolbox::constructMailServerConfig($input);
       }
 
-      if (!NotificationMail::isUserAddressValid($input['name'])) {
+      if (!NotificationMailing::isUserAddressValid($input['name'])) {
          Session::addMessageAfterRedirect(__('Invalid email address'), false, ERROR);
       }
 

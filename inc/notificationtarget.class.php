@@ -557,7 +557,7 @@ class NotificationTarget extends CommonDBChild {
          $new_mail = trim(Toolbox::strtolower($data['email']));
 
          if (!empty($new_mail)) {
-            if (NotificationMail::isUserAddressValid($new_mail)
+            if (NotificationMailing::isUserAddressValid($new_mail)
                && !isset($this->target[$new_mail])) {
                $param['email'] = $new_mail;
                $new_target = $new_mail;
@@ -1009,7 +1009,7 @@ class NotificationTarget extends CommonDBChild {
       foreach ($DB->request('glpi_entities',
                array('id' => $this->getEntity())) as $data) {
 
-         if (NotificationMail::isUserAddressValid($data['admin_email'])) {
+         if (NotificationMailing::isUserAddressValid($data['admin_email'])) {
             return array('email' => $data['admin_email'],
                          'name'  => $data['admin_email_name']);
          }
@@ -1034,7 +1034,7 @@ class NotificationTarget extends CommonDBChild {
       foreach ($DB->request('glpi_entities',
                array('id' => $this->getEntity())) as $data) {
 
-         if (NotificationMail::isUserAddressValid($data['admin_reply'])) {
+         if (NotificationMailing::isUserAddressValid($data['admin_reply'])) {
             return array('email' => $data['admin_reply'],
                          'name'  => $data['admin_reply_name']);
          }

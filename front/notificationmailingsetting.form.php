@@ -40,7 +40,7 @@ Session::checkRight("config", UPDATE);
 $notificationmail = new NotificationMailingSetting();
 
 if (!empty($_POST["test_smtp_send"])) {
-   NotificationMail::testNotification();
+   NotificationMailing::testNotification();
    Html::back();
 
 } else if (!empty($_POST["update"])) {

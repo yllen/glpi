@@ -1586,7 +1586,7 @@ class Ticket extends CommonITILObject {
       if (isset($input['_users_id_requester_notif'])
          && isset($input['_users_id_requester_notif']['alternative_email'])) {
          foreach ($input['_users_id_requester_notif']['alternative_email'] as $email) {
-            if ($email && !NotificationMail::isUserAddressValid($email)) {
+            if ($email && !NotificationMailing::isUserAddressValid($email)) {
                Session::addMessageAfterRedirect(
                   sprintf(__('Invalid email address %s'), $email),
                   false,

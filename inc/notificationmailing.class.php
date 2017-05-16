@@ -39,9 +39,9 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /**
- *  NotificationMail class implements the NotificationInterface
+ *  NotificationMailing class implements the NotificationInterface
 **/
-class NotificationMail implements NotificationInterface {
+class NotificationMailing implements NotificationInterface {
 
    /**
     * Check data
