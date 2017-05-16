@@ -571,13 +571,14 @@ class QueuedMail extends CommonDBTM {
    /**
     * Get pending notifications in queue
     *
-    * @param string $send_time   Maximum sent_time
-    * @param array  $limit_modes Modes to limit to
-    * @param array  $extra_where Extra params to add to the where clause
+    * @param string  $send_time   Maximum sent_time
+    * @param integer $limit       Query limit clause
+    * @param array   $limit_modes Modes to limit to
+    * @param array   $extra_where Extra params to add to the where clause
     *
     * @return array
     */
-   static public function getPendings($send_time = null, $limit_modes = null, $extra_where = []) {
+   static public function getPendings($send_time = null, $limit = 20, $limit_modes = null, $extra_where = []) {
       global $DB, $CFG_GLPI;
 
       if ($send_time === null) {
@@ -589,11 +590,11 @@ class QueuedMail extends CommonDBTM {
          'WHERE'  => [
             'is_deleted'   => 0,
             'mode'         => 'TOFILL',
-            'sent_time'    => ['<', $send_time],
+            'send_time'    => ['<', $send_time],
          ] +  $extra_where,
          'ORDER'  => 'send_time ASC',
          'START'  => 0,
-         'LIMIT'  => $task->fields['param']
+         'LIMIT'  => $limit
       ];
 
       $pendings = [];
@@ -640,13 +641,19 @@ class QueuedMail extends CommonDBTM {
       $send_time = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 
       $mail = new self();
-      $pendings = self::getPendings($send_time, [NotificationTemplateTemplate::MODE_MAIL]);
+      $pendings = self::getPendings(
+         $send_time,
+         $task->fields['param'],
+         [NotificationTemplateTemplate::MODE_MAIL]
+      );
 
-      foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
-         if ($mail->sendMailById($data['id'])) {
-            $cron_status = 1;
-            if (!is_null($task)) {
-               $task->addVolume(1);
+      if (isset($pendings[NotificationTemplateTemplate::MODE_MAIL])) {
+         foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
+            if ($mail->sendMailById($data['id'])) {
+               $cron_status = 1;
+               if (!is_null($task)) {
+                  $task->addVolume(1);
+               }
             }
          }
       }
@@ -699,6 +706,7 @@ class QueuedMail extends CommonDBTM {
          && !empty($items_id)) {
          $pendings = self::getPendings(
             null,
+            1,
             [NotificationTemplateTemplate::MODE_MAIL],
             [
                'itemtype'  => $itemtype,
@@ -707,8 +715,10 @@ class QueuedMail extends CommonDBTM {
          );
 
          $mail = new self();
-         foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
-            $mail->sendMailById($data['id']);
+         if (isset($pendings[NotificationTemplateTemplate::MODE_MAIL])) {
+            foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
+               $mail->sendMailById($data['id']);
+            }
          }
       }
    }
