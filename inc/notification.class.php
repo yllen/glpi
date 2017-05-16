@@ -510,8 +510,8 @@ class Notification extends CommonDBTM {
                       AND `glpi_notifications`.`is_active`='1'";
 
       $modes = NotificationTemplateTemplate::getModes();
+      $restrict_modes = null;
       foreach ($modes as $mode => $conf) {
-         $restrict_modes = null;
          $count = 0;
          if ($CFG_GLPI['notifications_' . $mode]) {
             if ($restrict_modes === null) {
@@ -525,10 +525,10 @@ class Notification extends CommonDBTM {
             }
             $restrict_modes .= "`glpi_notificationtemplatetemplates`.`mode` = '" . $settings_class::getMode() . "'";
          }
-         if ($restrict_modes !== null) {
-            $restrict_modes .= ')';
-            $query .= $restrict_modes;
-         }
+      }
+      if ($restrict_modes !== null) {
+         $restrict_modes .= ')';
+         $query .= $restrict_modes;
       }
 
       $query .= " ORDER BY `glpi_entities`.`level` DESC";
