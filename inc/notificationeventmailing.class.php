@@ -97,8 +97,13 @@ class NotificationEventMailing implements NotificationEventInterface {
                                                                   $options)) {
                         //Send notification to the user
                         if ($label == '') {
-                           $send_data = $template->getDataToSend($notificationtarget, $tid,
-                                                               $users_infos, $options);
+                           $send_data = $template->getDataToSend(
+                              $notificationtarget,
+                              $tid,
+                              $user_email,
+                              $users_infos,
+                              $options
+                           );
                            $send_data['_notificationtemplates_id'] = $data['notificationtemplates_id'];
                            $send_data['_itemtype']                 = $item->getType();
                            $send_data['_items_id']                 = $item->getID();
@@ -131,5 +136,23 @@ class NotificationEventMailing implements NotificationEventInterface {
          unset($email_processed);
          unset($email_notprocessed);
       }
+   }
+
+
+   static public function getTargetField(&$data) {
+      $field = 'email';
+
+      if (!isset($data[$field])
+         && isset($data['users_id'])) {
+         // No email set : get default for user
+         $data[$field] = UserEmail::getDefaultForUser($data['users_id']);
+      }
+      $data[$field] = trim(Toolbox::strtolower($data[$field]));
+
+      if (empty($data[$field]) or !NotificationMailing::isUserAddressValid($data[$field])) {
+         $data[$field] = null;
+      }
+
+      return $field;
    }
 }

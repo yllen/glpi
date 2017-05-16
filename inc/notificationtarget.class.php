@@ -85,6 +85,7 @@ class NotificationTarget extends CommonDBChild {
    public $raiseevent                  = '';
 
    private $mode                       = null;
+   private $event                      = null;
 
    const TAG_LANGUAGE               = 'lang';
    const TAG_VALUE                  = 'tag';
@@ -548,31 +549,10 @@ class NotificationTarget extends CommonDBChild {
          $param['users_id'] = $data['users_id'];
       }
 
-      if ($type == self::TYPE_EMAIL) {
-         // No email set : get default for user
-         if (!isset($data['email'])
-            && isset($data['users_id'])) {
-            $data['email'] = UserEmail::getDefaultForUser($data['users_id']);
-         }
-         $new_mail = trim(Toolbox::strtolower($data['email']));
-
-         if (!empty($new_mail)) {
-            if (NotificationMailing::isUserAddressValid($new_mail)
-               && !isset($this->target[$new_mail])) {
-               $param['email'] = $new_mail;
-               $new_target = $new_mail;
-            }
-         }
-      }
-      if ($type == self::TYPE_ID) {
-         if (!isset($data['users_id'])) {
-            throw new \RuntimeException('User ID is missing!');
-         }
-         $new_target = $data['users_id'];
-      }
-
-      if ($new_target != null) {
-         $this->target[$new_target] = $param;
+      $target_field = $this->event::getTargetField($data, $param);
+      if ($data[$target_field] !== null) {
+         $param[$target_field] = $data[$target_field];
+         $this->target[$data[$target_field]] = $param;
       }
    }
 
@@ -1420,6 +1400,18 @@ class NotificationTarget extends CommonDBChild {
     */
    protected function isMailMode() {
       return ($this->mode == NotificationTemplateTemplate::MODE_MAIL);
+   }
+
+   /**
+    * Set event
+    *
+    * @param string $event Event class
+    *
+    * @return NotificationTarget
+    */
+   public function setEvent($event) {
+      $this->event = $event;
+      return $this;
    }
 
    /**

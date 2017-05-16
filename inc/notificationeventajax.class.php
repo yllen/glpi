@@ -92,8 +92,13 @@ class NotificationEventAjax implements NotificationEventInterface {
                                                                   $options)) {
                         //Send notification to the user
                         if ($label == '') {
-                           $send_data = $template->getDataToSend($notificationtarget, $tid,
-                                                               $users_infos, $options);
+                           $send_data = $template->getDataToSend(
+                              $notificationtarget,
+                              $tid,
+                              $user_id,
+                              $users_infos,
+                              $options
+                           );
                            $send_data['_notificationtemplates_id'] = $data['notificationtemplates_id'];
                            $send_data['_itemtype']                 = $item->getType();
                            $send_data['_items_id']                 = $item->getID();
@@ -126,5 +131,17 @@ class NotificationEventAjax implements NotificationEventInterface {
          unset($processed);
          unset($notprocessed);
       }
+   }
+
+
+   static public function getTargetField(&$data) {
+      $field = 'users_id';
+
+      if (!isset($data[$field])) {
+         //Missing users_id; set to null
+         $data[$field] = null;
+      }
+
+      return $field;
    }
 }

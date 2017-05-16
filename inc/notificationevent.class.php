@@ -162,7 +162,7 @@ class NotificationEvent extends CommonDBTM {
                   $options,
                   $label,
                   $data,
-                  $notificationtarget,
+                  $notificationtarget->setEvent($eventclass),
                   $template,
                   $notify_me
                );

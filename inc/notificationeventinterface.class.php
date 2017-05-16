@@ -60,4 +60,13 @@ interface NotificationEventInterface {
       NotificationTemplate $template,
       $notify_me
    );
+
+   /**
+    * Get (and populate if needed) target field for notification
+    *
+    * @param array $data Input event data
+    *
+    * @return string
+    */
+   static public function getTargetField(&$data);
 }
