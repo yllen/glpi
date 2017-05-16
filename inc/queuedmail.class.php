@@ -569,11 +569,66 @@ class QueuedMail extends CommonDBTM {
 
 
    /**
+    * Get pending notifications in queue
+    *
+    * @param string $send_time   Maximum sent_time
+    * @param array  $limit_modes Modes to limit to
+    * @param array  $extra_where Extra params to add to the where clause
+    *
+    * @return array
+    */
+   static public function getPendings($send_time = null, $limit_modes = null, $extra_where = []) {
+      global $DB, $CFG_GLPI;
+
+      if ($send_time === null) {
+         $send_time = date('Y-m-d H:i:s');
+      }
+
+      $base_query = [
+         'FROM'   => self::getTable(),
+         'WHERE'  => [
+            'is_deleted'   => 0,
+            'mode'         => 'TOFILL',
+            'sent_time'    => ['<', $send_time],
+         ] +  $extra_where,
+         'ORDER'  => 'send_time ASC',
+         'START'  => 0,
+         'LIMIT'  => $task->fields['param']
+      ];
+
+      $pendings = [];
+      $modes = NotificationTemplateTemplate::getModes();
+      foreach (array_keys($modes) as $mode) {
+         if ($limit_modes !== null && !in_array($mode, $limit_modes)
+            || !$CFG_GLPI['notifications_' . $mode]
+         ) {
+            //mode is not in limits or is disabled, passing
+            continue;
+         }
+         $query = $base_query;
+         $query['WHERE']['mode'] = $mode;
+
+         $iterator = $DB->request($query);
+         if ($iterator->numRows() > 0) {
+            $pendings[$mode] = [];
+            while ($row = $iterator->next()) {
+               $pendings[$mode][] = $row;
+            }
+         }
+      }
+
+      return $pendings;
+   }
+
+
+   /**
     * Cron action on queued mails : send mails in queue
     *
-    * @param $task for log, if NULL display (default NULL)
+    * @param CommonDBTM $task for log (default NULL)
+    *
+    * @return integer either 0 or 1
    **/
-   static function cronQueuedMail($task=NULL) {
+   static function cronQueuedMail($task = null) {
       global $DB, $CFG_GLPI;
 
       if (!$CFG_GLPI["notifications_mailing"]) {
@@ -581,18 +636,13 @@ class QueuedMail extends CommonDBTM {
       }
       $cron_status = 0;
 
-      // Send mail at least 1 minute after adding in queue to be sure that process on it is finished
+      // Send notifications at least 1 minute after adding in queue to be sure that process on it is finished
       $send_time = date("Y-m-d H:i:s", strtotime("+1 minutes"));
-      $query       = "SELECT `glpi_queuedmails`.*
-                      FROM `glpi_queuedmails`
-                      WHERE NOT `glpi_queuedmails`.`is_deleted`
-                            AND `glpi_queuedmails`.`mode` = '" . NotificationTemplateTemplate::MODE_MAIL . "'
-                            AND `glpi_queuedmails`.`send_time` < '".$send_time."'
-                      ORDER BY `glpi_queuedmails`.`send_time` ASC
-                      LIMIT 0, ".$task->fields['param'];
 
       $mail = new self();
-      foreach ($DB->request($query) as $data) {
+      $pendings = self::getPendings($send_time, [NotificationTemplateTemplate::MODE_MAIL]);
+
+      foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
          if ($mail->sendMailById($data['id'])) {
             $cron_status = 1;
             if (!is_null($task)) {
@@ -607,9 +657,11 @@ class QueuedMail extends CommonDBTM {
    /**
     * Cron action on queued mails : clean mail queue
     *
-    * @param $task for log, if NULL display (default NULL)
+    * @param CommonDBTM $task for log (default NULL)
+    *
+    * @return integer either 0 or 1
    **/
-   static function cronQueuedMailClean($task=NULL) {
+   static function cronQueuedMailClean($task = null) {
       global $DB;
 
       $vol = 0;
@@ -635,26 +687,27 @@ class QueuedMail extends CommonDBTM {
    /**
     * Force sending all mails in queue for a specific item
     *
-    * @param $itemtype item type
-    * @param $items_id id of the item
+    * @param string  $itemtype item type
+    * @param integer $items_id id of the item
+    *
+    * @return void
    **/
    static function forceSendFor($itemtype, $items_id) {
       global $DB;
 
       if (!empty($itemtype)
-          && !empty($items_id)) {
-         // Send mail at least 1 minute after adding in queue to be sure that process on it is finished
-         $query = "SELECT `glpi_queuedmails`.*
-                   FROM `glpi_queuedmails`
-                   WHERE NOT `glpi_queuedmails`.`is_deleted`
-                        AND `glpi_queuedmails`.`mode` = '" . NotificationTemplateTemplate::MODE_MAIL . "'
-                        AND `glpi_queuedmails`.`itemtype` = '$itemtype'
-                        AND `glpi_queuedmails`.`items_id` = '$items_id'
-                        AND `glpi_queuedmails`.`send_time` <= NOW()
-                   ORDER BY `glpi_queuedmails`.`send_time` ASC";
+         && !empty($items_id)) {
+         $pendings = self::getPendings(
+            null,
+            [NotificationTemplateTemplate::MODE_MAIL],
+            [
+               'itemtype'  => $itemtype,
+               'items_id'  => $items_id
+            ]
+         );
 
          $mail = new self();
-         foreach ($DB->request($query) as $data) {
+         foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
             $mail->sendMailById($data['id']);
          }
       }
