@@ -313,8 +313,6 @@ $CFG_GLPI["notificationtemplates_types"]  = array('CartridgeItem', 'Change', 'Co
                                                   'Project', 'ProjectTask', 'Reservation',
                                                   'SoftwareLicense', 'Ticket', 'User', 'SavedSearch_Alert');
 
-$CFG_GLPI["notificationmethods_types"]    = array('NotificationMail');
-
 $CFG_GLPI["union_search_type"]            = array('ReservationItem' => "reservation_types",
                                                   'AllAssets'       => "asset_types");
 
