@@ -140,7 +140,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
             echo "<tr class='tab_bg_2'>";
             echo "<td>".$notiftpl->getLink()."</td>";
             echo "<td>".$tpl->getLink()."</td>";
-            echo "<td>" . self::getMode($data['mode']) . "</td>";
+            echo "<td>" . self::getMode($data['mode'])['label'] . "</td>";
             echo "</tr>";
             Session::addToNavigateListItems(__CLASS__, $data['id']);
          }
@@ -222,10 +222,9 @@ class NotificationTemplateTemplate extends CommonDBChild {
     *
     * @param string $mode the mode to use
     *
-    * @return string
+    * @return array
    **/
    static function getMode($mode) {
-
       $tab = self::getModes();
       if (isset($tab[$mode])) {
          return $tab[$mode];
@@ -302,7 +301,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
       }
       switch ($field) {
          case 'mode':
-            return self::getMode($values[$field]);
+            return self::getMode($values[$field])['label'];
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }

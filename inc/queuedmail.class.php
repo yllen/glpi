@@ -398,7 +398,7 @@ class QueuedMail extends CommonDBTM {
             return $out;
             break;
          case 'mode':
-            $out = NotificationTemplateTemplate::getMode($values[$field]);
+            $out = NotificationTemplateTemplate::getMode($values[$field])['label'];
             return $out;
             break;
 
