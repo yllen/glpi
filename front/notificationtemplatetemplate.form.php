@@ -82,7 +82,8 @@ if (isset($_POST["add"])) {
       "notificationtemplatetemplate"
    );
    $notiftpl->display([
-      'id'                 => $_GET["id"]
+      'id'                 => $_GET['id'],
+      'notifications_id'   => $_GET['notifications_id']
    ]);
    Html::footer();
 }

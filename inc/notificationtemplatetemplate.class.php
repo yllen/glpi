@@ -200,7 +200,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Mode') . "</td>";
       echo "<td>";
-      Dropdown::showFromArray('mode', self::getModes(), ['value' => $this->getField('mode')]);
+      self::dropdownMode(['name' => 'mode', 'value' => $this->getField('mode'), 'multiple' => false]);
       echo "</td>";
 
       echo "<td>". NotificationTemplate::getTypeName(1)."</td>";
@@ -344,6 +344,11 @@ class NotificationTemplateTemplate extends CommonDBChild {
          }
       }
 
-      return Dropdown::showFromArray($p['name'], self::getModes(), $p);
+      $modes = self::getModes();
+      foreach ($modes as &$mode) {
+         $mode = $mode['label'];
+      }
+
+      return Dropdown::showFromArray($p['name'], $modes, $p);
    }
 }
