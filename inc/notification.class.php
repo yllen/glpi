@@ -487,9 +487,11 @@ class Notification extends CommonDBTM {
 
 
    /**
-    * @param $event
-    * @param $itemtype
-    * @param $entity
+    * @param string $event    Event name
+    * @param string $itemtype Item type
+    * @param int    $entity   Restrict to entity
+    *
+    * @return ResultSet
    **/
    static function getNotificationsByEventAndType($event, $itemtype, $entity) {
       global $DB, $CFG_GLPI;
@@ -509,12 +511,23 @@ class Notification extends CommonDBTM {
 
       $modes = NotificationTemplateTemplate::getModes();
       foreach ($modes as $mode => $conf) {
-         if (!$CFG_GLPI['notifications_' . $mode]) {
+         $restrict_modes = null;
+         $count = 0;
+         if ($CFG_GLPI['notifications_' . $mode]) {
+            if ($restrict_modes === null) {
+               $restrict_modes = ' AND (';
+            } else {
+               $restrict_modes .= ' OR ';
+            }
             $settings_class = 'Notification' . ucfirst($mode) . 'Setting';
             if ($conf['from'] != 'core') {
                $settings_class = 'Plugin' . ucfirst($conf['from']) . $settings_class;
             }
-            $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . $settings_class::getMode() . "'";
+            $restrict_modes .= "`glpi_notificationtemplatetemplates`.`mode` = '" . $settings_class::getMode() . "'";
+         }
+         if ($restrict_modes !== null) {
+            $restrict_modes .= ')';
+            $query .= $restrict_modes;
          }
       }
 
