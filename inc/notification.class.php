@@ -507,21 +507,16 @@ class Notification extends CommonDBTM {
                                                  $entity, true) ."
                       AND `glpi_notifications`.`is_active`='1'";
 
-      if (!$CFG_GLPI['notifications_mailing']) {
-         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_MAIL . "'";
+      $modes = NotificationTemplateTemplate::getModes();
+      foreach ($modes as $mode => $conf) {
+         if (!$CFG_GLPI['notifications_' . $mode]) {
+            $settings_class = 'Notification' . ucfirst($mode) . 'Setting';
+            if ($conf['from'] != 'core') {
+               $settings_class = 'Plugin' . ucfirst($conf['from']) . $settings_class;
+            }
+            $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . $settings_class::getMode() . "'";
+         }
       }
-
-      if (!$CFG_GLPI['notifications_ajax']) {
-         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_AJAX . "'";
-      }
-
-      /*if (!$CFG_GLPI['notifications_websocket']) {
-         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_WEBSOCKET . "'";
-      }*/
-
-      /*if (!$CFG_GLPI['notifications_sms']) {
-         $query .= " AND NOT `glpi_notificationtemplatetemplates`.`mode` = '" . NotificationTemplateTemplate::MODE_SMS . "'";
-      }*/
 
       $query .= " ORDER BY `glpi_entities`.`level` DESC";
 
