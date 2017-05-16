@@ -150,7 +150,11 @@ class NotificationEvent extends CommonDBTM {
             }
 
             $options['mode'] = $data['mode'];
+            $mode = NotificationTemplateTemplate::getMode($data['mode']);
             $eventclass = 'NotificationEvent' . ucfirst($data['mode']);
+            if ($mode['from'] != 'core') {
+               $eventclass = 'Plugin' . ucfirst($mode['from']) . $eventclass;
+            }
             if (class_exists($eventclass)) {
                $eventclass::raise(
                   $event,

@@ -458,14 +458,18 @@ class Notification extends CommonDBTM {
    /**
     * Send notification
     *
-    * @param array $mailing_options Options
+    * @param array $options Options
     *
     * @return void
    **/
-   static function send($mailing_options) {
-      $classname = 'Notification' . ucfirst($mailing_options['mode']);
-      $mail = new $classname();
-      $mail->sendNotification($mailing_options);
+   static function send($options) {
+      $classname = 'Notification' . ucfirst($options['mode']);
+      $mode = NotificationTemplateTemplate::getMode($options['mode']);
+      if ($mode['from'] != 'core') {
+         $classname = 'Plugin' . ucfirst($mode['from']) . $classname;
+      }
+      $notif = new $classname();
+      $notif->sendNotification($options);
    }
 
 
