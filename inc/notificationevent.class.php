@@ -151,16 +151,26 @@ class NotificationEvent extends CommonDBTM {
 
             $options['mode'] = $data['mode'];
             $eventclass = 'NotificationEvent' . ucfirst($data['mode']);
-            $eventclass::raise(
-               $event,
-               $item,
-               $options,
-               $label,
-               $data,
-               $notificationtarget,
-               $template,
-               $notify_me
-            );
+            if (class_exists($eventclass)) {
+               $eventclass::raise(
+                  $event,
+                  $item,
+                  $options,
+                  $label,
+                  $data,
+                  $notificationtarget,
+                  $template,
+                  $notify_me
+               );
+            } else {
+               Toolbox::logDebug('Missing event class for mode ' . $data['mode'] . ' (' . $eventclass . ')');
+               $label = NotificationTemplateTemplate::getMode($data['mode'])['label'];
+               Session::addMessageAfterRedirect(
+                  sprintf(__('Unable to send notification using %1$s'), $label),
+                  true,
+                  ERROR
+               );
+            }
          }
       }
       $template = null;
