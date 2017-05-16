@@ -600,12 +600,19 @@ class QueuedMail extends CommonDBTM {
       $pendings = [];
       $modes = NotificationTemplateTemplate::getModes();
       foreach (array_keys($modes) as $mode) {
+         $eventclass = 'NotificationEvent' . ucfirst($data['mode']);
+         if ($mode['from'] != 'core') {
+            $eventclass = 'Plugin' . ucfirst($mode['from']) . $eventclass;
+         }
+
          if ($limit_modes !== null && !in_array($mode, $limit_modes)
             || !$CFG_GLPI['notifications_' . $mode]
+            || !$eventclass::canCron()
          ) {
-            //mode is not in limits or is disabled, passing
+            //mode is not in limits, is disabled, or cannot be called from cron, passing
             continue;
          }
+
          $query = $base_query;
          $query['WHERE']['mode'] = $mode;
 

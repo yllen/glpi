@@ -69,4 +69,11 @@ interface NotificationEventInterface {
     * @return string
     */
    static public function getTargetField(&$data);
+
+   /**
+    * Whether notifications can be handled by a crontab
+    *
+    * @return boolean
+    */
+   static public function canCron();
 }
