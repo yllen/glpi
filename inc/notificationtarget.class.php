@@ -549,7 +549,8 @@ class NotificationTarget extends CommonDBChild {
          $param['users_id'] = $data['users_id'];
       }
 
-      $target_field = $this->event::getTargetField($data, $param);
+      $eventclass = $this->event;
+      $target_field = $eventclass::getTargetField($data, $param);
       if ($data[$target_field] !== null) {
          $param[$target_field] = $data[$target_field];
          $this->target[$data[$target_field]] = $param;
