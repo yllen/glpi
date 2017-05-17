@@ -96,9 +96,6 @@ class NotificationTarget extends CommonDBChild {
    const GLPI_USER                  = 1;
    const EXTERNAL_USER              = 2;
 
-   const TYPE_EMAIL                 = 0;
-   const TYPE_ID                    = 1;
-
    /**
     * @param string $entity  (default '')
     * @param string $event   (default '')
@@ -441,49 +438,15 @@ class NotificationTarget extends CommonDBChild {
       return array();
    }
 
-   /**
-    * Add new mail with lang to current email array
-    *
-    * @param array $data Data (mail, lang[, id for user])
-    *
-    * @return void|false
-   **/
-   function addToAddressesList(array $data) {
-      if ($this->isMailMode()) {
-         return $this->addToRecipientsList($data, self::TYPE_EMAIL);
-      } else {
-         throw new \RuntimeException(
-            'Mode must be set to MAIL to use this!'
-         );
-      }
-   }
-
-   /**
-    * Add new ID with lang to current IDs array
-    *
-    * @param array $data Data (mail, lang[, id for user])
-    *
-    * @return void|false
-   **/
-   function addToIdList(array $data) {
-      if (!$this->isMailMode()) {
-         return $this->addToRecipientsList($data, self::TYPE_ID);
-      } else {
-         throw new \RuntimeException(
-            'MAIL mode is forbidden to use this!'
-         );
-      }
-   }
 
    /**
     * Add new recipient with lang to current recipients array
     *
-    * @param array   $data Data (mail, lang[, id for user])
-    * @param integer $type Type of data to retrieve (see self::TYPE_*)
+    * @param array $data Data (users_id, lang[, field used for notification])
     *
     * @return void|false
    **/
-   function addToRecipientsList(array $data, $type) {
+   function addToRecipientsList(array $data) {
       global $CFG_GLPI;
 
       $new_target = null;
@@ -599,12 +562,12 @@ class NotificationTarget extends CommonDBChild {
     * @return void
     */
    final protected function addAdmin() {
-      global $CFG_GLPI;
+      $eventclass = $this->event;
+      $admin_data = $eventclass::getAdminData();
 
-      $this->addToAddressesList(array("email"    => $CFG_GLPI["admin_email"],
-                                      "name"     => $CFG_GLPI["admin_email_name"],
-                                      "language" => $CFG_GLPI["language"],
-                                      'usertype' => self::getDefaultUserType()));
+      if ($admin_data) {
+         $this->addToRecipientsList($admin_data);
+      }
    }
 
 
@@ -619,8 +582,10 @@ class NotificationTarget extends CommonDBChild {
       $user = new User();
       if ($this->obj->isField('users_id')
           && $user->getFromDB($this->obj->getField('users_id'))) {
-         $this->addToAddressesList(array('language' => $user->getField('language'),
-                                         'users_id' => $user->getField('id')));
+         $this->addToRecipientsList([
+            'language' => $user->getField('language'),
+            'users_id' => $user->getField('id')
+         ]);
       }
    }
 
@@ -729,7 +694,7 @@ class NotificationTarget extends CommonDBChild {
       }
 
       foreach ($DB->request($query) as $data) {
-         $this->addToAddressesList($data);
+         $this->addToRecipientsList($data);
       }
    }
 
@@ -890,7 +855,7 @@ class NotificationTarget extends CommonDBChild {
     *
     * @return void
    **/
-   function addUserByField($field, $search_in_object=false) {
+   final protected function addUserByField($field, $search_in_object=false) {
       global $DB;
 
       $id = array();
@@ -912,7 +877,7 @@ class NotificationTarget extends CommonDBChild {
 
          foreach ($DB->request($query) as $data) {
             //Add the user email and language in the notified users list
-            $this->addToAddressesList($data);
+            $this->addToRecipientsList($data);
          }
       }
    }
@@ -971,7 +936,7 @@ class NotificationTarget extends CommonDBChild {
                WHERE `glpi_profiles_users`.`profiles_id` = '".$profiles_id."';";
 
       foreach ($DB->request($query) as $data) {
-         $this->addToAddressesList($data);
+         $this->addToRecipientsList($data);
       }
    }
 

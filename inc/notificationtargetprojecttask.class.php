@@ -130,7 +130,7 @@ class NotificationTargetProjectTask extends NotificationTarget {
       $user = new User;
       foreach ($DB->request($query) as $data) {
          if ($user->getFromDB($data['items_id'])) {
-            $this->addToAddressesList(array('language' => $user->getField('language'),
+            $this->addToRecipientsList(array('language' => $user->getField('language'),
                                             'users_id' => $user->getField('id')));
          }
       }
@@ -172,7 +172,7 @@ class NotificationTargetProjectTask extends NotificationTarget {
       $contact = new Contact();
       foreach ($DB->request($query) as $data) {
          if ($contact->getFromDB($data['items_id'])) {
-            $this->addToAddressesList(array("email"    => $contact->fields["email"],
+            $this->addToRecipientsList(array("email"    => $contact->fields["email"],
                                             "name"     => $contact->getName(),
                                             "language" => $CFG_GLPI["language"],
                                             'usertype' => NotificationTarget::ANONYMOUS_USER));
@@ -196,7 +196,7 @@ class NotificationTargetProjectTask extends NotificationTarget {
       $supplier = new Supplier();
       foreach ($DB->request($query) as $data) {
          if ($supplier->getFromDB($data['items_id'])) {
-            $this->addToAddressesList(array("email"    => $supplier->fields["email"],
+            $this->addToRecipientsList(array("email"    => $supplier->fields["email"],
                                             "name"     => $supplier->getName(),
                                             "language" => $CFG_GLPI["language"],
                                             'usertype' => NotificationTarget::ANONYMOUS_USER));

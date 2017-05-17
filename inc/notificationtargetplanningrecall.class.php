@@ -87,7 +87,7 @@ class NotificationTargetPlanningRecall extends NotificationTarget {
          $user = new User();
          if ($item->isField('users_id_tech')
              && $user->getFromDB($item->getField('users_id_tech'))) {
-            $this->addToAddressesList(array('language' => $user->getField('language'),
+            $this->addToRecipientsList(array('language' => $user->getField('language'),
                                             'users_id' => $user->getField('id')));
          }
       }

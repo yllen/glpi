@@ -118,14 +118,14 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                $author_id = -1;
             }
 
+            $user = [
+               'language' => $author_lang,
+               'users_id' => $author_id
+            ];
             if ($this->isMailMode()) {
-               $this->addToAddressesList(array('email'    => $author_email,
-                                             'language' => $author_lang,
-                                             'users_id' => $author_id));
-            } else {
-               $this->addToIdList(array('language' => $author_lang,
-                                        'users_id' => $author_id));
+               $user['email'] = $author_email;
             }
+            $this->addToRecipientsList($user);
          }
       }
 
@@ -139,9 +139,11 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
       foreach ($DB->request($query) as $data) {
          if ($this->isMailMode()) {
             if (NotificationMailing::isUserAddressValid($data['alternative_email'])) {
-               $this->addToAddressesList(array('email'    => $data['alternative_email'],
-                                               'language' => $CFG_GLPI["language"],
-                                               'users_id' => -1));
+               $this->addToRecipientsList([
+                  'email'    => $data['alternative_email'],
+                  'language' => $CFG_GLPI["language"],
+                  'users_id' => -1
+               ]);
             }
          }
       }
@@ -266,14 +268,15 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
          if (empty($author_id)) {
             $author_id = -1;
          }
+
+         $user = [
+            'language' => $author_lang,
+            'users_id' => $author_id
+         ];
          if ($this->isMailMode()) {
-            $this->addToAddressesList(array('email'    => $author_email,
-                                            'language' => $author_lang,
-                                            'users_id' => $author_id));
-         } else if ($author_id != -1) {
-            $this->addToIdList(array('language' => $author_lang,
-                                     'users_id' => $author_id));
+            $user['email'] = $author_email;
          }
+         $this->addToRecipientsList($user);
       }
    }
 
@@ -313,7 +316,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                    WHERE `$supplierlinktable`.`$fkfield` = '".$this->obj->getID()."'";
 
          foreach ($DB->request($query) as $data) {
-            $this->addToAddressesList($data);
+            $this->addToRecipientsList($data);
          }
       }
    }
@@ -340,11 +343,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$validationtable`.`id` = '".$options['validation_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            if ($this->isMailMode()) {
-               $this->addToAddressesList($data);
-            } else {
-               $this->addToIdList($data);
-            }
+            $this->addToRecipientsList($data);
          }
       }
    }
@@ -370,11 +369,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$validationtable`.`id` = '".$options['validation_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            if ($this->isMailMode()) {
-               $this->addToAddressesList($data);
-            } else {
-               $this->addToIdList($data);
-            }
+            $this->addToRecipientsList($data);
          }
       }
    }
@@ -401,11 +396,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$followuptable`.`id` = '".$options['followup_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            if ($this->isMailMode()) {
-               $this->addToAddressesList($data);
-            } else {
-               $this->addToIdList($data);
-            }
+            $this->addToRecipientsList($data);
          }
       }
    }
@@ -429,11 +420,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `glpi_users`.`id` = '".$options['task_users_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            if ($this->isMailMode()) {
-               $this->addToAddressesList($data);
-            } else {
-               $this->addToIdList($data);
-            }
+            $this->addToRecipientsList($data);
          }
       } else if (isset($options['task_id'])) {
          $tasktable = getTableForItemType($this->obj->getType().'Task');
@@ -445,11 +432,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$tasktable`.`id` = '".$options['task_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            if ($this->isMailMode()) {
-               $this->addToAddressesList($data);
-            } else {
-               $this->addToIdList($data);
-            }
+            $this->addToRecipientsList($data);
          }
       }
    }
@@ -473,11 +456,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `glpi_users`.`id` = '".$options['task_users_id_tech']."'";
 
          foreach ($DB->request($query) as $data) {
-            if ($this->isMailMode()) {
-               $this->addToAddressesList($data);
-            } else {
-               $this->addToIdList($data);
-            }
+            $this->addToRecipientsList($data);
          }
       } else if (isset($options['task_id'])) {
          $tasktable = getTableForItemType($this->obj->getType().'Task');
@@ -490,11 +469,7 @@ abstract class NotificationTargetCommonITILObject extends NotificationTarget {
                   WHERE `$tasktable`.`id` = '".$options['task_id']."'";
 
          foreach ($DB->request($query) as $data) {
-            if ($this->isMailMode()) {
-               $this->addToAddressesList($data);
-            } else {
-               $this->addToIdList($data);
-            }
+            $this->addToRecipientsList($data);
          }
       }
    }

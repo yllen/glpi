@@ -75,7 +75,7 @@ class NotificationTargetUser extends NotificationTarget {
                                 'email'    => $this->obj->getDefaultEmail(),
                                 'language' => $this->obj->getField('language'),
                                 'usertype' => $usertype);
-                  $this->addToAddressesList($data);
+                  $this->addToRecipientsList($data);
             }
       }
    }
