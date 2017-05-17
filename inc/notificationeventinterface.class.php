@@ -76,4 +76,20 @@ interface NotificationEventInterface {
     * @return boolean
     */
    static public function canCron();
+
+   /**
+    * Get admin data
+    *
+    * @return array
+    */
+   static public function getAdminData();
+
+   /**
+    * Get entity admin data
+    *
+    * @param integer $entity Entity ID
+    *
+    * @return array
+    */
+   static public function getEntityAdminsData($entity);
 }

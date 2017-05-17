@@ -160,4 +160,38 @@ class NotificationEventMailing implements NotificationEventInterface {
    static public function canCron() {
       return true;
    }
+
+
+   static public function getAdminData() {
+      global $CFG_GLPI;
+
+      return [
+         'email'     => $CFG_GLPI['admin_email'],
+         'name'      => $CFG_GLPI['admin_email_name'],
+         'language'  => $CFG_GLPI['language'],
+         'usertype'  => self::getDefaultUserType()
+      ];
+   }
+
+
+   static public function getEntityAdminsData($entity) {
+      global $DB, $CFG_GLPI;
+
+      $iterator = $DB->request([
+         'FROM'   => 'glpi_entities',
+         'WHERE'  => ['id' => $entity]
+      ]);
+
+      $admins = [];
+
+      while ($row = $iterator->next()) {
+         $admins[] = [
+            'language'  => $CFG_GLPI['language'],
+            'email'     => $row['admin_email'],
+            'name'      => $row['admin_email_name']
+         ];
+      }
+
+      return $admins;
+   }
 }

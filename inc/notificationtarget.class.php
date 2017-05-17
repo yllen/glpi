@@ -652,14 +652,16 @@ class NotificationTarget extends CommonDBChild {
     * @return void
     */
    final protected function addEntityAdmin() {
-      global $DB, $CFG_GLPI;
+      $eventclass = $this->event;
+      $admins_data = $eventclass::getEntityAdminsData($this->entity);
 
-      foreach ($DB->request('glpi_entities', array('id' => $this->entity)) as $row) {
-         $data['language'] = $CFG_GLPI['language'];
-         $data['email']    = $row['admin_email'];
-         $data['name']     = $row['admin_email_name'];
-         $data['usertype'] = self::getDefaultUserType();
-         $this->addToAddressesList($data);
+      if ($admin_data) {
+         foreach ($admins_data as $admin_data) {
+            if (!isset($admin_data['usertype'])) {
+               $admin_data['usertype'] = self::getDefaultUserType();
+            }
+            $this->addToRecipientsList($admin_data);
+         }
       }
    }
 
