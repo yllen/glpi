@@ -158,10 +158,4 @@ class NotificationAjax implements NotificationInterface {
       $now = date('Y-m-d H:i:s');
       $DB->query("UPDATE glpi_queuedmails SET sent_time='$now', is_deleted=true WHERE id='$id' AND recipient = '" . Session::getLoginUserID() . "'");
    }
-
-
-   static public function canCron() {
-      //notifications are pulled from web browser, it must not be handled from cron
-      return false;
-   }
 }

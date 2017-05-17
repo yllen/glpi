@@ -144,4 +144,10 @@ class NotificationEventAjax implements NotificationEventInterface {
 
       return $field;
    }
+
+
+   static public function canCron() {
+      //notifications are pulled from web browser, it must not be handled from cron
+      return false;
+   }
 }
