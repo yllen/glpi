@@ -13,6 +13,7 @@ The present file will list all changes made to the project; according to the
 - Link beetween software licenses
 - Alerts on saved searches
 - Add ajax browsers notifications in addition to emails
+- Plugins can now add new notifications types (xmpp, sms, telegram, ...) to be used along with standard notifications
 
 ### Changed
 - Display knowledge base category items in tickets using a popup instead of a
