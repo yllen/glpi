@@ -208,6 +208,19 @@ class CommonDBTM extends CommonGLPI {
 
 
    /**
+    * Hydrate an object from a resultset row
+    *
+    * @param array $rs The row
+    *
+    * @return void
+    */
+   function getFromResultSet($rs) {
+      //just set fields!
+      $this->fields = $rs;
+   }
+
+
+   /**
     * Generator to browse object from an iterator
     *
     * @since 9.2
