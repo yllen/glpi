@@ -650,20 +650,25 @@ class QueuedMail extends CommonDBTM {
       $mail = new self();
       $pendings = self::getPendings(
          $send_time,
-         $task->fields['param'],
-         [NotificationTemplateTemplate::MODE_MAIL]
+         $task->fields['param']
       );
 
-      if (isset($pendings[NotificationTemplateTemplate::MODE_MAIL])) {
-         foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
-            if ($mail->sendMailById($data['id'])) {
-               $cron_status = 1;
-               if (!is_null($task)) {
-                  $task->addVolume(1);
-               }
+      foreach ($pendings as $mode => $data) {
+         $eventclass = 'NotificationEvent' . ucfirst($mode);
+         $conf = NotificationTemplateTemplate::getMode($mode);
+         if ($conf['from'] != 'core') {
+            $eventclass = 'Plugin' . ucfirst($conf['from']) . $eventclass;
+         }
+
+         $result = $eventclass::send($row);
+         if ($result !== false && count($result)) {
+            $cron_status = 1;
+            if (!is_null($task)) {
+               $task->addVolume($result);
             }
          }
       }
+
       return $cron_status;
    }
 

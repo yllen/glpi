@@ -92,4 +92,14 @@ interface NotificationEventInterface {
     * @return array
     */
    static public function getEntityAdminsData($entity);
+
+
+   /**
+    * Send notification
+    *
+    * @param array $data Data to send
+    *
+    * @return false|integer False if something went wrong, number of send notifications otherwise
+    */
+   static public function send(array $data);
 }

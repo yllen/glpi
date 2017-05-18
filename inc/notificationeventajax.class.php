@@ -162,4 +162,10 @@ class NotificationEventAjax implements NotificationEventInterface {
       //since entities admin cannot be logged in; no ajax notifications for them
       return false;
    }
+
+
+   static public function send(array $data) {
+      Toolbox::logDebug(__METHOD__ . ' should not be called!');
+      return false;
+   }
 }
