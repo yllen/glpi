@@ -599,10 +599,10 @@ class QueuedMail extends CommonDBTM {
 
       $pendings = [];
       $modes = NotificationTemplateTemplate::getModes();
-      foreach (array_keys($modes) as $mode) {
-         $eventclass = 'NotificationEvent' . ucfirst($data['mode']);
-         if ($mode['from'] != 'core') {
-            $eventclass = 'Plugin' . ucfirst($mode['from']) . $eventclass;
+      foreach ($modes as $mode => $conf) {
+         $eventclass = 'NotificationEvent' . ucfirst($mode);
+         if ($conf['from'] != 'core') {
+            $eventclass = 'Plugin' . ucfirst($conf['from']) . $eventclass;
          }
 
          if ($limit_modes !== null && !in_array($mode, $limit_modes)
