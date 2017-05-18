@@ -52,6 +52,7 @@ class NotificationTemplateTemplate extends CommonDBChild {
    const MODE_WEBSOCKET = 'websocket';
    const MODE_SMS       = 'sms';
    const MODE_XMPP      = 'xmpp';
+   const MODE_IRC       = 'irc';
 
    static function getTypeName($nb=0) {
       return _n('Template', 'Templates', $nb);

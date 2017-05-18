@@ -566,6 +566,9 @@ class NotificationTarget extends CommonDBChild {
       $admin_data = $eventclass::getAdminData();
 
       if ($admin_data) {
+         if (!isset($admin_data['usertype'])) {
+            $admin_data['usertype'] = self::getDefaultUserType();
+         }
          $this->addToRecipientsList($admin_data);
       }
    }

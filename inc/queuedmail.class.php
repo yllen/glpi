@@ -660,7 +660,7 @@ class QueuedMail extends CommonDBTM {
             $eventclass = 'Plugin' . ucfirst($conf['from']) . $eventclass;
          }
 
-         $result = $eventclass::send($row);
+         $result = $eventclass::send($data);
          if ($result !== false && count($result)) {
             $cron_status = 1;
             if (!is_null($task)) {
