@@ -97,7 +97,7 @@ class QueuedMail extends CommonDBTM {
          case 'sendmail' :
             foreach ($ids as $id) {
                if ($item->canEdit($id)) {
-                  if ($item->sendMailById($id)) {
+                  if ($item->sendById($id)) {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                   } else {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
@@ -424,124 +424,39 @@ class QueuedMail extends CommonDBTM {
 
 
    /**
+    * Send notification in queue
+    *
+    * @param integer $ID Id
+    *
+    * @return boolean
+    */
+   public function sendById($ID) {
+      if ($this->getFromDB($ID)) {
+         $mode = $this->getField('mode');
+         $eventclass = 'NotificationEvent' . ucfirst($mode);
+         $conf = NotificationTemplateTemplate::getMode($mode);
+         if ($conf['from'] != 'core') {
+            $eventclass = 'Plugin' . ucfirst($conf['from']) . $eventclass;
+         }
+
+         return $eventclass::send([$this->fields]);
+      } else {
+         return false;
+      }
+   }
+
+
+   /**
     * Send mai lin queue
     *
     * @param $ID        integer ID of the item
     *
     * @return true if send false if not
+    *
+    * @deprecated, see QueuedMail::sendById
    **/
    function sendMailById($ID) {
-      global $CFG_GLPI;
-
-      if ($this->getFromDB($ID)) {
-
-         $mmail = new GLPIMailer();
-
-         $headers = importArrayFromDB($this->fields['headers']);
-         if (is_array($headers) && count($headers)) {
-            foreach ($headers as $key => $val) {
-               $mmail->AddCustomHeader("$key: $val");
-            }
-         }
-
-         // Add custom header for mail grouping in reader
-         $mmail->AddCustomHeader("In-Reply-To: <GLPI-".$this->fields["itemtype"]."-".
-                                 $this->fields["items_id"].">");
-
-         $mmail->SetFrom($this->fields['sender'], $this->fields['sendername']);
-
-         if ($this->fields['replyto']) {
-            $mmail->AddReplyTo($this->fields['replyto'], $this->fields['replytoname']);
-         }
-         $mmail->Subject  = $this->fields['name'];
-
-         if (empty($this->fields['body_html'])) {
-            $mmail->isHTML(false);
-            $mmail->Body = $this->fields['body_text'];
-         } else {
-            $mmail->isHTML(true);
-            $mmail->Body               = '';
-            $this->fields['body_html'] = Html::entity_decode_deep($this->fields['body_html']);
-            $documents                 = importArrayFromDB($this->fields['documents']);
-            if (is_array($documents) && count($documents)) {
-               $doc = new Document();
-               foreach ($documents as $docID) {
-                  $doc->getFromDB($docID);
-                  // Add embeded image if tag present in ticket content
-                  if (preg_match_all('/'.Document::getImageTag($doc->fields['tag']).'/',
-                                     $this->fields['body_html'], $matches, PREG_PATTERN_ORDER)) {
-                     $mmail->AddEmbeddedImage(GLPI_DOC_DIR."/".$doc->fields['filepath'],
-                                              Document::getImageTag($doc->fields['tag']),
-                                              $doc->fields['filename'],
-                                              'base64',
-                                              $doc->fields['mime']);
-                  }
-               }
-            }
-            $mmail->Body   .= $this->fields['body_html'];
-            $mmail->AltBody = $this->fields['body_text'];
-         }
-
-         $recipient = $this->getField('recipient');
-         if (defined('GLPI_FORCE_MAIL')) {
-            //force recipient to configured email address
-            $recipient = GLPI_FORCE_MAIL;
-            //add original email addess to message body
-            $text = sprintf(__('Orignal email address was %1$s'), $this->getField('recipient'));
-            $mmail->Body      .= "<br/>$text";
-            $mmail->AltBody   .= $text;
-         }
-
-         $mmail->AddAddress($recipient, $this->fields['recipientname']);
-
-         if (!empty($this->fields['messageid'])) {
-            $mmail->MessageID = "<".$this->fields['messageid'].">";
-         }
-
-         $messageerror = __('Error in sending the email');
-
-         if (!$mmail->Send()) {
-            Session::addMessageAfterRedirect($messageerror."<br>".$mmail->ErrorInfo, true);
-
-            $retries = $CFG_GLPI['smtp_max_retries'] - $this->fields['sent_try'];
-            Toolbox::logInFile("mail-error",
-                              sprintf(__('%1$s. Message: %2$s, Error: %3$s'),
-                                       sprintf(__('Warning: an email was undeliverable to %s with %d retries remaining'),
-                                                $this->fields['recipient'], $retries),
-                                       $this->fields['name'],
-                                       $mmail->ErrorInfo."\n"));
-
-            if ($retries <= 0) {
-               Toolbox::logInFile("mail-error",
-                                 sprintf(__('%1$s: %2$s'),
-                                          sprintf(__('Fatal error: giving up delivery of email to %s'),
-                                                $this->fields['recipient']),
-                                          $this->fields['name']."\n"));
-               $this->delete(array('id' => $this->fields['id']));
-            }
-
-            $mmail->ClearAddresses();
-            $this->update(array('id'        => $this->fields['id'],
-                                'sent_try' => $this->fields['sent_try']+1));
-            return false;
-
-         } else {
-            //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
-            Toolbox::logInFile("mail",
-                               sprintf(__('%1$s: %2$s'),
-                                        sprintf(__('An email was sent to %s'),
-                                                $this->fields['recipient']),
-                                        $this->fields['name']."\n"));
-            $mmail->ClearAddresses();
-            $this->update(array('id'        => $this->fields['id'],
-                                'sent_time' => $_SESSION['glpi_currenttime']));
-            $this->delete(array('id'        => $this->fields['id']));
-            return true;
-         }
-
-      } else {
-         return false;
-      }
+      return $this->sendById($ID);
    }
 
 
@@ -768,13 +683,16 @@ class QueuedMail extends CommonDBTM {
          echo "<td>"._n('Item', 'Items', 1)."</td>";
          echo "<td>";
          echo NOT_AVAILABLE;
-      } else {
+      } else if ($item instanceof CommonDBTM) {
          echo $item->getType();
          $item->getFromDB($this->fields['items_id']);
          echo "</td>";
          echo "<td>"._n('Item', 'Items', 1)."</td>";
          echo "<td>";
          echo $item->getLink();
+      } else {
+         echo get_class($item);
+         echo "</td><td></td>";
       }
       echo "</tr>";
 

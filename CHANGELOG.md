@@ -40,6 +40,7 @@ The following methods have been deprecated:
 - `Bookmark::unmark_default()`
 - `NotificationTarget*::get*Address()`
 - many `NotificationTarget*::get*()`
+- `QueuedMail::sendMailById()`
 
 #### Removals
 
