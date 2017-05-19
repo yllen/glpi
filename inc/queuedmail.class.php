@@ -719,18 +719,21 @@ class QueuedMail extends CommonDBTM {
          $pendings = self::getPendings(
             null,
             1,
-            [NotificationTemplateTemplate::MODE_MAIL],
+            null,
             [
                'itemtype'  => $itemtype,
                'items_id'  => $items_id
             ]
          );
 
-         $mail = new self();
-         if (isset($pendings[NotificationTemplateTemplate::MODE_MAIL])) {
-            foreach ($pendings[NotificationTemplateTemplate::MODE_MAIL] as $data) {
-               $mail->sendMailById($data['id']);
+         foreach ($pendings as $mode => $data) {
+            $eventclass = 'NotificationEvent' . ucfirst($mode);
+            $conf = NotificationTemplateTemplate::getMode($mode);
+            if ($conf['from'] != 'core') {
+               $eventclass = 'Plugin' . ucfirst($conf['from']) . $eventclass;
             }
+
+            $eventclass::send($data);
          }
       }
    }
@@ -739,8 +742,8 @@ class QueuedMail extends CommonDBTM {
    /**
     * Print the queued mail form
     *
-    * @param $ID        integer ID of the item
-    * @param $options   array
+    * @param integer $ID      ID of the item
+    * @param array   $options Options
     *
     * @return true if displayed  false if item not found or not right to display
    **/
