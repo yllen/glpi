@@ -46,7 +46,7 @@ interface NotificationInterface {
    /**
     * Send notifications
     *
-    * @return must return 0 or 1
+    * @return 0|1
    **/
    function sendNotification();
 
